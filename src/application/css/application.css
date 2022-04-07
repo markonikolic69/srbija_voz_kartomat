@@ -1,0 +1,505 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+
+@font-face {
+    src: url('Montserrat-Light.ttf');
+}
+
+
+@font-face {
+    src: url('Montserrat-Bold.ttf');
+}
+
+@font-face {
+    src: url('Montserrat-Thin.ttf');
+}
+
+
+.table_views {
+	-fx-background-color: transparent;
+}
+
+.table_views .column-header-background .filler {
+    -fx-background-color: transparent;
+}
+
+.table_views .corner {
+    -fx-background-color: transparent;
+}
+
+.table_views .column-header-background{
+    -fx-background-color: linear-gradient(to bottom, #1dbbdd44, #93f9b944);
+    -fx-background-radius: 7px 7px 0px 0px;
+    -fx-background-insets: 0 11px 0 0;
+    -fx-padding: 0 0 5px 0;
+}
+
+.table_views .table-cell{
+    -fx-border-color: transparent;
+    -fx-padding: 2 0 2 10px;
+}
+
+
+.table_views .table-cell{
+    -fx-border-color: transparent;
+    -fx-padding: 2 0 2 10px;
+}
+
+
+
+
+.button  {
+    -fx-background-color: transparent;
+ }
+ 
+.polasci_pn {
+	/*-fx-background-color: #d9d9d9;*/
+	-fx-background-color: white;
+	-fx-background-radius: 10px;
+	-fx-border-radius: 10px;
+	-fx-border-color: #404040;
+	-fx-border-width: 1px;
+}
+
+.polasci_novo_pn {
+	-fx-background-color: #E8E8E8;
+	-fx-background-radius: 10px;
+	-fx-border-radius: 10px;
+	-fx-border-width: 1px;
+}
+
+.calendar_novo_pn {
+
+	-fx-background-radius: 10px;
+	-fx-border-radius: 10px;
+	-fx-border-width: 1px;
+}
+ 
+ .progress-bar { 
+ 	
+ 	/*-fx-background-color: #756f6f;*/
+ 	-fx-accent: black;
+ }
+ 
+.progress-bar > .track {
+
+  -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+ 
+ 
+ .bodybg {
+
+ 	/*-fx-background-image: url('/application/img/ognjen/items_sumitted.gif');*/
+ 	-fx-background-size: 100% 100%;
+ }
+ 
+.button_btn {
+	-fx-background-color: #ff1f2e;
+	-fx-text-fill: white;
+}
+
+.lightgray_btn {
+	/*-fx-background-color: #404040;*/
+	-fx-background-color: white;
+	-fx-text-fill: #362c2d;
+	-fx-font-size: 15pt;
+	-fx-background-radius: 10px;
+	-fx-border-radius: 10px;
+}
+
+.lightgray_with_border_btn {
+	-fx-background-color: #404040;
+	-fx-text-fill: #362c2d;
+	-fx-font-size: 15pt;
+	-fx-border-color: #0C4076;
+	-fx-border-width: 1px;
+}
+
+
+.white_btn {
+	-fx-background-color: white;
+	-fx-text-fill: #362c2d;
+	-fx-font-size: 15pt;
+	-fx-font-weight: bold;
+}
+
+
+.button_in_group_btn {
+	-fx-background-color: #404040;
+	-fx-text-fill: white;
+}
+
+
+.label_normal {
+	-fx-font-size: 12pt;
+	-fx-text-alignment:right; 
+}
+
+
+.label_bold {
+	-fx-font-size: 12pt; 
+	-fx-font-weight: bold;
+	-fx-text-alignment:left;
+}
+
+.ostale_stanice_panel {
+	-fx-background-color: white;
+	-fx-background-radius: 10px;
+		-fx-border-radius: 10px;
+	-fx-border-color: #404040;
+	-fx-border-width: 1px;
+}
+
+.day_pn {
+	-fx-background-color: #3a6dcf/*#2880ec */;
+
+	-fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+
+}
+
+.blue_button {
+		-fx-background-color: #3a6dcf /*#5863cc */;
+	    -fx-background-radius: 10px;
+-fx-text-fill: white;
+	-fx-font-size: 30pt;
+    -fx-border-radius: 10px;
+}
+
+.blue_button_smal_font {
+			-fx-background-color: #3a6dcf /*#5863cc */;
+	    -fx-background-radius: 10px;
+-fx-text-fill: white;
+	-fx-font-size: 22pt;
+    -fx-border-radius: 10px;
+}
+
+.blue_button_small_font_size {
+		-fx-background-color: #3a6dcf /*#5863cc */;
+	    -fx-background-radius: 10px;
+	-fx-text-fill: white;
+	-fx-font-size: 15pt;
+    -fx-border-radius: 10px;
+}
+
+
+.red_button_small_font_size {
+			-fx-background-color: /*#2d388a*/#A12D2E;
+	    -fx-background-radius: 10px;
+	-fx-text-fill: white;
+	-fx-font-size: 10pt;
+    -fx-border-radius: 10px;
+}
+
+
+.white_button_small_font_size {
+	-fx-background-color: /*#2d388a*/white;
+	-fx-background-radius: 10px;
+	-fx-text-fill: #3a6dcf;
+	-fx-border-color: #0C4076;
+	-fx-border-width: 1px;
+	-fx-font-size: 10pt;
+    -fx-border-radius: 10px;
+}
+
+.dark_blue_button {
+			-fx-background-color: /*#2d388a*/#A12D2E;
+	    -fx-background-radius: 10px;
+	-fx-text-fill: white;
+	-fx-font-size: 15pt;
+    -fx-border-radius: 10px;
+}
+
+.tip_karte_pn {
+	-fx-background-color: lightgray;
+	-fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+.red_header_pn {
+	-fx-background-color: #d11b17;
+	-fx-background-radius: 10px 10px 0px 0px;
+    -fx-border-radius: 10px 10px 0px 0px;
+}
+
+.blue_pn {
+	-fx-background-color: #3a6dcf;
+	-fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+
+.dark_blue_pn {
+	-fx-background-color: #0C4076;
+	-fx-background-radius: 0px 0px 10px 10px;
+    -fx-border-radius: 0px 0px 10px 10px;
+}
+
+.calendar_pn {
+	-fx-background-color: white;
+	-fx-background-radius: 10px;
+	-fx-border-radius: 10px;
+	-fx-border-color: #404040;
+	-fx-border-width: 1px;
+}
+
+.cal_day_btn {
+	-fx-background-color: white;
+	-fx-text-fill: #2880ec;
+	-fx-background-radius: 7px;
+    -fx-border-radius: 7px;
+}
+
+.izmeni_opcije_btn {
+	-fx-background-color:  white /* #5863cc */;
+	/*-fx-text-fill: #362c2d;*/
+	-fx-text-fill: #3a6dcf;
+	-fx-font-size: 15pt; 
+	-fx-font-family: 'Montserrat';
+	-fx-background-radius: 7px;
+    -fx-border-radius: 7px;
+}
+
+.izmeni_opcije_veca_slova_btn {
+	-fx-background-color:  white /* #5863cc */;
+	/*-fx-text-fill: #362c2d;*/
+	-fx-text-fill: #3a6dcf;
+	-fx-font-size: 20pt; 
+	-fx-font-family: 'Montserrat';
+	-fx-background-radius: 7px;
+    -fx-border-radius: 7px;
+}
+
+.belo_plava_slova_btn {
+	-fx-background-color: white;
+	-fx-text-fill: #3a6dcf;
+	-fx-font-family: 'Montserrat Light';
+	-fx-font-size: 22pt; 
+	-fx-background-radius: 7px;
+    -fx-border-radius: 7px;
+}
+
+.cal_act_btn {
+	-fx-background-color: white;
+	-fx-text-fill: #404040;
+	-fx-border-color: #404040;
+	-fx-border-width: 1px;
+	-fx-background-radius: 10px;
+    -fx-border-radius:10px;
+}
+
+.cal_act_btn_vel_slo {
+	-fx-background-color: white;
+	-fx-text-fill: #404040;
+	-fx-border-color: #404040;
+	-fx-border-width: 1px;
+	-fx-background-radius: 10px;
+    -fx-border-radius:10px;
+    -fx-font-size: 22pt; 
+}
+
+.placanje_karticom_btn {
+	-fx-background-color: white;
+	-fx-text-fill: #404040;
+	-fx-border-color: #404040;
+	-fx-border-width: 3px;
+	-fx-background-radius: 10px;
+    -fx-border-radius:10px;
+    -fx-font-family: 'Montserrat Light';
+	-fx-font-size: 22pt;
+}
+
+.veliko_plavo_btn {
+	-fx-background-color: #3a6dcf;
+	-fx-text-fill: white;
+	-fx-background-radius: 10px;
+    -fx-border-radius:10px;
+    -fx-font-family: 'Montserrat Light';
+	-fx-font-size: 22pt;
+}
+
+
+.kalendar_novi_btn {
+	-fx-background-color: white;
+	-fx-text-fill: #404040;
+	-fx-border-color: #404040;
+	-fx-border-width: 1px;
+	-fx-background-radius: 10px;
+    -fx-border-radius:10px;
+    -fx-font-family: 'Montserrat Light';
+	-fx-font-size: 14pt;
+}
+
+
+.mala_bela_slova {
+	-fx-font-family: 'Montserrat Light';
+	-fx-text-fill: white;
+	-fx-font-size: 10pt; 
+	-fx-text-alignment:left;
+}
+
+.mala_siva_slova {
+	-fx-font-family: 'Montserrat Light';
+	-fx-text-fill: #404040;
+	-fx-font-size: 10pt; 
+	-fx-text-alignment:left;
+}
+
+.siva_slova {
+	-fx-font-family: 'Montserrat Light';
+	-fx-text-fill: #404040;
+	-fx-font-size: 15pt; 
+	-fx-text-alignment:left;
+}
+
+.velika_bold_bela_slova {
+	-fx-font-family: 'Montserrat';
+	-fx-text-fill: white;
+	-fx-font-size: 15pt; 
+	-fx-font-weight: bold;
+	-fx-text-alignment:left;
+}
+
+.extra_velika_bold_bela_slova {
+	-fx-font-family: 'Montserrat';
+	-fx-text-fill: white;
+	-fx-font-size: 25pt; 
+	-fx-font-weight: bold;
+	-fx-text-alignment:right;
+}
+
+.velika_bela_slova {
+	-fx-font-family: 'Montserrat Light';
+	-fx-text-fill: white;
+	-fx-font-size: 20pt; 
+	-fx-font-weight: bold;
+	-fx-text-alignment:left;
+}
+
+.bela_slova {
+	-fx-font-family: 'Montserrat Light';
+	-fx-text-fill: white;
+	-fx-font-size: 15pt; 
+	-fx-font-weight: bold;
+	-fx-text-alignment:left;
+}
+
+.crna_slova {
+	-fx-font-family: 'Montserrat Light';
+	-fx-text-fill: black;
+	-fx-font-size: 15pt; 
+	-fx-text-alignment:left;
+}
+ 
+.velika_bold_crna_slova {
+	-fx-font-family: 'Montserrat';
+	-fx-text-fill: black;
+	-fx-font-size: 20pt; 
+	-fx-font-weight: bold;
+	-fx-text-alignment:left;
+}
+
+.velika_bold_bela_slova {
+	-fx-font-family: 'Montserrat';
+	-fx-text-fill: white;
+	-fx-font-size: 20pt; 
+	-fx-font-weight: bold;
+	-fx-text-alignment:left;
+}
+
+.bold_crna_slova {
+	-fx-font-family: 'Montserrat';
+	-fx-text-fill: black;
+	-fx-font-size: 17pt; 
+	-fx-font-weight: bold;
+	-fx-text-alignment:left;
+}
+
+.tamno_braon_slova {
+	-fx-font-family: 'Montserrat Light';
+	-fx-text-fill: #362c2d;
+	-fx-font-size: 15pt; 
+	-fx-text-alignment:left;
+}
+
+.mala_tamno_braon_slova {
+	-fx-font-family: 'Montserrat Light';
+	-fx-text-fill: #362c2d;
+	-fx-font-size: 10pt; 
+	-fx-text-alignment:left;
+}
+
+.velika_tamno_braon_slova {
+	-fx-font-family: 'Montserrat Light';
+	-fx-text-fill: #362c2d;
+	-fx-font-size: 20pt; 
+	-fx-text-alignment:left;
+}
+
+.velikaaaaa_tamno_braon_slova {
+	-fx-font-family: 'Montserrat Light';
+	-fx-text-fill: #362c2d;
+	-fx-font-size: 30pt; 
+	-fx-text-alignment:left;
+}
+
+.popust_id_tf {
+		-fx-font-family: 'Montserrat Light';
+	-fx-text-fill: #362c2d;
+	-fx-font-size: 17pt; 
+	-fx-text-alignment:left;
+		-fx-background-color: white;
+	-fx-text-fill: #404040;
+	-fx-border-color: #404040;
+	-fx-border-width: 1px;
+	-fx-background-radius: 10px;
+    -fx-border-radius:10px;
+}
+
+.error_lbl {
+	-fx-font-family: 'Montserrat Light';
+ 	-fx-font-size: 14pt ;
+ 	-fx-text-fill: #404040;
+ 	-fx-alignment:center;
+}
+
+.message_lbl {
+	-fx-font-family: 'Montserrat Light';
+ 	-fx-font-size: 23pt ;
+ 	-fx-text-fill: #404040;
+ 	-fx-alignment:center;
+}
+
+.error_pn {
+		 /*-fx-background-color: #2d388a;*/
+	 -fx-background-color: white;
+	 /* 	-fx-border-color: gray;
+	-fx-border-width: 1px; */
+	-fx-background-radius: 10px 10px 10px 10px;
+    -fx-border-radius: 10px 10px 10px 10px;
+    -fx-border-radius: 10px;
+	-fx-border-width: 1px;
+	-fx-border-color: #404040;
+}
+
+.tastatura_pn {
+		 /*-fx-background-color: #2d388a;*/
+	 -fx-background-color: white;
+	 /* 	-fx-border-color: gray;
+	-fx-border-width: 1px; */
+	-fx-background-radius: 10px 10px 10px 10px;
+    -fx-border-radius: 10px 10px 10px 10px;
+    -fx-border-radius: 10px;
+	-fx-border-width: 1px;
+	-fx-border-color: #404040;
+}
+
+HBox, VBox {
+    -fx-alignment: center ;
+    -fx-padding: 10 ;
+}
+ 
+
+ 

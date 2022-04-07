@@ -1,0 +1,109 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+
+@font-face {
+    src: url('Montserrat-Light.ttf');
+}
+
+
+@font-face {
+    src: url('Montserrat-Bold.ttf');
+}
+
+@font-face {
+    src: url('Montserrat-Thin.ttf');
+}
+
+
+.table_views {
+	-fx-background-color: transparent;
+}
+
+.table_views .column-header-background .filler {
+    -fx-background-color: transparent;
+}
+
+.date-picker .text-field {
+    -fx-control-inner-background: lightgray ;
+    -fx-pref-width: 0 px;
+}
+
+.table_views .corner {
+    -fx-background-color: transparent;
+}
+
+.table_views .column-header-background{
+    -fx-background-color: linear-gradient(to bottom, #1dbbdd44, #93f9b944);
+    -fx-background-radius: 7px 7px 0px 0px;
+    -fx-background-insets: 0 11px 0 0;
+    -fx-padding: 0 0 5px 0;
+}
+
+.table_views .table-cell{
+    -fx-border-color: transparent;
+    -fx-padding: 2 0 2 10px;
+}
+
+
+.table_views .table-cell{
+    -fx-border-color: transparent;
+    -fx-padding: 2 0 2 10px;
+}
+
+
+
+
+.button  {
+    -fx-background-color: transparent;
+ }
+ 
+.polasci_pn {
+	/*-fx-background-color: #d9d9d9;*/
+	-fx-background-color: white;
+
+}
+ 
+ .progress-bar { 
+ 	
+ 	/*-fx-background-color: #756f6f;*/
+ 	-fx-accent: black;
+ }
+ 
+.progress-bar > .track {
+
+  -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+ 
+ 
+ .bodybg {
+
+ 	/*-fx-background-image: url('/application/img/ognjen/items_sumitted.gif');*/
+ 	-fx-background-size: 100% 100%;
+ }
+ 
+.button_btn {
+	-fx-background-color: #ff1f2e;
+	-fx-text-fill: white;
+}
+
+
+.label_normal {
+	-fx-font-size: 12pt;
+	-fx-text-alignment:right; 
+}
+
+
+.label_bold {
+	-fx-font-size: 12pt; 
+	-fx-font-weight: bold;
+	-fx-text-alignment:left;
+}
+
+
+ 
+
+ 
+
+ 
