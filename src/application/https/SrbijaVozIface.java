@@ -9,36 +9,47 @@ public interface SrbijaVozIface {
 	
 	public List<StanicaIDBean> getStanicaIDs() throws CommunicationException;
 	
+	public List<StanicaIDBean> getStanicaIDsNew(int sifra_od) throws CommunicationException;
+	
 	public List<VozBean> getListaVozovaNaTrasi(int sifra_stanice_od, int sifra_stanice_do, String datum, int broj_putnika, int razred) throws CommunicationException;
 	
-	public CenaBean getCenaPovratna(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak) throws CommunicationException;
+	public List<VozBean> getListaVozovaNaTrasiNew(int sifra_stanice_od, int sifra_stanice_do, String datum, int broj_putnika, int razred) throws CommunicationException;
 	
-	public CenaBean getCenaJedanSmer(int broj_putnika, int razred, int kilometraza,  int rang) throws CommunicationException;
+	public CenaBean getCenaPovratna(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak, String datum) throws CommunicationException;
 	
-	public CenaBean getCenaPovratnaPSE(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak) throws CommunicationException;
+	public CenaBean getCenaJedanSmer(int broj_putnika, int razred, int kilometraza,  int rang, String datum) throws CommunicationException;
+	
+	public CenaBean getCenaPovratnaPSE(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak, String datum) throws CommunicationException;
 	
 	public CenaBean getCenaPovratnaDETE(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, 
-			int razred_povratak,  int rang_povratak) throws CommunicationException;
+			int razred_povratak,  int rang_povratak, String datum) throws CommunicationException;
 
 	public CenaBean getCenaPovratnaSRB_PLUS_K_13(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, 
-			int razred_povratak,  int rang_povratak) throws CommunicationException;
+			int razred_povratak,  int rang_povratak, String datum) throws CommunicationException;
 	
 	public CenaBean getCenaPovratnaRAIL_PLUS_K_30(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, 
-			int razred_povratak,  int rang_povratak) throws CommunicationException;
+			int razred_povratak,  int rang_povratak, String datum) throws CommunicationException;
 	
-	public CenaBean getCenaJedanSmerPSE(int broj_putnika, int razred, int kilometraza,  int rang) throws CommunicationException;
+	public CenaBean getCenaPovratnaPenzioneri(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, 
+			int razred_povratak,  int rang_povratak, String datum) throws CommunicationException;
+	
+	public CenaBean getCenaJedanSmerPSE(int broj_putnika, int razred, int kilometraza,  int rang, String datum) throws CommunicationException;
 	
 
-	public CenaBean getCenaJedanSmerDETE(int broj_putnika, int razred, int kilometraza,  int rang) throws CommunicationException;
+	public CenaBean getCenaJedanSmerDETE(int broj_putnika, int razred, int kilometraza,  int rang, String datum) throws CommunicationException;
 	
-	public CenaBean getCenaJedanSmerSRB_PLUS_K_13(int broj_putnika, int razred, int kilometraza,  int rang) throws CommunicationException;
+	public CenaBean getCenaJedanSmerSRB_PLUS_K_13(int broj_putnika, int razred, int kilometraza,  int rang, String datum) throws CommunicationException;
 	
-	public CenaBean getCenaJedanSmerRAIL_PLUS_K_30(int broj_putnika, int razred, int kilometraza,  int rang) throws CommunicationException;
+	public CenaBean getCenaJedanSmerRAIL_PLUS_K_30(int broj_putnika, int razred, int kilometraza,  int rang, String datum) throws CommunicationException;
+	
+	public CenaBean getCenaJedanSmerPenzioneri(int broj_putnika, int razred, int kilometraza,  int rang, String datum) throws CommunicationException;
 	
 	public List<PovlasticaBean> getPovlastice(int smer/*1 ili 2*/) throws CommunicationException;
 	
 	public boolean provera_legitimacije(int broj_legitimacije, int povlastica_id) throws CommunicationException;//https://ekarta.srbvoz.rs/api/povlastice?brleg=52910&pov=37
 	
+	public boolean provera_legitimacije(String broj_legitimacije, int povlastica_id) throws CommunicationException;//https://ekarta.srbvoz.rs/api/povlastice?brleg=52910&pov=37
+
 	public TokenBean getToken(String username, String password) throws CommunicationException;
 	
 	public List<FrekventneStaniceBean> getFrekventneStanice(String mak_adresa) throws CommunicationException;
@@ -53,5 +64,11 @@ public interface SrbijaVozIface {
 	public EtKartaResponse upisUPIT_KA_BANCI(boolean is_pozitivan, int userID, String orderID, double cena, TransactionDataResponse payment_transaction_data) throws CommunicationException;
 
 	public void upisKARTA_ODSTAMPANA(String userID, String broj_karte) throws CommunicationException;
+	
+	public int getBrojSlobodnihMesta(int broj_voza, String datum) throws CommunicationException;
+	
+	public String getTrajanjeKarte(int stanicaod, int stanicado, int via, int  smer, String datum) throws CommunicationException;
+	
+	public String upisU_KARTOMAT_SLIP(String broj_karte, String slip) throws CommunicationException;
 
 }

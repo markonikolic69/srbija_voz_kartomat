@@ -20,5 +20,7 @@
 	<classpathentry kind="lib" path="C:/Users/38164/eclipse-workspace/SrbijaVoz/lib/gson-2.8.2.jar"/>
 	<classpathentry kind="lib" path="lib/barbecue-2.0-dev.jar"/>
 	<classpathentry kind="lib" path="C:/Documents/workspace_processing/3pp_lib/unirest/json-20160212.jar"/>
+	<classpathentry kind="lib" path="C:/Documents/workspace_processing/3pp_lib/APACHE/LOGGING/log4j-1.2.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/38164/.m2/repository/com/google/zxing/core/3.2.1/core-3.2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

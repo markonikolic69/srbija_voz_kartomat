@@ -8,7 +8,8 @@ public enum SrbijaVozPopustID {
 	SRB_PLUS_K_13(new Integer(3)),
 	RAIL_PLUS_K_30(new Integer(4)),
 	DETE( new Integer(5)),
-	PAS( new Integer(6));
+	PAS( new Integer(6)),
+	PENZIONER( new Integer(7));
 	
 	
 	
@@ -19,6 +20,7 @@ public enum SrbijaVozPopustID {
 	public static final int ID_RAIL_PLUS_K_30 = 4;
 	public static final int ID_DETE = 5;
 	public static final int ID_PAS = 6;
+	public static final int ID_PENZIONER = 29;
 	
 	
 	public Integer _app_id = 0;

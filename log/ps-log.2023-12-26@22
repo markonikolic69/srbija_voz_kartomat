@@ -1,0 +1,439 @@
+[22:40:22][INFO][JavaFX Application Thread][2798][MainUIController][handle_destinacija1] - handle_destinacija1
+[22:40:22][INFO][JavaFX Application Thread][3020][MainUIController][setPodaciOdVozaMarko] - setPodaciOdVozaMarko
+[22:40:22][INFO][Thread-128][37][GetListaVozovaPolazakThread][run] - run, params: _url = https://webapi1.srbvoz.rs/eKarta/api/, _sifra_stanice_od = 16052, _sifra_stanice_do = 16808, _datum = 26.12.2023, _broj_putnika = 1, _razred = 2
+[22:40:22][INFO][Thread-128][132][SrbijaVozIfaceImpl][getListaVozovaNaTrasiNew] - Srbija voz api call: getListaVozovaNaTrasiNew, sifra_stanice_od = 16052, sifra_stanice_do = 16808, datum = 26.12.2023, broj_putnika = 1, razred = 2
+[22:40:22][INFO][Thread-128][150][SrbijaVozIfaceImpl][getListaVozovaNaTrasiNew] - Srbija voz api call: getListaVozovaNaTrasiNew, returned = [{"odsifra":16052,"dosifra":16808,"idvoz":44400001,"brvoz":750,"nazivvoz":"                    ","rang":8,"vremep":"23:40","vremed":"00:29             ","nazivod":"Beograd Centar","nazivdo":"Novi Sad","idrel":173959,"relkm":89,"ponuda":"ABv       ","cenau":453.00,"trajanje_putovanja":"00:49","datum_dolaska":"2023-12-27T00:00:00","br_slobodnih_mesta":0,"br_slobodnih_mesta12":"","rezervacioni_sistem":false,"napomena":"","napomenaE":"","soko":false,"bsM_R2":0,"bsM_R1":0,"etTrasaVoza":[{"iD_VOZ":44400001,"rb":1,"sifrA_STANICE":16052,"vremE_DOLASKA":"23:40             ","vremE_POLASKA":"23:40             ","naziV_STANICE":"Beograd Centar"},{"iD_VOZ":44400001,"rb":2,"sifrA_STANICE":16003,"vremE_DOLASKA":"23:43             ","vremE_POLASKA":"23:44             ","naziV_STANICE":"Novi Beograd"},{"iD_VOZ":44400001,"rb":3,"sifrA_STANICE":16204,"vremE_DOLASKA":"23:54             ","vremE_POLASKA":"23:55             ","naziV_STANICE":"Batajnica"},{"iD_VOZ":44400001,"rb":4,"sifrA_STANICE":16501,"vremE_DOLASKA":"23:59             ","vremE_POLASKA":"00:00             ","naziV_STANICE":"Nova Pazova"},{"iD_VOZ":44400001,"rb":5,"sifrA_STANICE":16503,"vremE_DOLASKA":"00:04             ","vremE_POLASKA":"00:05             ","naziV_STANICE":"Stara Pazova"},{"iD_VOZ":44400001,"rb":6,"sifrA_STANICE":16801,"vremE_DOLASKA":"00:09             ","vremE_POLASKA":"00:10             ","naziV_STANICE":"Indjija"},{"iD_VOZ":44400001,"rb":7,"sifrA_STANICE":16802,"vremE_DOLASKA":"00:14             ","vremE_POLASKA":"00:15             ","naziV_STANICE":"Beska"},{"iD_VOZ":44400001,"rb":8,"sifrA_STANICE":16806,"vremE_DOLASKA":"00:20             ","vremE_POLASKA":"00:20             ","naziV_STANICE":"Sremski Karlovci"},{"iD_VOZ":44400001,"rb":9,"sifrA_STANICE":16807,"vremE_DOLASKA":"00:24             ","vremE_POLASKA":"00:25             ","naziV_STANICE":"Petrovaradin"},{"iD_VOZ":44400001,"rb":10,"sifrA_STANICE":16808,"vremE_DOLASKA":"00:29             ","vremE_POLASKA":"00:29             ","naziV_STANICE":"Novi Sad"}]}]
+[22:40:22][INFO][Thread-128][3037][MainUIController][setListaVozovaPolasciCallbackSuccess] - setListaVozovaPolasciCallbackSuccess, lista_vozova = [VozBean [odsifra=16052, dosifra=16808, idvoz=44400001, brvoz=750, nazivvoz=                    , rang=8, vremep=23:40, vremed=00:29             , nazivod=Beograd Centar, nazivdo=Novi Sad, idrel=173959, relkm=89, ponuda=ABv       , cenau=453.0, trajanje_putovanja=00:49, datum_dolaska=27.12.2023, etTrasaVoza=[StanicaNaTrasiBean [iD_VOZ=44400001, rb=1, sifrA_STANICE=16052, vremE_DOLASKA=23:40             , vremE_POLASKA=23:40             , naziV_STANICE=Beograd Centar], StanicaNaTrasiBean [iD_VOZ=44400001, rb=2, sifrA_STANICE=16003, vremE_DOLASKA=23:43             , vremE_POLASKA=23:44             , naziV_STANICE=Novi Beograd], StanicaNaTrasiBean [iD_VOZ=44400001, rb=3, sifrA_STANICE=16204, vremE_DOLASKA=23:54             , vremE_POLASKA=23:55             , naziV_STANICE=Batajnica], StanicaNaTrasiBean [iD_VOZ=44400001, rb=4, sifrA_STANICE=16501, vremE_DOLASKA=23:59             , vremE_POLASKA=00:00             , naziV_STANICE=Nova Pazova], StanicaNaTrasiBean [iD_VOZ=44400001, rb=5, sifrA_STANICE=16503, vremE_DOLASKA=00:04             , vremE_POLASKA=00:05             , naziV_STANICE=Stara Pazova], StanicaNaTrasiBean [iD_VOZ=44400001, rb=6, sifrA_STANICE=16801, vremE_DOLASKA=00:09             , vremE_POLASKA=00:10             , naziV_STANICE=Indjija], StanicaNaTrasiBean [iD_VOZ=44400001, rb=7, sifrA_STANICE=16802, vremE_DOLASKA=00:14             , vremE_POLASKA=00:15             , naziV_STANICE=Beska], StanicaNaTrasiBean [iD_VOZ=44400001, rb=8, sifrA_STANICE=16806, vremE_DOLASKA=00:20             , vremE_POLASKA=00:20             , naziV_STANICE=Sremski Karlovci], StanicaNaTrasiBean [iD_VOZ=44400001, rb=9, sifrA_STANICE=16807, vremE_DOLASKA=00:24             , vremE_POLASKA=00:25             , naziV_STANICE=Petrovaradin], StanicaNaTrasiBean [iD_VOZ=44400001, rb=10, sifrA_STANICE=16808, vremE_DOLASKA=00:29             , vremE_POLASKA=00:29             , naziV_STANICE=Novi Sad]], _datum_vreme_polaska=26.12.2023 23:40, _datum_vreme_povratka=27.12.2023 00:29             , _is_selected=false, br_slobodnih_mesta=0, rezervacioni_sistem=false, soko=false, bsM_R2=0, bsM_R1=0]]
+[22:40:22][INFO][JavaFX Application Thread][3112][MainUIController][setPodaciOdVoza] - setPodaciOdVoza
+[22:40:22][INFO][JavaFX Application Thread][5345][MainUIController][is_vreme_polaska_manje_od_5_minuta] - --> is_vreme_polaska_manje_od_5_minuta
+[22:40:22][INFO][JavaFX Application Thread][5365][MainUIController][is_vreme_polaska_manje_od_5_minuta] - <-- is_vreme_polaska_manje_od_5_minuta return false
+[22:40:22][INFO][JavaFX Application Thread][3009][MainUIController][setSelectedVoz] - setSelectedVoz, selected = VozBean [odsifra=16052, dosifra=16808, idvoz=44400001, brvoz=750, nazivvoz=                    , rang=8, vremep=23:40, vremed=00:29             , nazivod=Beograd Centar, nazivdo=Novi Sad, idrel=173959, relkm=89, ponuda=ABv       , cenau=453.0, trajanje_putovanja=00:49, datum_dolaska=27.12.2023, etTrasaVoza=[StanicaNaTrasiBean [iD_VOZ=44400001, rb=1, sifrA_STANICE=16052, vremE_DOLASKA=23:40             , vremE_POLASKA=23:40             , naziV_STANICE=Beograd Centar], StanicaNaTrasiBean [iD_VOZ=44400001, rb=2, sifrA_STANICE=16003, vremE_DOLASKA=23:43             , vremE_POLASKA=23:44             , naziV_STANICE=Novi Beograd], StanicaNaTrasiBean [iD_VOZ=44400001, rb=3, sifrA_STANICE=16204, vremE_DOLASKA=23:54             , vremE_POLASKA=23:55             , naziV_STANICE=Batajnica], StanicaNaTrasiBean [iD_VOZ=44400001, rb=4, sifrA_STANICE=16501, vremE_DOLASKA=23:59             , vremE_POLASKA=00:00             , naziV_STANICE=Nova Pazova], StanicaNaTrasiBean [iD_VOZ=44400001, rb=5, sifrA_STANICE=16503, vremE_DOLASKA=00:04             , vremE_POLASKA=00:05             , naziV_STANICE=Stara Pazova], StanicaNaTrasiBean [iD_VOZ=44400001, rb=6, sifrA_STANICE=16801, vremE_DOLASKA=00:09             , vremE_POLASKA=00:10             , naziV_STANICE=Indjija], StanicaNaTrasiBean [iD_VOZ=44400001, rb=7, sifrA_STANICE=16802, vremE_DOLASKA=00:14             , vremE_POLASKA=00:15             , naziV_STANICE=Beska], StanicaNaTrasiBean [iD_VOZ=44400001, rb=8, sifrA_STANICE=16806, vremE_DOLASKA=00:20             , vremE_POLASKA=00:20             , naziV_STANICE=Sremski Karlovci], StanicaNaTrasiBean [iD_VOZ=44400001, rb=9, sifrA_STANICE=16807, vremE_DOLASKA=00:24             , vremE_POLASKA=00:25             , naziV_STANICE=Petrovaradin], StanicaNaTrasiBean [iD_VOZ=44400001, rb=10, sifrA_STANICE=16808, vremE_DOLASKA=00:29             , vremE_POLASKA=00:29             , naziV_STANICE=Novi Sad]], _datum_vreme_polaska=26.12.2023 23:40, _datum_vreme_povratka=27.12.2023 00:29             , _is_selected=false, br_slobodnih_mesta=0, rezervacioni_sistem=false, soko=false, bsM_R2=0, bsM_R1=0]
+[22:40:22][INFO][JavaFX Application Thread][193][SrbijaVozIfaceImpl][getTrajanjeKarte] - Srbija voz api call: getTrajanjeKarte, stanicaod = 16052, stanicado = 16808, via = 1, smer = 2, datum = 27.12.2023
+[22:40:22][INFO][JavaFX Application Thread][213][SrbijaVozIfaceImpl][getTrajanjeKarte] - Srbija voz api call: getTrajanjeKarte, returned = "12/27/2023 12:00:00 AM"
+[22:40:22][INFO][JavaFX Application Thread][6720][MainUIController][uslov_za_drugi_korak] - --> uslov_za_drugi_korak
+[22:40:22][INFO][JavaFX Application Thread][6811][MainUIController][uslov_za_drugi_korak] - <-- uslov_za_drugi_korak
+[22:40:22][INFO][JavaFX Application Thread][4636][MainUIController][handle_pagination_polasci_povratci] - --> handle_pagination_polasci_povratci, is_napred = true, is_init = true
+[22:40:22][INFO][JavaFX Application Thread][1935][MainUIController][getNextPaginationpPolasci] - _polazak_true_povratak_false=true_lista_svih_polazaka_current_position = 0, SVI_POLASCI_SIZE=5, polasci_povratci.size() = 1, lista_current_position = 0
+[22:40:22][INFO][JavaFX Application Thread][1955][MainUIController][getNextPaginationpPolasci] - _lista_svih_polazaka_current_position = 0, is_pagination = false
+[22:40:22][INFO][JavaFX Application Thread][1956][MainUIController][getNextPaginationpPolasci] - _lista_svih_povrataka_current_position = 0, is_pagination = false
+[22:40:22][INFO][JavaFX Application Thread][4808][MainUIController][handle_pagination_polasci_povratci] - <-- handle_pagination_polasci_povratci
+[22:40:22][INFO][JavaFX Application Thread][3456][MainUIController][setCena] - set cena, is_povratna = false
+[22:40:22][INFO][JavaFX Application Thread][3465][MainUIController][setCenaJedanSmer] - setCena , _prva_karta_tip = 0
+[22:40:22][INFO][JavaFX Application Thread][331][SrbijaVozIfaceImpl][getCenaJedanSmerZaTipPutnika] - Srbija voz api call: getCenaJedanSmerZaTipPutnika, broj_putnika = 1, kilometraza = 89, razred = 2, rang = 8, sifra_povlastice = 1, datum = 27-12-2023
+[22:40:22][INFO][JavaFX Application Thread][356][SrbijaVozIfaceImpl][getCenaJedanSmerZaTipPutnika] - Srbija voz api call: getCenaJedanSmerZaTipPutnika, returned = [{"cenau":453.00,"cenao":333.00,"cenad":120.00,"cenab":0.00,"cenar":0.00,"tiprez":0}]
+[22:40:22][INFO][JavaFX Application Thread][3478][MainUIController][setCenaJedanSmer] - setCena, current_tip = 0
+[22:40:22][INFO][JavaFX Application Thread][3534][MainUIController][getCenaJedanSmerFromAPI] - --> getCenaJedanSmerFromAPI, karta_tip = 0, osnovna_cena = CenaBean [cenau=453.0, cenao=333.0, cenad=120.0, cenab=0.0, cenar=0.0, tiprez=0]
+[22:40:22][INFO][JavaFX Application Thread][3526][MainUIController][setCenaJedanSmer] - <--setCena, ukupna_cena = 453.0
+[22:40:22][INFO][JavaFX Application Thread][3174][MainUIController][setPodaciOdVoza] - <--
+[22:40:22][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 120
+[22:40:23][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 119
+[22:40:24][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 118
+[22:40:25][INFO][JavaFX Application Thread][2612][MainUIController][handleIzmeniTipKarte] - handleIzmeniTipKarte
+[22:40:25][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 117
+[22:40:26][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 116
+[22:40:27][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 115
+[22:40:28][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 114
+[22:40:29][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 113
+[22:40:30][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 112
+[22:40:31][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 111
+[22:40:32][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 110
+[22:40:33][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 109
+[22:40:34][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 108
+[22:40:35][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 107
+[22:40:36][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 106
+[22:40:37][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 105
+[22:40:38][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 104
+[22:40:39][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 103
+[22:40:40][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 102
+[22:40:41][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 101
+[22:40:42][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 100
+[22:40:43][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 99
+[22:40:44][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 98
+[22:40:45][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 97
+[22:40:46][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 96
+[22:40:47][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 95
+[22:40:48][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 94
+[22:40:49][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 93
+[22:40:50][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 92
+[22:40:51][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 91
+[22:40:52][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 90
+[22:40:53][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 89
+[22:40:54][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 88
+[22:40:55][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 87
+[22:40:56][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 86
+[22:40:57][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 85
+[22:40:58][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 84
+[22:40:59][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 83
+[22:41:00][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 82
+[22:41:01][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 81
+[22:41:02][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 80
+[22:41:03][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 79
+[22:41:04][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 78
+[22:41:05][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 77
+[22:41:06][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 76
+[22:41:07][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 75
+[22:41:08][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 74
+[22:41:09][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 73
+[22:41:10][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 72
+[22:41:11][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 71
+[22:41:12][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 70
+[22:41:13][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 69
+[22:41:14][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 68
+[22:41:15][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 67
+[22:41:16][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 66
+[22:41:17][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 65
+[22:41:18][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 64
+[22:41:19][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 63
+[22:41:20][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 62
+[22:41:21][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 61
+[22:41:22][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 60
+[22:41:23][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 59
+[22:41:24][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 58
+[22:41:25][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 57
+[22:41:26][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 56
+[22:41:27][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 55
+[22:41:28][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 54
+[22:41:29][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 53
+[22:41:30][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 52
+[22:41:31][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 51
+[22:41:32][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 50
+[22:41:33][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 49
+[22:41:34][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 48
+[22:41:35][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 47
+[22:41:36][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 46
+[22:41:37][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 45
+[22:41:38][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 44
+[22:41:39][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 43
+[22:41:40][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 42
+[22:41:41][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 41
+[22:41:42][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 40
+[22:41:43][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 39
+[22:41:44][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 38
+[22:41:45][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 37
+[22:41:46][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 36
+[22:41:47][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 35
+[22:41:48][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 34
+[22:41:49][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 33
+[22:41:50][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 32
+[22:41:51][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 31
+[22:41:52][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 30
+[22:41:53][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 29
+[22:41:54][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 28
+[22:41:55][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 27
+[22:41:56][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 26
+[22:41:57][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 25
+[22:41:58][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 24
+[22:41:59][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 23
+[22:42:00][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 22
+[22:42:01][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 21
+[22:42:02][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 20
+[22:42:03][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 19
+[22:42:04][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 18
+[22:42:05][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 17
+[22:42:06][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 16
+[22:42:07][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 15
+[22:42:08][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 14
+[22:42:09][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 13
+[22:42:10][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 12
+[22:42:11][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 11
+[22:42:12][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 10
+[22:42:13][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 9
+[22:42:14][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 8
+[22:42:15][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 7
+[22:42:16][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 6
+[22:42:17][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 5
+[22:42:18][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 4
+[22:42:19][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 3
+[22:42:20][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 2
+[22:42:21][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 1
+[22:42:22][INFO][JavaFX Application Thread][6972][MainUIController][resetForNewSession] - --> resetForNewSession 
+[22:42:22][INFO][JavaFX Application Thread][2200][MainUIController][setLocale] - resetLocale finished
+[22:42:22][INFO][JavaFX Application Thread][3758][MainUIController][handle_1_btn] - handle_1_btn 
+[22:42:22][INFO][JavaFX Application Thread][3456][MainUIController][setCena] - set cena, is_povratna = false
+[22:42:22][INFO][JavaFX Application Thread][3465][MainUIController][setCenaJedanSmer] - setCena , _prva_karta_tip = 0
+[22:42:22][INFO][JavaFX Application Thread][3526][MainUIController][setCenaJedanSmer] - <--setCena, ukupna_cena = 0.0
+[22:42:22][INFO][JavaFX Application Thread][4116][MainUIController][handle_razred_drugi_polazak] - --> handle_razred_drugi_polazak
+[22:42:22][INFO][JavaFX Application Thread][4123][MainUIController][handle_razred_drugi_polazak] - <-- handle_razred_drugi_polazak
+[22:42:22][INFO][JavaFX Application Thread][3817][MainUIController][handle_smer] - handle_smer, is_povratna =  false
+[22:42:22][INFO][JavaFX Application Thread][6720][MainUIController][uslov_za_drugi_korak] - --> uslov_za_drugi_korak
+[22:42:22][INFO][JavaFX Application Thread][6811][MainUIController][uslov_za_drugi_korak] - <-- uslov_za_drugi_korak
+[22:42:22][INFO][JavaFX Application Thread][4174][MainUIController][refresh_ostale_stanice] - --> refresh_ostale_stanice
+[22:42:22][INFO][JavaFX Application Thread][4400][MainUIController][refresh_ostale_stanice] - <-- refresh_ostale_stanice
+[22:42:22][INFO][JavaFX Application Thread][4404][MainUIController][handle_pagination] - --> handle_pagination, is_napred = true
+[22:42:22][INFO][JavaFX Application Thread][4632][MainUIController][handle_pagination] - <-- handle_pagination
+[22:42:22][INFO][JavaFX Application Thread][7279][MainUIController][resetForNewSession] - <-- resetForNewSession 
+[22:43:40][INFO][JavaFX Application Thread][2798][MainUIController][handle_destinacija1] - handle_destinacija1
+[22:43:40][INFO][JavaFX Application Thread][3020][MainUIController][setPodaciOdVozaMarko] - setPodaciOdVozaMarko
+[22:43:40][INFO][Thread-250][37][GetListaVozovaPolazakThread][run] - run, params: _url = https://webapi1.srbvoz.rs/eKarta/api/, _sifra_stanice_od = 16052, _sifra_stanice_do = 16808, _datum = 26.12.2023, _broj_putnika = 1, _razred = 2
+[22:43:40][INFO][Thread-250][132][SrbijaVozIfaceImpl][getListaVozovaNaTrasiNew] - Srbija voz api call: getListaVozovaNaTrasiNew, sifra_stanice_od = 16052, sifra_stanice_do = 16808, datum = 26.12.2023, broj_putnika = 1, razred = 2
+[22:43:40][INFO][Thread-250][150][SrbijaVozIfaceImpl][getListaVozovaNaTrasiNew] - Srbija voz api call: getListaVozovaNaTrasiNew, returned = [{"odsifra":16052,"dosifra":16808,"idvoz":44400001,"brvoz":750,"nazivvoz":"                    ","rang":8,"vremep":"23:40","vremed":"00:29             ","nazivod":"Beograd Centar","nazivdo":"Novi Sad","idrel":173959,"relkm":89,"ponuda":"ABv       ","cenau":453.00,"trajanje_putovanja":"00:49","datum_dolaska":"2023-12-27T00:00:00","br_slobodnih_mesta":0,"br_slobodnih_mesta12":"","rezervacioni_sistem":false,"napomena":"","napomenaE":"","soko":false,"bsM_R2":0,"bsM_R1":0,"etTrasaVoza":[{"iD_VOZ":44400001,"rb":1,"sifrA_STANICE":16052,"vremE_DOLASKA":"23:40             ","vremE_POLASKA":"23:40             ","naziV_STANICE":"Beograd Centar"},{"iD_VOZ":44400001,"rb":2,"sifrA_STANICE":16003,"vremE_DOLASKA":"23:43             ","vremE_POLASKA":"23:44             ","naziV_STANICE":"Novi Beograd"},{"iD_VOZ":44400001,"rb":3,"sifrA_STANICE":16204,"vremE_DOLASKA":"23:54             ","vremE_POLASKA":"23:55             ","naziV_STANICE":"Batajnica"},{"iD_VOZ":44400001,"rb":4,"sifrA_STANICE":16501,"vremE_DOLASKA":"23:59             ","vremE_POLASKA":"00:00             ","naziV_STANICE":"Nova Pazova"},{"iD_VOZ":44400001,"rb":5,"sifrA_STANICE":16503,"vremE_DOLASKA":"00:04             ","vremE_POLASKA":"00:05             ","naziV_STANICE":"Stara Pazova"},{"iD_VOZ":44400001,"rb":6,"sifrA_STANICE":16801,"vremE_DOLASKA":"00:09             ","vremE_POLASKA":"00:10             ","naziV_STANICE":"Indjija"},{"iD_VOZ":44400001,"rb":7,"sifrA_STANICE":16802,"vremE_DOLASKA":"00:14             ","vremE_POLASKA":"00:15             ","naziV_STANICE":"Beska"},{"iD_VOZ":44400001,"rb":8,"sifrA_STANICE":16806,"vremE_DOLASKA":"00:20             ","vremE_POLASKA":"00:20             ","naziV_STANICE":"Sremski Karlovci"},{"iD_VOZ":44400001,"rb":9,"sifrA_STANICE":16807,"vremE_DOLASKA":"00:24             ","vremE_POLASKA":"00:25             ","naziV_STANICE":"Petrovaradin"},{"iD_VOZ":44400001,"rb":10,"sifrA_STANICE":16808,"vremE_DOLASKA":"00:29             ","vremE_POLASKA":"00:29             ","naziV_STANICE":"Novi Sad"}]}]
+[22:43:40][INFO][Thread-250][3037][MainUIController][setListaVozovaPolasciCallbackSuccess] - setListaVozovaPolasciCallbackSuccess, lista_vozova = [VozBean [odsifra=16052, dosifra=16808, idvoz=44400001, brvoz=750, nazivvoz=                    , rang=8, vremep=23:40, vremed=00:29             , nazivod=Beograd Centar, nazivdo=Novi Sad, idrel=173959, relkm=89, ponuda=ABv       , cenau=453.0, trajanje_putovanja=00:49, datum_dolaska=27.12.2023, etTrasaVoza=[StanicaNaTrasiBean [iD_VOZ=44400001, rb=1, sifrA_STANICE=16052, vremE_DOLASKA=23:40             , vremE_POLASKA=23:40             , naziV_STANICE=Beograd Centar], StanicaNaTrasiBean [iD_VOZ=44400001, rb=2, sifrA_STANICE=16003, vremE_DOLASKA=23:43             , vremE_POLASKA=23:44             , naziV_STANICE=Novi Beograd], StanicaNaTrasiBean [iD_VOZ=44400001, rb=3, sifrA_STANICE=16204, vremE_DOLASKA=23:54             , vremE_POLASKA=23:55             , naziV_STANICE=Batajnica], StanicaNaTrasiBean [iD_VOZ=44400001, rb=4, sifrA_STANICE=16501, vremE_DOLASKA=23:59             , vremE_POLASKA=00:00             , naziV_STANICE=Nova Pazova], StanicaNaTrasiBean [iD_VOZ=44400001, rb=5, sifrA_STANICE=16503, vremE_DOLASKA=00:04             , vremE_POLASKA=00:05             , naziV_STANICE=Stara Pazova], StanicaNaTrasiBean [iD_VOZ=44400001, rb=6, sifrA_STANICE=16801, vremE_DOLASKA=00:09             , vremE_POLASKA=00:10             , naziV_STANICE=Indjija], StanicaNaTrasiBean [iD_VOZ=44400001, rb=7, sifrA_STANICE=16802, vremE_DOLASKA=00:14             , vremE_POLASKA=00:15             , naziV_STANICE=Beska], StanicaNaTrasiBean [iD_VOZ=44400001, rb=8, sifrA_STANICE=16806, vremE_DOLASKA=00:20             , vremE_POLASKA=00:20             , naziV_STANICE=Sremski Karlovci], StanicaNaTrasiBean [iD_VOZ=44400001, rb=9, sifrA_STANICE=16807, vremE_DOLASKA=00:24             , vremE_POLASKA=00:25             , naziV_STANICE=Petrovaradin], StanicaNaTrasiBean [iD_VOZ=44400001, rb=10, sifrA_STANICE=16808, vremE_DOLASKA=00:29             , vremE_POLASKA=00:29             , naziV_STANICE=Novi Sad]], _datum_vreme_polaska=26.12.2023 23:40, _datum_vreme_povratka=27.12.2023 00:29             , _is_selected=false, br_slobodnih_mesta=0, rezervacioni_sistem=false, soko=false, bsM_R2=0, bsM_R1=0]]
+[22:43:40][INFO][JavaFX Application Thread][3112][MainUIController][setPodaciOdVoza] - setPodaciOdVoza
+[22:43:40][INFO][JavaFX Application Thread][5345][MainUIController][is_vreme_polaska_manje_od_5_minuta] - --> is_vreme_polaska_manje_od_5_minuta
+[22:43:40][INFO][JavaFX Application Thread][5365][MainUIController][is_vreme_polaska_manje_od_5_minuta] - <-- is_vreme_polaska_manje_od_5_minuta return false
+[22:43:40][INFO][JavaFX Application Thread][3009][MainUIController][setSelectedVoz] - setSelectedVoz, selected = VozBean [odsifra=16052, dosifra=16808, idvoz=44400001, brvoz=750, nazivvoz=                    , rang=8, vremep=23:40, vremed=00:29             , nazivod=Beograd Centar, nazivdo=Novi Sad, idrel=173959, relkm=89, ponuda=ABv       , cenau=453.0, trajanje_putovanja=00:49, datum_dolaska=27.12.2023, etTrasaVoza=[StanicaNaTrasiBean [iD_VOZ=44400001, rb=1, sifrA_STANICE=16052, vremE_DOLASKA=23:40             , vremE_POLASKA=23:40             , naziV_STANICE=Beograd Centar], StanicaNaTrasiBean [iD_VOZ=44400001, rb=2, sifrA_STANICE=16003, vremE_DOLASKA=23:43             , vremE_POLASKA=23:44             , naziV_STANICE=Novi Beograd], StanicaNaTrasiBean [iD_VOZ=44400001, rb=3, sifrA_STANICE=16204, vremE_DOLASKA=23:54             , vremE_POLASKA=23:55             , naziV_STANICE=Batajnica], StanicaNaTrasiBean [iD_VOZ=44400001, rb=4, sifrA_STANICE=16501, vremE_DOLASKA=23:59             , vremE_POLASKA=00:00             , naziV_STANICE=Nova Pazova], StanicaNaTrasiBean [iD_VOZ=44400001, rb=5, sifrA_STANICE=16503, vremE_DOLASKA=00:04             , vremE_POLASKA=00:05             , naziV_STANICE=Stara Pazova], StanicaNaTrasiBean [iD_VOZ=44400001, rb=6, sifrA_STANICE=16801, vremE_DOLASKA=00:09             , vremE_POLASKA=00:10             , naziV_STANICE=Indjija], StanicaNaTrasiBean [iD_VOZ=44400001, rb=7, sifrA_STANICE=16802, vremE_DOLASKA=00:14             , vremE_POLASKA=00:15             , naziV_STANICE=Beska], StanicaNaTrasiBean [iD_VOZ=44400001, rb=8, sifrA_STANICE=16806, vremE_DOLASKA=00:20             , vremE_POLASKA=00:20             , naziV_STANICE=Sremski Karlovci], StanicaNaTrasiBean [iD_VOZ=44400001, rb=9, sifrA_STANICE=16807, vremE_DOLASKA=00:24             , vremE_POLASKA=00:25             , naziV_STANICE=Petrovaradin], StanicaNaTrasiBean [iD_VOZ=44400001, rb=10, sifrA_STANICE=16808, vremE_DOLASKA=00:29             , vremE_POLASKA=00:29             , naziV_STANICE=Novi Sad]], _datum_vreme_polaska=26.12.2023 23:40, _datum_vreme_povratka=27.12.2023 00:29             , _is_selected=false, br_slobodnih_mesta=0, rezervacioni_sistem=false, soko=false, bsM_R2=0, bsM_R1=0]
+[22:43:40][INFO][JavaFX Application Thread][193][SrbijaVozIfaceImpl][getTrajanjeKarte] - Srbija voz api call: getTrajanjeKarte, stanicaod = 16052, stanicado = 16808, via = 1, smer = 2, datum = 27.12.2023
+[22:43:40][INFO][JavaFX Application Thread][213][SrbijaVozIfaceImpl][getTrajanjeKarte] - Srbija voz api call: getTrajanjeKarte, returned = "12/27/2023 12:00:00 AM"
+[22:43:40][INFO][JavaFX Application Thread][6720][MainUIController][uslov_za_drugi_korak] - --> uslov_za_drugi_korak
+[22:43:40][INFO][JavaFX Application Thread][6811][MainUIController][uslov_za_drugi_korak] - <-- uslov_za_drugi_korak
+[22:43:40][INFO][JavaFX Application Thread][4636][MainUIController][handle_pagination_polasci_povratci] - --> handle_pagination_polasci_povratci, is_napred = true, is_init = true
+[22:43:40][INFO][JavaFX Application Thread][1935][MainUIController][getNextPaginationpPolasci] - _polazak_true_povratak_false=true_lista_svih_polazaka_current_position = 0, SVI_POLASCI_SIZE=5, polasci_povratci.size() = 1, lista_current_position = 0
+[22:43:40][INFO][JavaFX Application Thread][1955][MainUIController][getNextPaginationpPolasci] - _lista_svih_polazaka_current_position = 0, is_pagination = false
+[22:43:40][INFO][JavaFX Application Thread][1956][MainUIController][getNextPaginationpPolasci] - _lista_svih_povrataka_current_position = 0, is_pagination = false
+[22:43:40][INFO][JavaFX Application Thread][4808][MainUIController][handle_pagination_polasci_povratci] - <-- handle_pagination_polasci_povratci
+[22:43:40][INFO][JavaFX Application Thread][3456][MainUIController][setCena] - set cena, is_povratna = false
+[22:43:40][INFO][JavaFX Application Thread][3465][MainUIController][setCenaJedanSmer] - setCena , _prva_karta_tip = 0
+[22:43:40][INFO][JavaFX Application Thread][331][SrbijaVozIfaceImpl][getCenaJedanSmerZaTipPutnika] - Srbija voz api call: getCenaJedanSmerZaTipPutnika, broj_putnika = 1, kilometraza = 89, razred = 2, rang = 8, sifra_povlastice = 1, datum = 27-12-2023
+[22:43:40][INFO][JavaFX Application Thread][356][SrbijaVozIfaceImpl][getCenaJedanSmerZaTipPutnika] - Srbija voz api call: getCenaJedanSmerZaTipPutnika, returned = [{"cenau":453.00,"cenao":333.00,"cenad":120.00,"cenab":0.00,"cenar":0.00,"tiprez":0}]
+[22:43:40][INFO][JavaFX Application Thread][3478][MainUIController][setCenaJedanSmer] - setCena, current_tip = 0
+[22:43:40][INFO][JavaFX Application Thread][3534][MainUIController][getCenaJedanSmerFromAPI] - --> getCenaJedanSmerFromAPI, karta_tip = 0, osnovna_cena = CenaBean [cenau=453.0, cenao=333.0, cenad=120.0, cenab=0.0, cenar=0.0, tiprez=0]
+[22:43:40][INFO][JavaFX Application Thread][3526][MainUIController][setCenaJedanSmer] - <--setCena, ukupna_cena = 453.0
+[22:43:40][INFO][JavaFX Application Thread][3174][MainUIController][setPodaciOdVoza] - <--
+[22:43:40][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 120
+[22:43:41][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 119
+[22:43:42][INFO][JavaFX Application Thread][2612][MainUIController][handleIzmeniTipKarte] - handleIzmeniTipKarte
+[22:43:42][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 118
+[22:43:43][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 117
+[22:43:44][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 116
+[22:43:45][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 115
+[22:43:46][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 114
+[22:43:47][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 113
+[22:43:48][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 112
+[22:43:49][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 111
+[22:43:50][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 110
+[22:43:51][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 109
+[22:43:52][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 108
+[22:43:53][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 107
+[22:43:54][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 106
+[22:43:55][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 105
+[22:43:56][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 104
+[22:43:57][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 103
+[22:43:58][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 102
+[22:43:59][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 101
+[22:44:00][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 100
+[22:44:01][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 99
+[22:44:02][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 98
+[22:44:03][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 97
+[22:44:04][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 96
+[22:44:05][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 95
+[22:44:06][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 94
+[22:44:07][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 93
+[22:44:08][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 92
+[22:44:09][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 91
+[22:44:10][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 90
+[22:44:11][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 89
+[22:44:12][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 88
+[22:44:13][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 87
+[22:44:14][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 86
+[22:44:15][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 85
+[22:44:16][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 84
+[22:44:17][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 83
+[22:44:18][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 82
+[22:44:19][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 81
+[22:44:20][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 80
+[22:44:21][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 79
+[22:44:22][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 78
+[22:44:23][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 77
+[22:44:24][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 76
+[22:44:25][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 75
+[22:44:26][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 74
+[22:44:27][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 73
+[22:44:28][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 72
+[22:44:29][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 71
+[22:44:30][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 70
+[22:44:31][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 69
+[22:44:32][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 68
+[22:44:33][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 67
+[22:44:34][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 66
+[22:44:35][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 65
+[22:44:36][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 64
+[22:44:37][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 63
+[22:44:38][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 62
+[22:44:39][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 61
+[22:44:40][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 60
+[22:44:41][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 59
+[22:44:42][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 58
+[22:44:43][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 57
+[22:44:44][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 56
+[22:44:45][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 55
+[22:44:46][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 54
+[22:44:47][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 53
+[22:44:48][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 52
+[22:44:49][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 51
+[22:44:50][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 50
+[22:44:51][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 49
+[22:44:52][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 48
+[22:44:53][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 47
+[22:44:54][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 46
+[22:44:55][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 45
+[22:44:56][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 44
+[22:44:57][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 43
+[22:44:58][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 42
+[22:44:59][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 41
+[22:45:00][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 40
+[22:45:01][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 39
+[22:45:02][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 38
+[22:45:03][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 37
+[22:45:04][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 36
+[22:45:05][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 35
+[22:45:06][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 34
+[22:45:07][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 33
+[22:45:08][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 32
+[22:45:09][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 31
+[22:45:10][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 30
+[22:45:11][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 29
+[22:45:12][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 28
+[22:45:13][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 27
+[22:45:14][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 26
+[22:45:15][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 25
+[22:45:16][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 24
+[22:45:17][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 23
+[22:45:18][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 22
+[22:45:19][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 21
+[22:45:20][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 20
+[22:45:21][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 19
+[22:45:22][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 18
+[22:45:23][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 17
+[22:45:24][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 16
+[22:45:25][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 15
+[22:45:26][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 14
+[22:45:27][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 13
+[22:45:28][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 12
+[22:45:29][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 11
+[22:45:30][INFO][JavaFX Application Thread][5528][MainUIController][handle_tip_karte_odustani] - handle_tip_karte_odustani 
+[22:45:30][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 120
+[22:45:31][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 119
+[22:45:32][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 118
+[22:45:33][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 117
+[22:45:34][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 116
+[22:45:35][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 115
+[22:45:36][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 114
+[22:45:37][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 113
+[22:45:38][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 112
+[22:45:39][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 111
+[22:45:40][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 110
+[22:45:41][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 109
+[22:45:42][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 108
+[22:45:43][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 107
+[22:45:44][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 106
+[22:45:45][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 105
+[22:45:46][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 104
+[22:45:47][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 103
+[22:45:48][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 102
+[22:45:49][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 101
+[22:45:50][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 100
+[22:45:51][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 99
+[22:45:52][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 98
+[22:45:53][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 97
+[22:45:54][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 96
+[22:45:55][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 95
+[22:45:56][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 94
+[22:45:57][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 93
+[22:45:58][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 92
+[22:45:59][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 91
+[22:46:00][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 90
+[22:46:01][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 89
+[22:46:02][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 88
+[22:46:03][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 87
+[22:46:04][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 86
+[22:46:05][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 85
+[22:46:06][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 84
+[22:46:07][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 83
+[22:46:08][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 82
+[22:46:09][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 81
+[22:46:10][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 80
+[22:46:11][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 79
+[22:46:12][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 78
+[22:46:13][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 77
+[22:46:14][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 76
+[22:46:15][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 75
+[22:46:16][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 74
+[22:46:17][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 73
+[22:46:18][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 72
+[22:46:19][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 71
+[22:46:20][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 70
+[22:46:21][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 69
+[22:46:22][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 68
+[22:46:23][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 67
+[22:46:24][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 66
+[22:46:25][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 65
+[22:46:26][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 64
+[22:46:27][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 63
+[22:46:28][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 62
+[22:46:29][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 61
+[22:46:30][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 60
+[22:46:31][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 59
+[22:46:32][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 58
+[22:46:33][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 57
+[22:46:34][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 56
+[22:46:35][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 55
+[22:46:36][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 54
+[22:46:37][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 53
+[22:46:38][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 52
+[22:46:39][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 51
+[22:46:40][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 50
+[22:46:41][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 49
+[22:46:42][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 48
+[22:46:43][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 47
+[22:46:44][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 46
+[22:46:45][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 45
+[22:46:46][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 44
+[22:46:47][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 43
+[22:46:48][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 42
+[22:46:49][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 41
+[22:46:50][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 40
+[22:46:51][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 39
+[22:46:52][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 38
+[22:46:53][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 37
+[22:46:54][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 36
+[22:46:55][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 35
+[22:46:56][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 34
+[22:46:57][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 33
+[22:46:58][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 32
+[22:46:59][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 31
+[22:47:00][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 30
+[22:47:01][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 29
+[22:47:02][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 28
+[22:47:03][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 27
+[22:47:04][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 26
+[22:47:05][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 25
+[22:47:06][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 24
+[22:47:07][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 23
+[22:47:08][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 22
+[22:47:09][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 21
+[22:47:10][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 20
+[22:47:11][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 19
+[22:47:12][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 18
+[22:47:13][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 17
+[22:47:14][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 16
+[22:47:15][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 15
+[22:47:16][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 14
+[22:47:17][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 13
+[22:47:18][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 12
+[22:47:19][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 11
+[22:47:20][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 10
+[22:47:21][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 9
+[22:47:22][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 8
+[22:47:23][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 7
+[22:47:24][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 6
+[22:47:25][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 5
+[22:47:26][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 4
+[22:47:27][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 3
+[22:47:28][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 2
+[22:47:29][INFO][Timer-0][2561][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 1
+[22:47:30][INFO][JavaFX Application Thread][6972][MainUIController][resetForNewSession] - --> resetForNewSession 
+[22:47:30][INFO][JavaFX Application Thread][2200][MainUIController][setLocale] - resetLocale finished
+[22:47:30][INFO][JavaFX Application Thread][3758][MainUIController][handle_1_btn] - handle_1_btn 
+[22:47:30][INFO][JavaFX Application Thread][3456][MainUIController][setCena] - set cena, is_povratna = false
+[22:47:30][INFO][JavaFX Application Thread][3465][MainUIController][setCenaJedanSmer] - setCena , _prva_karta_tip = 0
+[22:47:30][INFO][JavaFX Application Thread][3526][MainUIController][setCenaJedanSmer] - <--setCena, ukupna_cena = 0.0
+[22:47:30][INFO][JavaFX Application Thread][4116][MainUIController][handle_razred_drugi_polazak] - --> handle_razred_drugi_polazak
+[22:47:30][INFO][JavaFX Application Thread][4123][MainUIController][handle_razred_drugi_polazak] - <-- handle_razred_drugi_polazak
+[22:47:30][INFO][JavaFX Application Thread][3817][MainUIController][handle_smer] - handle_smer, is_povratna =  false
+[22:47:30][INFO][JavaFX Application Thread][6720][MainUIController][uslov_za_drugi_korak] - --> uslov_za_drugi_korak
+[22:47:30][INFO][JavaFX Application Thread][6811][MainUIController][uslov_za_drugi_korak] - <-- uslov_za_drugi_korak
+[22:47:30][INFO][JavaFX Application Thread][4174][MainUIController][refresh_ostale_stanice] - --> refresh_ostale_stanice
+[22:47:30][INFO][JavaFX Application Thread][4400][MainUIController][refresh_ostale_stanice] - <-- refresh_ostale_stanice
+[22:47:30][INFO][JavaFX Application Thread][4404][MainUIController][handle_pagination] - --> handle_pagination, is_napred = true
+[22:47:30][INFO][JavaFX Application Thread][4632][MainUIController][handle_pagination] - <-- handle_pagination
+[22:47:30][INFO][JavaFX Application Thread][7279][MainUIController][resetForNewSession] - <-- resetForNewSession 

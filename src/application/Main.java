@@ -23,10 +23,17 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+
 public class Main extends Application {
 	
 	
 	private Locale locale = new Locale("sr","RS");
+	
+	
+	public static final Logger logger = Logger.getLogger("mainLogger");
 	
 
 	
@@ -47,6 +54,8 @@ public class Main extends Application {
 					+ ".fxml";
 			primaryStage.initStyle(StageStyle.UNDECORATED);
 			ResourceBundle bundle = ResourceBundle.getBundle("resources.language.MessageBundle",locale );
+			//logovanje
+			PropertyConfigurator.configure("log4j.properties");
 			URL url = getClass().getResource(resource_view);
 			Parent root = FXMLLoader.load(url, bundle);
 			Scene scene = new Scene(root);
@@ -68,8 +77,11 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			
+			logger.info("-->Main() - program started");
 			
 		} catch(Exception e) {
+			logger.error("-->Main() - program can't start, will exit. Details: " + 
+					e.getMessage(), e);
 			e.printStackTrace();
 		}
 	}

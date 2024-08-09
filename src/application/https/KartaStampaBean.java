@@ -26,6 +26,23 @@ public class KartaStampaBean {
 	private String RAZREDR = "";
 	private String VAZI_OD = "";
 	private String VAZI_DO = "";
+	private String VAZI_OD_R = "";
+	public String getVAZI_OD_R() {
+		return VAZI_OD_R;
+	}
+
+	public void setVAZI_OD_R(String vAZI_OD_R) {
+		VAZI_OD_R = vAZI_OD_R;
+	}
+
+	public String getVAZI_DO_R() {
+		return VAZI_DO_R;
+	}
+
+	public void setVAZI_DO_R(String vAZI_DO_R) {
+		VAZI_DO_R = vAZI_DO_R;
+	}
+	private String VAZI_DO_R = "";
 	private String VOZA = "";
 	public String getVOZA() {
 		return VOZA;
@@ -91,6 +108,8 @@ public class KartaStampaBean {
 		RAZREDR = "" + gson_container.getOrDefault("RAZREDR", 0).toString();
 		VAZI_OD = "" + gson_container.getOrDefault("VAZI_OD", 0).toString();
 		VAZI_DO = "" + gson_container.getOrDefault("VAZI_DO", 0).toString();
+		VAZI_OD_R = "" + gson_container.getOrDefault("VAZI_ODR", 0).toString();
+		VAZI_DO_R = "" + gson_container.getOrDefault("VAZI_DOR", 0).toString();
 		VOZA = "" + gson_container.getOrDefault("VOZA", 0).toString();
 		VOZR = "" + gson_container.getOrDefault("VOZR", 0).toString();
 		VREME_POLASKAA = "" + gson_container.getOrDefault("VREME_POLASKAA", 0).toString();
@@ -292,6 +311,7 @@ public class KartaStampaBean {
 				+ ", NAZIV_STANICE_ODR=" + NAZIV_STANICE_ODR + ", NAZIV_STANICE_DOR=" + NAZIV_STANICE_DOR + ", VIA="
 				+ VIA + ", VIAR=" + VIAR + ", SMER=" + SMER + ", BROJ_KARTE=" + BROJ_KARTE + ", RAZREDA=" + RAZREDA
 				+ ", RAZREDR=" + RAZREDR + ", VAZI_OD=" + VAZI_OD + ", VAZI_DO=" + VAZI_DO + ", VOZA=" + VOZA
+				+  ", VAZI_OD_R=" + VAZI_OD_R + ", VAZI_DO_R=" + VAZI_DO_R 
 				+ ", VOZR=" + VOZR + ", VREME_POLASKAA=" + VREME_POLASKAA + ", VREME_DOLASKAA=" + VREME_DOLASKAA
 				+ ", VREME_POLASKAR=" + VREME_POLASKAR + ", VREME_DOLASKAR=" + VREME_DOLASKAR + ", CENA=" + CENA
 				+ ", POVLASTICA_NAZIV=" + POVLASTICA_NAZIV + ", BROJ_LEGITIMACIJE=" + BROJ_LEGITIMACIJE + ", UZRAST="

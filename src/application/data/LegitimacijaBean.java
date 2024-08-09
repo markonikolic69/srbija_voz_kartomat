@@ -4,7 +4,7 @@ import com.google.gson.internal.LinkedTreeMap;
 
 public class LegitimacijaBean {
 	
-	private int broJ_LEGITIMACIJE = 0;
+	private String broJ_LEGITIMACIJE = "";
 	private int iD_LEGITIMACIJE = 0;
 	private String ime = "";
 	private String prezime = "";
@@ -14,7 +14,7 @@ public class LegitimacijaBean {
 	
 	public LegitimacijaBean (LinkedTreeMap gson_container) {
 
-		broJ_LEGITIMACIJE = (int) Double.parseDouble(gson_container.getOrDefault("broJ_LEGITIMACIJE", 0).toString());
+		broJ_LEGITIMACIJE = gson_container.getOrDefault("broJ_LEGITIMACIJE", 0).toString();
 		iD_LEGITIMACIJE = (int) Double.parseDouble(gson_container.getOrDefault("iD_LEGITIMACIJE", 0).toString());
 		ime = gson_container.getOrDefault("ime", "").toString();
 		prezime = gson_container.getOrDefault("prezime", "").toString();
@@ -24,10 +24,10 @@ public class LegitimacijaBean {
 	}
 	
 	
-	public int getBroJ_LEGITIMACIJE() {
+	public String getBroJ_LEGITIMACIJE() {
 		return broJ_LEGITIMACIJE;
 	}
-	public void setBroJ_LEGITIMACIJE(int broJ_LEGITIMACIJE) {
+	public void setBroJ_LEGITIMACIJE(String broJ_LEGITIMACIJE) {
 		this.broJ_LEGITIMACIJE = broJ_LEGITIMACIJE;
 	}
 	public int getiD_LEGITIMACIJE() {

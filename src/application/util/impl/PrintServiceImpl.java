@@ -208,10 +208,10 @@ public class PrintServiceImpl {
 		
 		// cena
 		g.setFont(font_veci);
-		g.drawString(cena + "0", 680, 530);
+		g.drawString("RSD: " + cena + "0", 500, 470);
 		g.setFont(font);
 		
-		g.drawImage(generateEAN13BarcodeImage(ticketID), 426, 490, null);
+		g.drawImage(generateEAN13BarcodeImage(ticketID), 426, 480, null);
 				
 		File outputfile = new File("C:\\npi_printer_srbija_voz\\K_2b2_output.bmp");
 		

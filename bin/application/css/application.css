@@ -19,6 +19,14 @@
 	-fx-background-color: transparent;
 }
 
+.loader_pn {
+	-fx-background-color: transparent;
+}
+
+.fiscal_pn {
+	-fx-background-color: white;
+}
+
 .table_views .column-header-background .filler {
     -fx-background-color: transparent;
 }
@@ -88,6 +96,7 @@
     -fx-background-radius: 0;
 }
  
+
  
  .bodybg {
 
@@ -109,6 +118,8 @@
 	-fx-border-radius: 10px;
 }
 
+
+
 .lightgray_with_border_btn {
 	-fx-background-color: #404040;
 	-fx-text-fill: #362c2d;
@@ -122,7 +133,9 @@
 	-fx-background-color: white;
 	-fx-text-fill: #362c2d;
 	-fx-font-size: 15pt;
-	-fx-font-weight: bold;
+	-fx-background-radius: 10px;
+	-fx-border-radius: 10px;
+	/*-fx-font-weight: bold;*/
 }
 
 
@@ -262,6 +275,10 @@
     -fx-border-radius: 7px;
 }
 
+.izmeni_opcije_btn:pressed {
+	-fx-background-color:  lightgray /* #5863cc */;
+}
+
 .izmeni_opcije_veca_slova_btn {
 	-fx-background-color:  white /* #5863cc */;
 	/*-fx-text-fill: #362c2d;*/
@@ -360,6 +377,15 @@
 	-fx-font-size: 15pt; 
 	-fx-font-weight: bold;
 	-fx-text-alignment:left;
+}
+
+.velika_bold_bela_slova_centered {
+	-fx-font-family: 'Montserrat';
+	-fx-text-fill: white;
+	-fx-font-size: 20pt; 
+	-fx-font-weight: bold;
+	-fx-text-alignment:center;
+	-fx-alignment: center ;
 }
 
 .extra_velika_bold_bela_slova {

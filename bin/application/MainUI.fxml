@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.TextFlow?>
 
 <AnchorPane fx:id="root_pane" prefHeight="1024.0" prefWidth="1280.0" styleClass="bodybg" stylesheets="@/application/css/application.css" visible="true" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainUIController">
    <children>
@@ -29,7 +30,7 @@
             <!--  >Label fx:id="stanica_value_lbl" layoutX="100.0" layoutY="70.0" prefHeight="18.0" prefWidth="300.0" styleClass="velika_bold_crna_slova" text="%stanica_value_lbl" /-->
 
          			
-      				<Label fx:id="drugi_naslov_lbl" alignment="CENTER" layoutX="520.0" layoutY="20.0" prefHeight="48.0" prefWidth="446.0" styleClass="bela_slova" text="%drugi_naslov_lbl" /> 
+      				<Label fx:id="drugi_naslov_lbl" alignment="CENTER" layoutX="520.0" layoutY="20.0" prefHeight="48.0" prefWidth="446.0" styleClass="bela_slova" text="%drugi_naslov_lbl" visible="false" /> 
       				<Button fx:id="novi_pomoc_btn" layoutX="1130.0" layoutY="30.0" mnemonicParsing="false" onAction="#handle_novi_pomoc_btn" prefHeight="40.0" prefWidth="112.0" styleClass="cal_act_btn" text="%novi_pomoc_btn" />               
                </children>
             </Pane>
@@ -41,6 +42,9 @@
                		<Label fx:id="odrediste_polazak_lbl" layoutX="295.0" layoutY="15.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_bela_slova" text="%odrediste" />
 					<Label fx:id="relacija_polaza_value_lbl" layoutX="15.0" layoutY="30.0" prefHeight="18.0" prefWidth="300.0" styleClass="velika_bela_slova" text="" />
 					<Label fx:id="odrediste_value_lbl" layoutX="295.0" layoutY="30.0" prefHeight="18.0" prefWidth="300.0" styleClass="velika_bela_slova" text="" />
+					
+
+					
 					
 					<Label fx:id="polazak_lbl" layoutX="15.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%polazak_lbl" />
                		<Label fx:id="dolazak_lbl" layoutX="295.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%dolazak_lbl" />
@@ -54,12 +58,20 @@
 					<Label fx:id="vreme_polazak_dolazak_value_lbl" layoutX="425.0" layoutY="85.0" prefHeight="18.0" prefWidth="100.0" styleClass="bela_slova" text="" />
 					
 					<Label fx:id="broj_voza_lbl" layoutX="15.0" layoutY="135.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%broj_voza_lbl" />
-					<Label fx:id="razred_lbl" layoutX="150.0" layoutY="135.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%razred_lbl" />
+					<Label fx:id="razred_lbl" layoutX="120.0" layoutY="135.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%razred_lbl" />
+					
+					<ImageView fx:id="soko_view_polazak" fitHeight="60.0" fitWidth="80.0" layoutX="200.0" layoutY="85.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                     	<image>
+                        	<Image url="@img/soko.png" />
+                     	</image>
+                  	</ImageView>
+					
+					<Label fx:id="rang_voza_polazak_lbl" layoutX="220.0" layoutY="135.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%rang" />
 					<Label fx:id="povlastice_polazak_lbl" layoutX="295.0" layoutY="135.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_bela_slova" text="%povlastice_lbl" />
 					<Label fx:id="broj_voza_polazak_value_lbl" layoutX="15.0" layoutY="150.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="" />
-					<Label fx:id="razred_polazak_value_lbl" layoutX="150.0" layoutY="150.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="%razred_polazak_value_lbl" />
+					<Label fx:id="razred_polazak_value_lbl" layoutX="120.0" layoutY="150.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="%razred_polazak_value_lbl" />
 					<Label fx:id="tip_karte_polazak_value_lbl" layoutX="295.0" layoutY="150.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="" />
-					
+					<Label fx:id="rang_voza_polazak_value_lbl" layoutX="220.0" layoutY="150.0" prefHeight="18.0" prefWidth="100.0" styleClass="bela_slova" text="%razred_lbl" />
 					
 					<Label fx:id="broj_putnika_naslov_lbl" layoutX="15.0" layoutY="190.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_bela_slova" text="%broj_putnika_naslov_lbl" />
 					<Label fx:id="smer_polazak_lbl" layoutX="295.0" layoutY="190.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%smer_lbl" />
@@ -83,15 +95,23 @@
 						<Label fx:id="datum_povratka_separator1_lbl" layoutX="125.0" layoutY="85.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="|" />
 						<Label fx:id="vreme_dolazak_value_lbl" layoutX="145.0" layoutY="85.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="" />
 					
+					
+						<ImageView fx:id="soko_view_povratak" fitHeight="60.0" fitWidth="80.0" layoutX="200.0" layoutY="85.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                     		<image>
+                        		<Image url="@img/soko.png" />
+                     		</image>
+                  		</ImageView>
 						<Label fx:id="datum_povratka_dolazak_value_lbl" layoutX="295.0" layoutY="85.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="" />
 						<Label fx:id="datum_povratka_separator2_lbl" layoutX="405.0" layoutY="85.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="|" />
 						<Label fx:id="vreme_dolazak_dolazak_value_lbl" layoutX="425.0" layoutY="85.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="" />
 					
 						<Label fx:id="broj_voza_dolazak_lbl" layoutX="15.0" layoutY="135.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%broj_voza_dolazak_lbl" />
-						<Label fx:id="razred_dolazak_lbl" layoutX="150.0" layoutY="135.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%razred_dolazak_lbl" />
+						<Label fx:id="razred_dolazak_lbl" layoutX="120.0" layoutY="135.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%razred_dolazak_lbl" />
+						<Label fx:id="rang_voza_dolazak_lbl" layoutX="220.0" layoutY="135.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%rang" />
 						<Label fx:id="tip_karte_dolazak_lbl" layoutX="295.0" layoutY="135.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_bela_slova" text="%tip_karte_dolazak_lbl" />
 						<Label fx:id="broj_voza_dolazak_value_lbl" layoutX="15.0" layoutY="150.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="" />
-						<Label fx:id="razred_odlazak_value_lbl" layoutX="150.0" layoutY="150.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="%razred_odlazak_value_lbl" />
+						<Label fx:id="razred_odlazak_value_lbl" layoutX="120.0" layoutY="150.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="%razred_odlazak_value_lbl" />
+						<Label fx:id="rand_voza_odlazak_value_lbl" layoutX="220.0" layoutY="150.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="%razred_odlazak_value_lbl" />
 						<Label fx:id="tip_karte_dolazak_value_lbl" layoutX="295.0" layoutY="150.0" prefHeight="18.0" prefWidth="300.0" styleClass="bela_slova" text="%tip_karte_dolazak_value_lbl" />
 					
 					</Pane>			
@@ -116,6 +136,7 @@
             </Pane>
             <Pane fx:id="datum_polaska_izmena_pn" layoutX="40.0" layoutY="260.0" prefHeight="90.0" prefWidth="640.0" styleClass="tip_karte_pn">
                <children>
+
                		<Label fx:id="polazak_datum_lbl" layoutX="25.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="%polazak_datum_lbl" />
                		<Label fx:id="datum_izmena_value_lbl" layoutX="25.0" layoutY="45.0" prefHeight="18.0" prefWidth="200.0" styleClass="velika_bold_crna_slova" text="" />
                		<ImageView fx:id="polazak_date_icon_gif" fitHeight="50.0" fitWidth="50.0" layoutX="200.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
@@ -208,7 +229,7 @@
             
             
             
-            <Label fx:id="trenutno_vreme_lbl" layoutX="570.0" layoutY="900.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%trenutno_vreme_lbl" />
+            <Label fx:id="trenutno_vreme_izmeni_lbl" layoutX="570.0" layoutY="900.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%trenutno_vreme_lbl" />
            	<Label fx:id="trenutno_vreme_value_izmeni_lbl" layoutX="580.0" layoutY="920.0" prefHeight="18.0" prefWidth="200.0" styleClass="siva_slova" text="10:45" />
             
          </children>
@@ -221,24 +242,24 @@
     
     
 
-      <Pane fx:id="odrediste_pn" layoutX="0.0" layoutY="0.0" prefHeight="1024.0" prefWidth="1280.0" styleClass="polasci_pn" visible="true">
+      <Pane fx:id="odrediste_pn" prefHeight="1024.0" prefWidth="1280.0" styleClass="polasci_pn" visible="true">
          <children>
          
-            <Pane fx:id="red_header_pn" layoutX="0.0" layoutY="0.0" prefHeight="104.0" prefWidth="1280.0" styleClass="red_header_pn">
+            <Pane fx:id="red_header_pn" layoutX="0.0" layoutY="0.0" prefHeight="156.0" prefWidth="1280.0" styleClass="red_header_pn">
                <children>
-            		<ImageView fx:id="logo_gif" fitHeight="104.0" fitWidth="381.0" layoutY="0.0" pickOnBounds="true" preserveRatio="true">
+            		<ImageView fx:id="logo_gif" fitHeight="156.0" fitWidth="381.0" layoutY="0.0" pickOnBounds="true" preserveRatio="true">
                			<image>
-                  			<Image url="/application/img/logo.gif" />
+                  			<Image url="/application/img/logo_siri.gif" />
                			</image>
             		</ImageView> 				
-         			<Button fx:id="cir_btn" layoutX="1090.0" layoutY="20.0" mnemonicParsing="false" onAction="#handle_cir" prefHeight="50.0" prefWidth="50.0" styleClass="white_button_small_font_size" text="Ћир" />
-         			<Button fx:id="lat_btn" layoutX="1150.0" layoutY="20.0" mnemonicParsing="false" onAction="#handle_lat" prefHeight="50.0" prefWidth="50.0" styleClass="white_button_small_font_size" text="Lat" />
-         			<Button fx:id="eng_btn" layoutX="1210.0" layoutY="20.0" mnemonicParsing="false" onAction="#handle_eng" prefHeight="50.0" prefWidth="50.0" styleClass="white_button_small_font_size" text="Eng" />
+         			<Button fx:id="cir_btn" layoutX="1051.0" layoutY="75.0" mnemonicParsing="false" onAction="#handle_cir" prefHeight="50.0" prefWidth="50.0" styleClass="white_button_small_font_size" text="Ћир" />
+         			<Button fx:id="lat_btn" layoutX="1115.0" layoutY="75.0" mnemonicParsing="false" onAction="#handle_lat" prefHeight="50.0" prefWidth="50.0" styleClass="white_button_small_font_size" text="Lat" />
+         			<Button fx:id="eng_btn" layoutX="1179.0" layoutY="75.0" mnemonicParsing="false" onAction="#handle_eng" prefHeight="50.0" prefWidth="50.0" styleClass="white_button_small_font_size" text="Eng" />
                 	
                </children>
             </Pane>
             <Label fx:id="biraj_odrediste_lbl" layoutX="90.0" layoutY="240.0" prefHeight="20.0" prefWidth="446.0" styleClass="velika_tamno_braon_slova" text="%biraj_odrediste_lbl" />
-          	<Button fx:id="strana1_pomoc_btn" layoutX="1120.0" layoutY="120.0" mnemonicParsing="false" onAction="#handle_strana1_pomoc_btn" prefHeight="60.0" prefWidth="112.0" styleClass="cal_act_btn" text="%novi_pomoc_btn" />
+          	<Button fx:id="strana1_pomoc_btn" layoutX="1120.0" layoutY="180.0" mnemonicParsing="false" onAction="#handle_strana1_pomoc_btn" prefHeight="60.0" prefWidth="112.0" styleClass="cal_act_btn" text="%novi_pomoc_btn" />
           	
          	<Button fx:id="destinacija1_btn" layoutX="90.0" layoutY="300.0" mnemonicParsing="false" onAction="#handle_destinacija1" prefHeight="90.0" prefWidth="530.0" styleClass="blue_button" text="" visible="false" />
          	<Button fx:id="destinacija2_btn" layoutX="660.0" layoutY="300.0" mnemonicParsing="false" onAction="#handle_destinacija2" prefHeight="90.0" prefWidth="530.0" styleClass="blue_button" text="" visible="false" />
@@ -250,7 +271,7 @@
       		<Button fx:id="destinacija8_btn" layoutX="660.0" layoutY="660.0" mnemonicParsing="false" onAction="#handle_destinacija8" prefHeight="90.0" prefWidth="530.0" styleClass="blue_button" text="" visible="false" />
       		
       		<Button fx:id="ostale_destinacije_btn" layoutX="90.0" layoutY="700.0" mnemonicParsing="false" onAction="#handle_ostale" prefHeight="90.0" prefWidth="1090.0" styleClass="cal_act_btn_vel_slo" text="%ostale_destinacije_btn" />
-            <Label fx:id="trenutno_vreme_lbl" layoutX="640.0" layoutY="900.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%trenutno_vreme_lbl" />
+            <Label fx:id="trenutno_vreme_destinacije_lbl" layoutX="640.0" layoutY="900.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%trenutno_vreme_lbl" />
             <Label fx:id="trenutno_vreme_value_lbl" layoutX="640.0" layoutY="920.0" prefHeight="18.0" prefWidth="200.0" styleClass="velika_tamno_braon_slova" text="10:45" />
            
          </children>
@@ -412,95 +433,100 @@
       
 
  
-      <Pane fx:id="tip_karte_pn" layoutX="40.0" layoutY="180.0" prefHeight="760.0" prefWidth="1210.0" styleClass="polasci_pn" visible="false">
+      <Pane fx:id="tip_karte_pn" layoutX="10.0" layoutY="180.0" prefHeight="760.0" prefWidth="1250.0" styleClass="polasci_pn" visible="false">
          <children>
             
             <Button fx:id="tip_karte_izmeni_btn" layoutX="950.0" layoutY="25.0" mnemonicParsing="false" onAction="#handle_tip_karte_izmeni" prefHeight="60.0" prefWidth="200.0" styleClass="cal_act_btn_vel_slo" text="%potvrdi" />
             <Button fx:id="tip_karte_odustani_btn" layoutX="80.0" layoutY="25.0" mnemonicParsing="false" onAction="#handle_tip_karte_odustani" prefHeight="60.0" prefWidth="200.0" styleClass="cal_act_btn_vel_slo" text="%odustani" />
             <Label fx:id="izaberi_tip_karte_lbl" layoutX="500.0" layoutY="30.0" prefHeight="48.0" prefWidth="400.0" styleClass="crna_slova" text="%izaberi_primenjenje_povlastice" />
-            <Label fx:id="prvi_tip_putnik_lbl" layoutX="70.0" layoutY="125.0" prefHeight="18.0" prefWidth="120.0" styleClass="tamno_braon_slova" text="%putnik" />
-            <Label fx:id="prvi_tip_putnik_br_lbl" layoutX="70.0" layoutY="150.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="1" />
-            <Pane fx:id="prvi_tip_karte_pn" layoutX="185.0" layoutY="120.0" prefHeight="60.0" prefWidth="800.0" styleClass="tip_karte_pn">
+            <Label fx:id="prvi_tip_putnik_lbl" layoutX="50.0" layoutY="125.0" prefHeight="18.0" prefWidth="120.0" styleClass="tamno_braon_slova" text="%putnik" />
+            <Label fx:id="prvi_tip_putnik_br_lbl" layoutX="50.0" layoutY="150.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="1" />
+            <Pane fx:id="prvi_tip_karte_pn" layoutX="145.0" layoutY="120.0" prefHeight="60.0" prefWidth="900.0" styleClass="tip_karte_pn">
                <children>
 
                   
                   <Button fx:id="prvi_tip_redovna_btn" layoutX="10.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_prvi_tip_redovna" prefHeight="40.0" prefWidth="180.0" styleClass="white_btn" text="%redovna_cena" />
-                  <Button fx:id="prvi_tip_srb_k13_btn" layoutX="220.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_prvi_tip_srb_k13" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="SRB + K-13" />
-                  <Button fx:id="prvi_tip_rail_k30_btn" layoutX="385.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_prvi_tip_rail_k30" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="RAIL + K-30" />
-                  <Button fx:id="prvi_tip_dete_btn" layoutX="555.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_prvi_tip_dete" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%dete" />
-                  <Button fx:id="prvi_tip_pas_btn" layoutX="670.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_prvi_tip_pas" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%pas" />
+                  <Button fx:id="prvi_tip_srb_k13_btn" layoutX="210.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_prvi_tip_srb_k13" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="SRB + K-13" />
+                  <Button fx:id="prvi_tip_rail_k30_btn" layoutX="365.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_prvi_tip_rail_k30" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="RAIL + K-30" />
+                  <Button fx:id="prvi_tip_dete_btn" layoutX="520.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_prvi_tip_dete" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%dete" />
+                  <Button fx:id="prvi_tip_pas_btn" layoutX="625.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_prvi_tip_pas" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%pas" />
+                  <Button fx:id="prvi_tip_penzioner_btn" layoutX="730.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_prvi_tip_penzioner" prefHeight="40.0" prefWidth="150.0" styleClass="lightgray_btn" text="PENZIONER" />
                 
                </children>
             </Pane>
-            <TextField fx:id="prvi_tip_tf" layoutX="955.0" layoutY="120.0" prefHeight="60.0" prefWidth="200.0" styleClass="popust_id_tf" />
+            <TextField fx:id="prvi_tip_tf" layoutX="1055.0" layoutY="120.0" prefHeight="60.0" prefWidth="180.0" styleClass="popust_id_tf" />
             <Line fx:id="prvi_tip_ln" endX="1100.0" layoutX="51.0" layoutY="210.0" startX="18.0" stroke="gray" strokeWidth="0.5" />
             
-            <Label fx:id="drugi_tip_putnik_lbl" layoutX="70.0" layoutY="230.0" prefHeight="18.0" prefWidth="120.0" styleClass="tamno_braon_slova" text="%putnik" />
-            <Label fx:id="drugi_tip_putnik_br_lbl" layoutX="70.0" layoutY="255.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="2" />
-            <Pane fx:id="drugi_tip_karte_pn" layoutX="185.0" layoutY="225.0" prefHeight="60.0" prefWidth="800.0" styleClass="tip_karte_pn">
+            <Label fx:id="drugi_tip_putnik_lbl" layoutX="50.0" layoutY="230.0" prefHeight="18.0" prefWidth="120.0" styleClass="tamno_braon_slova" text="%putnik" />
+            <Label fx:id="drugi_tip_putnik_br_lbl" layoutX="50.0" layoutY="255.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="2" />
+            <Pane fx:id="drugi_tip_karte_pn" layoutX="145.0" layoutY="225.0" prefHeight="60.0" prefWidth="900.0" styleClass="tip_karte_pn">
                <children>
 
                   
                   <Button fx:id="drugi_tip_redovna_btn" layoutX="10.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_drugi_tip_redovna" prefHeight="40.0" prefWidth="180.0" styleClass="white_btn" text="%redovna_cena" />
-                  <Button fx:id="drugi_tip_srb_k13_btn" layoutX="220.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_drugi_tip_srb_k13" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="SRB + K-13" />
-                  <Button fx:id="drugi_tip_rail_k30_btn" layoutX="385.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_drugi_tip_rail_k30" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="RAIL + K-30" />
-                  <Button fx:id="drugi_tip_dete_btn" layoutX="555.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_drugi_tip_dete" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%dete" />
-                  <Button fx:id="drugi_tip_pas_btn" layoutX="670.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_drugi_tip_pas" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%pas" />
+                  <Button fx:id="drugi_tip_srb_k13_btn" layoutX="210.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_drugi_tip_srb_k13" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="SRB + K-13" />
+                  <Button fx:id="drugi_tip_rail_k30_btn" layoutX="365.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_drugi_tip_rail_k30" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="RAIL + K-30" />
+                  <Button fx:id="drugi_tip_dete_btn" layoutX="520.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_drugi_tip_dete" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%dete" />
+                  <Button fx:id="drugi_tip_pas_btn" layoutX="625.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_drugi_tip_pas" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%pas" />
+                  <Button fx:id="drugi_tip_penzioner_btn" layoutX="730.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_drugi_tip_penzioner" prefHeight="40.0" prefWidth="150.0" styleClass="lightgray_btn" text="PENZIONER" />
                 
                </children>
             </Pane>
-            <TextField fx:id="drugi_tip_tf" layoutX="955.0" layoutY="225.0" prefHeight="60.0" prefWidth="200.0" styleClass="popust_id_tf" />
+            <TextField fx:id="drugi_tip_tf" layoutX="1055.0" layoutY="225.0" prefHeight="60.0" prefWidth="180.0" styleClass="popust_id_tf" />
             <Line fx:id="drugi_tip_ln" endX="1100.0" layoutX="51.0" layoutY="315.0" startX="18.0" stroke="gray" strokeWidth="0.5" />
             
-            <Label fx:id="treci_tip_putnik_lbl" layoutX="70.0" layoutY="335.0" prefHeight="18.0" prefWidth="120.0" styleClass="tamno_braon_slova" text="%putnik" />
-            <Label fx:id="treci_tip_putnik_br_lbl" layoutX="70.0" layoutY="360.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="3" />
-            <Pane fx:id="treci_tip_karte_pn" layoutX="185.0" layoutY="330.0" prefHeight="60.0" prefWidth="800.0" styleClass="tip_karte_pn">
+            <Label fx:id="treci_tip_putnik_lbl" layoutX="50.0" layoutY="335.0" prefHeight="18.0" prefWidth="120.0" styleClass="tamno_braon_slova" text="%putnik" />
+            <Label fx:id="treci_tip_putnik_br_lbl" layoutX="50.0" layoutY="360.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="3" />
+            <Pane fx:id="treci_tip_karte_pn" layoutX="145.0" layoutY="330.0" prefHeight="60.0" prefWidth="900.0" styleClass="tip_karte_pn">
                <children>
 
                   
                   <Button fx:id="treci_tip_redovna_btn" layoutX="10.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_treci_tip_redovna" prefHeight="40.0" prefWidth="180.0" styleClass="white_btn" text="%redovna_cena" />
-                  <Button fx:id="treci_tip_srb_k13_btn" layoutX="220.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_treci_tip_srb_k13" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="SRB + K-13" />
-                  <Button fx:id="treci_tip_rail_k30_btn" layoutX="385.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_treci_tip_rail_k30" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="RAIL + K-30" />
-                  <Button fx:id="treci_tip_dete_btn" layoutX="555.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_treci_tip_dete" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%dete" />
-                  <Button fx:id="treci_tip_pas_btn" layoutX="670.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_treci_tip_pas" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%pas" />
+                  <Button fx:id="treci_tip_srb_k13_btn" layoutX="210.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_treci_tip_srb_k13" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="SRB + K-13" />
+                  <Button fx:id="treci_tip_rail_k30_btn" layoutX="365.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_treci_tip_rail_k30" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="RAIL + K-30" />
+                  <Button fx:id="treci_tip_dete_btn" layoutX="520.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_treci_tip_dete" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%dete" />
+                  <Button fx:id="treci_tip_pas_btn" layoutX="625.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_treci_tip_pas" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%pas" />
+                  <Button fx:id="treci_tip_penzioner_btn" layoutX="730.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_treci_tip_penzioner" prefHeight="40.0" prefWidth="150.0" styleClass="lightgray_btn" text="PENZIONER" />
                 
                </children>
             </Pane>
-            <TextField fx:id="treci_tip_tf" layoutX="955.0" layoutY="330.0" prefHeight="60.0" prefWidth="200.0" styleClass="popust_id_tf" />
+            <TextField fx:id="treci_tip_tf" layoutX="1055.0" layoutY="330.0" prefHeight="60.0" prefWidth="180.0" styleClass="popust_id_tf" />
             <Line fx:id="treci_tip_ln" endX="1100.0" layoutX="51.0" layoutY="420.0" startX="18.0" stroke="gray" strokeWidth="0.5" />
             
-            <Label fx:id="cetvrti_tip_putnik_lbl" layoutX="70.0" layoutY="440.0" prefHeight="18.0" prefWidth="120.0" styleClass="tamno_braon_slova" text="%putnik" />
-            <Label fx:id="cetvrti_tip_putnik_br_lbl" layoutX="70.0" layoutY="465.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="4" />
-            <Pane fx:id="cetvrti_tip_karte_pn" layoutX="185.0" layoutY="435.0" prefHeight="60.0" prefWidth="800.0" styleClass="tip_karte_pn">
+            <Label fx:id="cetvrti_tip_putnik_lbl" layoutX="50.0" layoutY="440.0" prefHeight="18.0" prefWidth="120.0" styleClass="tamno_braon_slova" text="%putnik" />
+            <Label fx:id="cetvrti_tip_putnik_br_lbl" layoutX="50.0" layoutY="465.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="4" />
+            <Pane fx:id="cetvrti_tip_karte_pn" layoutX="145.0" layoutY="435.0" prefHeight="60.0" prefWidth="900.0" styleClass="tip_karte_pn">
                <children>
 
                   
                   <Button fx:id="cetvrti_tip_redovna_btn" layoutX="10.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_cetvrti_tip_redovna" prefHeight="40.0" prefWidth="180.0" styleClass="white_btn" text="%redovna_cena" />
-                  <Button fx:id="cetvrti_tip_srb_k13_btn" layoutX="220.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_cetvrti_tip_srb_k13" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="SRB + K-13" />
-                  <Button fx:id="cetvrti_tip_rail_k30_btn" layoutX="385.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_cetvrti_tip_rail_k30" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="RAIL + K-30" />
-                  <Button fx:id="cetvrti_tip_dete_btn" layoutX="555.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_cetvrti_tip_dete" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%dete" />
-                  <Button fx:id="cetvrti_tip_pas_btn" layoutX="670.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_cetvrti_tip_pas" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%pas" />
+                  <Button fx:id="cetvrti_tip_srb_k13_btn" layoutX="210.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_cetvrti_tip_srb_k13" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="SRB + K-13" />
+                  <Button fx:id="cetvrti_tip_rail_k30_btn" layoutX="365.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_cetvrti_tip_rail_k30" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="RAIL + K-30" />
+                  <Button fx:id="cetvrti_tip_dete_btn" layoutX="520.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_cetvrti_tip_dete" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%dete" />
+                  <Button fx:id="cetvrti_tip_pas_btn" layoutX="625.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_cetvrti_tip_pas" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%pas" />
+                  <Button fx:id="cetvrti_tip_penzioner_btn" layoutX="730.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_cetvrti_tip_penzioner" prefHeight="40.0" prefWidth="150.0" styleClass="lightgray_btn" text="PENZIONER" />
                 
                </children>
             </Pane>
-            <TextField fx:id="cetvrti_tip_tf" layoutX="955.0" layoutY="435.0" prefHeight="60.0" prefWidth="200.0" styleClass="popust_id_tf" />
+            <TextField fx:id="cetvrti_tip_tf" layoutX="1055.0" layoutY="435.0" prefHeight="60.0" prefWidth="180.0" styleClass="popust_id_tf" />
             <Line fx:id="cetvrti_tip_ln" endX="1100.0" layoutX="51.0" layoutY="525.0" startX="18.0" stroke="gray" strokeWidth="0.5" />
             
-            <Label fx:id="peti_tip_putnik_lbl" layoutX="70.0" layoutY="545.0" prefHeight="18.0" prefWidth="120.0" styleClass="tamno_braon_slova" text="%putnik" />
-            <Label fx:id="peti_tip_putnik_br_lbl" layoutX="70.0" layoutY="570.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="5" />
-            <Pane fx:id="peti_tip_karte_pn" layoutX="185.0" layoutY="540.0" prefHeight="60.0" prefWidth="800.0" styleClass="tip_karte_pn">
+            <Label fx:id="peti_tip_putnik_lbl" layoutX="50.0" layoutY="545.0" prefHeight="18.0" prefWidth="120.0" styleClass="tamno_braon_slova" text="%putnik" />
+            <Label fx:id="peti_tip_putnik_br_lbl" layoutX="50.0" layoutY="570.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="5" />
+            <Pane fx:id="peti_tip_karte_pn" layoutX="145.0" layoutY="540.0" prefHeight="60.0" prefWidth="900.0" styleClass="tip_karte_pn">
                <children>
 
                   
                   <Button fx:id="peti_tip_redovna_btn" layoutX="10.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_peti_tip_redovna" prefHeight="40.0" prefWidth="180.0" styleClass="white_btn" text="%redovna_cena" />
-                  <Button fx:id="peti_tip_srb_k13_btn" layoutX="220.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_peti_tip_srb_k13" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="SRB + K-13" />
-                  <Button fx:id="peti_tip_rail_k30_btn" layoutX="385.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_peti_tip_rail_k30" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="RAIL + K-30" />
-                  <Button fx:id="peti_tip_dete_btn" layoutX="555.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_peti_tip_dete" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%dete" />
-                  <Button fx:id="peti_tip_pas_btn" layoutX="670.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_peti_tip_pas" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%pas" />
+                  <Button fx:id="peti_tip_srb_k13_btn" layoutX="210.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_peti_tip_srb_k13" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="SRB + K-13" />
+                  <Button fx:id="peti_tip_rail_k30_btn" layoutX="365.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_peti_tip_rail_k30" prefHeight="40.0" prefWidth="140.0" styleClass="lightgray_btn" text="RAIL + K-30" />
+                  <Button fx:id="peti_tip_dete_btn" layoutX="520.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_peti_tip_dete" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%dete" />
+                  <Button fx:id="peti_tip_pas_btn" layoutX="625.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_peti_tip_pas" prefHeight="40.0" prefWidth="90.0" styleClass="lightgray_btn" text="%pas" />
+                  <Button fx:id="peti_tip_penzioner_btn" layoutX="730.0" layoutY="7.0" mnemonicParsing="false" onAction="#handle_peti_tip_penzioner" prefHeight="40.0" prefWidth="150.0" styleClass="lightgray_btn" text="PENZIONER" />
                 
                </children>
             </Pane>
-            <TextField fx:id="peti_tip_tf" layoutX="955.0" layoutY="540.0" prefHeight="60.0" prefWidth="200.0" styleClass="popust_id_tf" />
+            <TextField fx:id="peti_tip_tf" layoutX="1055.0" layoutY="540.0" prefHeight="60.0" prefWidth="180.0" styleClass="popust_id_tf" />
             <Line fx:id="peti_tip_ln" endX="1100.0" layoutX="51.0" layoutY="630.0" startX="18.0" stroke="gray" strokeWidth="0.5" />
             
          </children>
@@ -557,21 +583,21 @@
             		<Label fx:id="prva_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
             		<Label fx:id="prva_smer_lbl" layoutX="250.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%smer" />
             		<Label fx:id="prva_smer_value_lbl" layoutX="250.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_tamno_braon_slova" text="" />
-           			<Label fx:id="prva_odrediste_lbl" layoutX="400.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
-            		<Label fx:id="prva_odrediste_value_lbl" layoutX="400.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
+           			<Label fx:id="prva_odrediste_lbl" layoutX="380.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
+            		<Label fx:id="prva_odrediste_value_lbl" layoutX="380.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="bold_crna_slova" text="" />
             		
-            		<Label fx:id="prva_datum_polaziste_lbl" layoutX="10.0" layoutY="45.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_polaska" />
-            		<Label fx:id="prva_datum_polaziste_value_lbl" layoutX="10.0" layoutY="60.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" />
-            		<Label fx:id="prva_datum_separator_lbl" layoutX="105.0" layoutY="60.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" />
-           			<Label fx:id="prva_vreme_polaziste_value_lbl" layoutX="120.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
-                  	<Label fx:id="prva_polaziste_broj_voza_lbl" layoutX="250.0" layoutY="45.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" />
-            		<Label fx:id="prva_polaziste_broj_voza_value_lbl" layoutX="250.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
-                  	<Label fx:id="prva_datum_povratak_lbl" layoutX="400.0" layoutY="45.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_povratka" visible="false" />            		
-            		<Label fx:id="prva_datum_povratak_value_lbl" layoutX="400.0" layoutY="60.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" visible="false" />
-            		<Label fx:id="prva_datum_povratak_separator_lbl" layoutX="445.0" layoutY="60.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" visible="false" />
-           			<Label fx:id="prva_vreme_povratak_value_lbl" layoutX="460.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
-                  	<Label fx:id="prva_povratak_broj_voza_lbl" layoutX="540.0" layoutY="45.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" visible="false" />
-            		<Label fx:id="prva_povratak_broj_voza_value_lbl" layoutX="540.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
+            		<Label fx:id="prva_datum_polaziste_lbl" layoutX="10.0" layoutY="55.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_polaska" />
+            		<Label fx:id="prva_datum_polaziste_value_lbl" layoutX="10.0" layoutY="70.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" />
+            		<Label fx:id="prva_datum_separator_lbl" layoutX="105.0" layoutY="70.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" />
+           			<Label fx:id="prva_vreme_polaziste_value_lbl" layoutX="120.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
+                  	<Label fx:id="prva_polaziste_broj_voza_lbl" layoutX="250.0" layoutY="55.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" />
+            		<Label fx:id="prva_polaziste_broj_voza_value_lbl" layoutX="250.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
+                  	<Label fx:id="prva_datum_povratak_lbl" layoutX="350.0" layoutY="55.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_povratka" visible="false" />            		
+            		<Label fx:id="prva_datum_povratak_value_lbl" layoutX="350.0" layoutY="70.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" visible="false" />
+            		<Label fx:id="prva_datum_povratak_separator_lbl" layoutX="445.0" layoutY="70.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" visible="false" />
+           			<Label fx:id="prva_vreme_povratak_value_lbl" layoutX="460.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
+                  	<Label fx:id="prva_povratak_broj_voza_lbl" layoutX="540.0" layoutY="55.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" visible="false" />
+            		<Label fx:id="prva_povratak_broj_voza_value_lbl" layoutX="540.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
             		
             		
             		<Label fx:id="prva_tip_lbl" layoutX="10.0" layoutY="105.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%primenjene_povlastice" />
@@ -591,21 +617,21 @@
             		<Label fx:id="druga_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
             		<Label fx:id="druga_smer_lbl" layoutX="250.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%smer" />
             		<Label fx:id="druga_smer_value_lbl" layoutX="250.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_tamno_braon_slova" text="" />
-           			<Label fx:id="druga_odrediste_lbl" layoutX="400.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
-            		<Label fx:id="druga_odrediste_value_lbl" layoutX="400.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
+           			<Label fx:id="druga_odrediste_lbl" layoutX="380.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
+            		<Label fx:id="druga_odrediste_value_lbl" layoutX="380.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="bold_crna_slova" text="" />
             		
-            		<Label fx:id="druga_datum_polaziste_lbl" layoutX="10.0" layoutY="45.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_polaska" />
-            		<Label fx:id="druga_datum_polaziste_value_lbl" layoutX="10.0" layoutY="60.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" />
-            		<Label fx:id="druga_datum_separator_lbl" layoutX="105.0" layoutY="60.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" />
-           			<Label fx:id="druga_vreme_polaziste_value_lbl" layoutX="120.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
-                  	<Label fx:id="druga_polaziste_broj_voza_lbl" layoutX="250.0" layoutY="45.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" />
-            		<Label fx:id="druga_polaziste_broj_voza_value_lbl" layoutX="250.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
-                  	<Label fx:id="druga_datum_povratak_lbl" layoutX="400.0" layoutY="45.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_povratka" visible="false" />            		
-            		<Label fx:id="druga_datum_povratak_value_lbl" layoutX="400.0" layoutY="60.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" visible="false" />
-            		<Label fx:id="druga_datum_povratak_separator_lbl" layoutX="445.0" layoutY="60.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" visible="false" />
-           			<Label fx:id="druga_vreme_povratak_value_lbl" layoutX="460.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
-                  	<Label fx:id="druga_povratak_broj_voza_lbl" layoutX="540.0" layoutY="45.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" visible="false" />
-            		<Label fx:id="druga_povratak_broj_voza_value_lbl" layoutX="540.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
+            		<Label fx:id="druga_datum_polaziste_lbl" layoutX="10.0" layoutY="55.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_polaska" />
+            		<Label fx:id="druga_datum_polaziste_value_lbl" layoutX="10.0" layoutY="70.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" />
+            		<Label fx:id="druga_datum_separator_lbl" layoutX="105.0" layoutY="70.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" />
+           			<Label fx:id="druga_vreme_polaziste_value_lbl" layoutX="120.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
+                  	<Label fx:id="druga_polaziste_broj_voza_lbl" layoutX="250.0" layoutY="55.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" />
+            		<Label fx:id="druga_polaziste_broj_voza_value_lbl" layoutX="250.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
+                  	<Label fx:id="druga_datum_povratak_lbl" layoutX="350.0" layoutY="55.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_povratka" visible="false" />            		
+            		<Label fx:id="druga_datum_povratak_value_lbl" layoutX="350.0" layoutY="70.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" visible="false" />
+            		<Label fx:id="druga_datum_povratak_separator_lbl" layoutX="445.0" layoutY="70.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" visible="false" />
+           			<Label fx:id="druga_vreme_povratak_value_lbl" layoutX="460.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
+                  	<Label fx:id="druga_povratak_broj_voza_lbl" layoutX="540.0" layoutY="55.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" visible="false" />
+            		<Label fx:id="druga_povratak_broj_voza_value_lbl" layoutX="540.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
             		
             		
             		<Label fx:id="druga_tip_lbl" layoutX="10.0" layoutY="105.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%primenjene_povlastice" />
@@ -625,21 +651,21 @@
             		<Label fx:id="treca_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
             		<Label fx:id="treca_smer_lbl" layoutX="250.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%smer" />
             		<Label fx:id="treca_smer_value_lbl" layoutX="250.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_tamno_braon_slova" text="" />
-           			<Label fx:id="treca_odrediste_lbl" layoutX="400.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
-            		<Label fx:id="treca_odrediste_value_lbl" layoutX="400.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
+           			<Label fx:id="treca_odrediste_lbl" layoutX="380.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
+            		<Label fx:id="treca_odrediste_value_lbl" layoutX="380.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="bold_crna_slova" text="" />
             		
-            		<Label fx:id="treca_datum_polaziste_lbl" layoutX="10.0" layoutY="45.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_polaska" />
-            		<Label fx:id="treca_datum_polaziste_value_lbl" layoutX="10.0" layoutY="60.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" />
-            		<Label fx:id="treca_datum_separator_lbl" layoutX="105.0" layoutY="60.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" />
-           			<Label fx:id="treca_vreme_polaziste_value_lbl" layoutX="120.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
-                  	<Label fx:id="treca_polaziste_broj_voza_lbl" layoutX="250.0" layoutY="45.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" />
-            		<Label fx:id="treca_polaziste_broj_voza_value_lbl" layoutX="250.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
-                  	<Label fx:id="treca_datum_povratak_lbl" layoutX="400.0" layoutY="45.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_povratka" visible="false" />            		
-            		<Label fx:id="treca_datum_povratak_value_lbl" layoutX="400.0" layoutY="60.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" visible="false" />
-            		<Label fx:id="treca_datum_povratak_separator_lbl" layoutX="445.0" layoutY="60.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" visible="false" />
-           			<Label fx:id="treca_vreme_povratak_value_lbl" layoutX="460.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
-                  	<Label fx:id="treca_povratak_broj_voza_lbl" layoutX="540.0" layoutY="45.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" visible="false" />
-            		<Label fx:id="treca_povratak_broj_voza_value_lbl" layoutX="540.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
+            		<Label fx:id="treca_datum_polaziste_lbl" layoutX="10.0" layoutY="55.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_polaska" />
+            		<Label fx:id="treca_datum_polaziste_value_lbl" layoutX="10.0" layoutY="70.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" />
+            		<Label fx:id="treca_datum_separator_lbl" layoutX="105.0" layoutY="70.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" />
+           			<Label fx:id="treca_vreme_polaziste_value_lbl" layoutX="120.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
+                  	<Label fx:id="treca_polaziste_broj_voza_lbl" layoutX="250.0" layoutY="55.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" />
+            		<Label fx:id="treca_polaziste_broj_voza_value_lbl" layoutX="250.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
+                  	<Label fx:id="treca_datum_povratak_lbl" layoutX="350.0" layoutY="55.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_povratka" visible="false" />            		
+            		<Label fx:id="treca_datum_povratak_value_lbl" layoutX="350.0" layoutY="70.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" visible="false" />
+            		<Label fx:id="treca_datum_povratak_separator_lbl" layoutX="445.0" layoutY="70.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" visible="false" />
+           			<Label fx:id="treca_vreme_povratak_value_lbl" layoutX="460.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
+                  	<Label fx:id="treca_povratak_broj_voza_lbl" layoutX="540.0" layoutY="55.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" visible="false" />
+            		<Label fx:id="treca_povratak_broj_voza_value_lbl" layoutX="540.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
             		
             		
             		<Label fx:id="treca_tip_lbl" layoutX="10.0" layoutY="105.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%primenjene_povlastice" />
@@ -658,21 +684,21 @@
             		<Label fx:id="cetvrta_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
             		<Label fx:id="cetvrta_smer_lbl" layoutX="250.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%smer" />
             		<Label fx:id="cetvrta_smer_value_lbl" layoutX="250.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_tamno_braon_slova" text="" />
-           			<Label fx:id="cetvrta_odrediste_lbl" layoutX="400.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
-            		<Label fx:id="cetvrta_odrediste_value_lbl" layoutX="400.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
+           			<Label fx:id="cetvrta_odrediste_lbl" layoutX="380.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
+            		<Label fx:id="cetvrta_odrediste_value_lbl" layoutX="380.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="bold_crna_slova" text="" />
             		
-            		<Label fx:id="cetvrta_datum_polaziste_lbl" layoutX="10.0" layoutY="45.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_polaska" />
-            		<Label fx:id="cetvrta_datum_polaziste_value_lbl" layoutX="10.0" layoutY="60.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" />
-            		<Label fx:id="cetvrta_datum_separator_lbl" layoutX="105.0" layoutY="60.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" />
-           			<Label fx:id="cetvrta_vreme_polaziste_value_lbl" layoutX="120.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
-                  	<Label fx:id="cetvrta_polaziste_broj_voza_lbl" layoutX="250.0" layoutY="45.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" />
-            		<Label fx:id="cetvrta_polaziste_broj_voza_value_lbl" layoutX="250.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
-                  	<Label fx:id="cetvrta_datum_povratak_lbl" layoutX="400.0" layoutY="45.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_povratka" visible="false" />            		
-            		<Label fx:id="cetvrta_datum_povratak_value_lbl" layoutX="400.0" layoutY="60.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" visible="false" />
-            		<Label fx:id="cetvrta_datum_povratak_separator_lbl" layoutX="445.0" layoutY="60.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" visible="false" />
-           			<Label fx:id="cetvrta_vreme_povratak_value_lbl" layoutX="460.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
-                  	<Label fx:id="cetvrta_povratak_broj_voza_lbl" layoutX="540.0" layoutY="45.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" visible="false" />
-            		<Label fx:id="cetvrta_povratak_broj_voza_value_lbl" layoutX="540.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
+            		<Label fx:id="cetvrta_datum_polaziste_lbl" layoutX="10.0" layoutY="55.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_polaska" />
+            		<Label fx:id="cetvrta_datum_polaziste_value_lbl" layoutX="10.0" layoutY="70.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" />
+            		<Label fx:id="cetvrta_datum_separator_lbl" layoutX="105.0" layoutY="70.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" />
+           			<Label fx:id="cetvrta_vreme_polaziste_value_lbl" layoutX="120.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
+                  	<Label fx:id="cetvrta_polaziste_broj_voza_lbl" layoutX="250.0" layoutY="55.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" />
+            		<Label fx:id="cetvrta_polaziste_broj_voza_value_lbl" layoutX="250.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
+                  	<Label fx:id="cetvrta_datum_povratak_lbl" layoutX="350.0" layoutY="55.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_povratka" visible="false" />            		
+            		<Label fx:id="cetvrta_datum_povratak_value_lbl" layoutX="350.0" layoutY="70.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" visible="false" />
+            		<Label fx:id="cetvrta_datum_povratak_separator_lbl" layoutX="445.0" layoutY="70.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" visible="false" />
+           			<Label fx:id="cetvrta_vreme_povratak_value_lbl" layoutX="460.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
+                  	<Label fx:id="cetvrta_povratak_broj_voza_lbl" layoutX="540.0" layoutY="55.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" visible="false" />
+            		<Label fx:id="cetvrta_povratak_broj_voza_value_lbl" layoutX="540.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
             		
             		
             		<Label fx:id="cetvrta_tip_lbl" layoutX="10.0" layoutY="105.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%primenjene_povlastice" />
@@ -689,23 +715,23 @@
                <children>
 					<Label fx:id="peta_polaziste_lbl" layoutX="10.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%polaziste" />
             		<Label fx:id="peta_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
-            		<Label fx:id="peta_smer_lbl" layoutX="200.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%smer" />
-            		<Label fx:id="peta_smer_value_lbl" layoutX="200.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_tamno_braon_slova" text="" />
-           			<Label fx:id="peta_odrediste_lbl" layoutX="400.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
-            		<Label fx:id="peta_odrediste_value_lbl" layoutX="400.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
+            		<Label fx:id="peta_smer_lbl" layoutX="250.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%smer" />
+            		<Label fx:id="peta_smer_value_lbl" layoutX="250.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_tamno_braon_slova" text="" />
+           			<Label fx:id="peta_odrediste_lbl" layoutX="380.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
+            		<Label fx:id="peta_odrediste_value_lbl" layoutX="380.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="bold_crna_slova" text="" />
             		
-            		<Label fx:id="peta_datum_polaziste_lbl" layoutX="10.0" layoutY="45.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_polaska" />
-            		<Label fx:id="peta_datum_polaziste_value_lbl" layoutX="10.0" layoutY="60.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" />
-            		<Label fx:id="peta_datum_separator_lbl" layoutX="105.0" layoutY="60.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" />
-           			<Label fx:id="peta_vreme_polaziste_value_lbl" layoutX="120.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
-                  	<Label fx:id="peta_polaziste_broj_voza_lbl" layoutX="250.0" layoutY="45.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" />
-            		<Label fx:id="peta_polaziste_broj_voza_value_lbl" layoutX="250.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
-                  	<Label fx:id="peta_datum_povratak_lbl" layoutX="400.0" layoutY="45.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_povratka" visible="false" />            		
-            		<Label fx:id="peta_datum_povratak_value_lbl" layoutX="400.0" layoutY="60.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" visible="false" />
-            		<Label fx:id="peta_datum_povratak_separator_lbl" layoutX="445.0" layoutY="60.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" visible="false" />
-           			<Label fx:id="peta_vreme_povratak_value_lbl" layoutX="460.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
-                  	<Label fx:id="peta_povratak_broj_voza_lbl" layoutX="540.0" layoutY="45.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" visible="false" />
-            		<Label fx:id="peta_povratak_broj_voza_value_lbl" layoutX="540.0" layoutY="60.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
+            		<Label fx:id="peta_datum_polaziste_lbl" layoutX="10.0" layoutY="55.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_polaska" />
+            		<Label fx:id="peta_datum_polaziste_value_lbl" layoutX="10.0" layoutY="70.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" />
+            		<Label fx:id="peta_datum_separator_lbl" layoutX="105.0" layoutY="70.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" />
+           			<Label fx:id="peta_vreme_polaziste_value_lbl" layoutX="120.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
+                  	<Label fx:id="peta_polaziste_broj_voza_lbl" layoutX="250.0" layoutY="55.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" />
+            		<Label fx:id="peta_polaziste_broj_voza_value_lbl" layoutX="250.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" />
+                  	<Label fx:id="peta_datum_povratak_lbl" layoutX="350.0" layoutY="55.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%datum_vreme_povratka" visible="false" />            		
+            		<Label fx:id="peta_datum_povratak_value_lbl" layoutX="350.0" layoutY="70.0" prefHeight="18.0" prefWidth="200.0" styleClass="tamno_braon_slova" text="" visible="false" />
+            		<Label fx:id="peta_datum_povratak_separator_lbl" layoutX="445.0" layoutY="70.0" prefHeight="18.0" prefWidth="10.0" styleClass="mala_siva_slova" text="|" visible="false" />
+           			<Label fx:id="peta_vreme_povratak_value_lbl" layoutX="460.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
+                  	<Label fx:id="peta_povratak_broj_voza_lbl" layoutX="540.0" layoutY="55.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_siva_slova" text="%broj_voza" visible="false" />
+            		<Label fx:id="peta_povratak_broj_voza_value_lbl" layoutX="540.0" layoutY="70.0" prefHeight="18.0" prefWidth="100.0" styleClass="tamno_braon_slova" text="" visible="false" />
             		
             		
             		<Label fx:id="peta_tip_lbl" layoutX="10.0" layoutY="105.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%primenjene_povlastice" />
@@ -780,13 +806,81 @@
       </Pane>
       
       
-      
+      <Pane fx:id="tastatura_alfanumeric_pn" layoutX="100.0" layoutY="220.0" prefHeight="670.0" prefWidth="1030.0" styleClass="ostale_stanice_panel" visible="false">
+         <children>
+            
+            <Button fx:id="tast_alfa_num_zatvori_btn" layoutX="80.0" layoutY="70.0" mnemonicParsing="false" onAction="#handle_alfa_tastatura_zatvori" prefHeight="40.0" prefWidth="112.0" styleClass="cal_act_btn" text="%zatvori" />
+         	<Label fx:id="tast_alfa_num_unesi_id_povlastice" layoutX="310.0" layoutY="80.0" prefHeight="18.0" prefWidth="300.0" styleClass="tamno_braon_slova" text="%tastatura_unesi_id_povlastice" />
+         	<Label fx:id="tast_alfa_num_value_lbl" layoutX="620.0" layoutY="65.0" prefHeight="18.0" prefWidth="400.0" styleClass="velikaaaaa_tamno_braon_slova" text="" />
+            
+            
+            <Button fx:id="tast_alfa_num_1" layoutX="70.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleTastAlfaNumJedan" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="1" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_2" layoutX="160.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleTastAlfaNumDva" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="2" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_3" layoutX="250.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleTastAlfaNumTri" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="3" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_4" layoutX="340.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleTastAlfaNumCetiri" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="4" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_5" layoutX="430.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleTastAlfaNumPet" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="5" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_6" layoutX="520.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleTastAlfaNumSest" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="6" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_7" layoutX="610.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleTastAlfaNumSedam" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="7" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_8" layoutX="700.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleTastAlfaNumOsam" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="8" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_9" layoutX="790.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleTastAlfaNumDevet" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="9" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_0" layoutX="880.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleTastAlfaNumNula" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="0" textAlignment="CENTER" visible="true" />
+                                 
+            <Button fx:id="tast_alfa_num_A" layoutX="70.0" layoutY="290.0" onAction="#handle_tast_alfa_num_A" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="A" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_B" layoutX="160.0" layoutY="290.0" onAction="#handle_tast_alfa_num_B" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="B" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_C" layoutX="250.0" layoutY="290.0" onAction="#handle_tast_alfa_num_C" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="C" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_D" layoutX="340.0" layoutY="290.0" onAction="#handle_tast_alfa_num_D" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="D" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_E" layoutX="430.0" layoutY="290.0" onAction="#handle_tast_alfa_num_E" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="E" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_F" layoutX="520.0" layoutY="290.0" onAction="#handle_tast_alfa_num_F" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="F" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_G" layoutX="610.0" layoutY="290.0" onAction="#handle_tast_alfa_num_G" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="G" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_H" layoutX="700.0" layoutY="290.0" onAction="#handle_tast_alfa_num_H" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="H" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_I" layoutX="790.0" layoutY="290.0" onAction="#handle_tast_alfa_num_I" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="I" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_J" layoutX="880.0" layoutY="290.0" onAction="#handle_tast_alfa_num_J" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="J" textAlignment="CENTER" visible="true" />
+            
+            <Button fx:id="tast_alfa_num_K" layoutX="70.0" layoutY="380.0" onAction="#handle_tast_alfa_num_K" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="K" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_L" layoutX="160.0" layoutY="380.0" onAction="#handle_tast_alfa_num_L" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="L" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_M" layoutX="250.0" layoutY="380.0" onAction="#handle_tast_alfa_num_M" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="M" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_N" layoutX="340.0" layoutY="380.0" onAction="#handle_tast_alfa_num_N" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="N" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_O" layoutX="430.0" layoutY="380.0" onAction="#handle_tast_alfa_num_O" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="O" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_P" layoutX="520.0" layoutY="380.0" onAction="#handle_tast_alfa_num_P" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="P" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_R" layoutX="610.0" layoutY="380.0" onAction="#handle_tast_alfa_num_R" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="R" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_S" layoutX="700.0" layoutY="380.0" onAction="#handle_tast_alfa_num_S" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="S" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_T" layoutX="790.0" layoutY="380.0" onAction="#handle_tast_alfa_num_T" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="T" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_Ć" layoutX="880.0" layoutY="380.0" onAction="#handle_tast_alfa_num_CS" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="Ć" textAlignment="CENTER" visible="true" />
+            
+            <Button fx:id="tast_alfa_num_Č" layoutX="70.0" layoutY="470.0" onAction="#handle_tast_alfa_num_CH" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="Č" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_U" layoutX="160.0" layoutY="470.0" onAction="#handle_tast_alfa_num_U" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="U" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_V" layoutX="250.0" layoutY="470.0" onAction="#handle_tast_alfa_num_V" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="V" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_Š" layoutX="340.0" layoutY="470.0" onAction="#handle_tast_alfa_num_SH" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="Š" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_Z" layoutX="430.0" layoutY="470.0" onAction="#handle_tast_alfa_num_Z" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="Z" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_Ž" layoutX="520.0" layoutY="470.0" onAction="#handle_tast_alfa_num_ZH" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="Ž" textAlignment="CENTER" visible="true" />
+            
+            <Button fx:id="tast_alfa_num_Y" layoutX="610.0" layoutY="470.0" onAction="#handle_tast_alfa_num_Y" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="Y" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_W" layoutX="700.0" layoutY="470.0" onAction="#handle_tast_alfa_num_W" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="W" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_Q" layoutX="790.0" layoutY="470.0" onAction="#handle_tast_alfa_num_Q" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="Q" textAlignment="CENTER" visible="true" />
+            <Button fx:id="tast_alfa_num_X" layoutX="880.0" layoutY="470.0" onAction="#handle_tast_alfa_num_X" prefHeight="70.0" prefWidth="70.0" styleClass="blue_button_smal_font" text="X" textAlignment="CENTER" visible="true" />
+            
+            <Button fx:id="tast_alfa_num_POTVRDI" layoutX="700.0" layoutY="560.0" onAction="#handle_tast_alfa_num_POTVRDI" prefHeight="70.0" prefWidth="250.0" styleClass="blue_button_smal_font" text="%potvrdi_broj_btn" textAlignment="CENTER" visible="true" />
+            
+         </children>
+      </Pane>
       
 
       
       
 	<Pane fx:id="placanje_result_pn" layoutX="0.0" layoutY="0.0" prefHeight="1024.0" prefWidth="1280.0" styleClass="polasci_pn" visible="false">
 	<children>
+			<Pane fx:id="fiskal_pn" layoutX="20.0" layoutY="20.0" prefWidth="400.0" styleClass="fiscal_pn" visible="false">
+         <children>
+            <TextFlow fx:id="fiskal_tflow" prefWidth="400.0" />
+            <ImageView fx:id="fiskal_qr_code" fitHeight="400.0" fitWidth="400.0" layoutX="0.0" layoutY="567.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../../temp/TIO_dokumenti/QRCode_sekretarijat_500.png" />
+               </image>
+            </ImageView>
+            <TextFlow fx:id="fiskal_tflow_kraj" layoutX="0.0" prefHeight="70.0" prefWidth="400.0" />
+            <Button fx:id="check_fiscal_btn" layoutX="120.0" mnemonicParsing="false" onAction="#handle_check_fiscal_btn" prefHeight="40.0" prefWidth="112.0" styleClass="cal_act_btn" text="%fiscal_check" />               
+         </children>
+		</Pane>
 	        <Label fx:id="message_lbl_1" layoutX="30.0" layoutY="514.0" prefHeight="30.0" prefWidth="980.0" styleClass="message_lbl" text="" />
             <Label fx:id="message_lbl_2" layoutX="30.0" layoutY="554.0" prefHeight="30.0" prefWidth="980.0" styleClass="message_lbl" text="" />
             <Label fx:id="message_lbl_3" layoutX="30.0" layoutY="594.0" prefHeight="30.0" prefWidth="980.0" styleClass="message_lbl" text="" />
@@ -800,21 +894,21 @@
       
       
 
- 	<Pane fx:id="polasci_calendar_pn" layoutX="150.0" layoutY="20.0" prefHeight="982.0" prefWidth="1095.0" styleClass="polasci_pn" visible="false">
+ 	<Pane fx:id="polasci_calendar_pn" layoutX="50.0" layoutY="20.0" prefHeight="982.0" prefWidth="1195.0" styleClass="polasci_pn" visible="false">
 	<children>
-		<Pane fx:id="calendar_novi_pn" layoutX="30.0" layoutY="30.0" prefHeight="330.0" prefWidth="1035.0" styleClass="calendar_novo_pn">
+		<Pane fx:id="calendar_novi_pn" layoutX="30.0" layoutY="30.0" prefHeight="330.0" prefWidth="1135.0" styleClass="calendar_novo_pn">
 			<children>
-				<Button fx:id="sled_ned_cal_btn" layoutX="845.0" layoutY="85.0" mnemonicParsing="false" onAction="#handle_calendar_pos_ned" prefHeight="50.0" styleClass="cal_act_btn" text="%sled_ned_cal_btn" />
-				<Button fx:id="calendar_odustani_btn" layoutX="0.0" layoutY="0.0" mnemonicParsing="false" onAction="#handle_calendar_odustani" prefHeight="50.0" prefWidth="112.0" styleClass="cal_act_btn" text="%calendar_odustani_btn" />
-				<Button fx:id="pret_ned_cal_btn" layoutX="0.0" layoutY="85.0" mnemonicParsing="false" onAction="#handle_calendar_pre_ned" prefHeight="50.0" styleClass="cal_act_btn" text="%pret_ned_cal_btn" />
-				<Label fx:id="izaberi_datum_cal_lbl" layoutX="330.0" layoutY="90.0" prefHeight="48.0" prefWidth="398.0" styleClass="tamno_braon_slova" text="%izaberi_datum_cal_lbl" />
-				<Label fx:id="izaberi_polazak_lbl" layoutX="380.0" layoutY="250.0" prefHeight="48.0" prefWidth="350.0" styleClass="crna_slova" text="%izaberi_polazak_lbl" />
-				<Label fx:id="izaberi_polazak_na_dan_lbl" layoutX="400.0" layoutY="280.0" prefHeight="48.0" prefWidth="150.0" styleClass="crna_slova" text="%izaberi_polazak_na_dan_lbl" visible="false" />
-				<Label fx:id="izaberi_polazak_datum_lbl" layoutX="440.0" layoutY="278.0" prefHeight="48.0" prefWidth="200.0" styleClass="velika_bold_crna_slova" text="" visible="false" />
+				<Button fx:id="sled_ned_cal_btn" layoutX="935.0" layoutY="75.0" mnemonicParsing="false" onAction="#handle_calendar_pos_ned" prefHeight="60.0" styleClass="cal_act_btn" text="%sled_ned_cal_btn" />
+				<Button fx:id="calendar_odustani_btn" layoutX="50.0" layoutY="0.0" mnemonicParsing="false" onAction="#handle_calendar_odustani" prefHeight="60.0" prefWidth="170.0" styleClass="cal_act_btn" text="%calendar_odustani_btn" />
+				<Button fx:id="pret_ned_cal_btn" layoutX="50.0" layoutY="75.0" mnemonicParsing="false" onAction="#handle_calendar_pre_ned" prefHeight="60.0" styleClass="cal_act_btn" text="%pret_ned_cal_btn" />
+				<Label fx:id="izaberi_datum_cal_lbl" layoutX="430.0" layoutY="90.0" prefHeight="48.0" prefWidth="398.0" styleClass="tamno_braon_slova" text="%izaberi_datum_cal_lbl" />
+				<Label fx:id="izaberi_polazak_lbl" layoutX="480.0" layoutY="250.0" prefHeight="48.0" prefWidth="350.0" styleClass="crna_slova" text="%izaberi_polazak_lbl" />
+				<Label fx:id="izaberi_polazak_na_dan_lbl" layoutX="500.0" layoutY="280.0" prefHeight="48.0" prefWidth="150.0" styleClass="crna_slova" text="%izaberi_polazak_na_dan_lbl" visible="false" />
+				<Label fx:id="izaberi_polazak_datum_lbl" layoutX="540.0" layoutY="278.0" prefHeight="48.0" prefWidth="200.0" styleClass="velika_bold_crna_slova" text="" visible="false" />
 
-				<Pane fx:id="pon_pn" layoutX="30.0" layoutY="150.0" prefHeight="90.0" prefWidth="130.0" styleClass="day_pn">
+				<Pane fx:id="pon_pn" layoutX="50.0" layoutY="150.0" prefHeight="90.0" prefWidth="140.0" styleClass="day_pn">
 					<children>
-						<Button fx:id="pon_izab_btn" mnemonicParsing="false" onAction="#handle_change_pon" prefHeight="90.0" prefWidth="130.0" styleClass="kalendar_novi_btn" text="">
+						<Button fx:id="pon_izab_btn" mnemonicParsing="false" onAction="#handle_change_pon" prefHeight="90.0" prefWidth="140.0" styleClass="kalendar_novi_btn" text="">
 							<graphic>
 								<VBox prefHeight="84.0" prefWidth="84.0">
 									<children>
@@ -826,9 +920,9 @@
 						</Button>
 					</children>
 				</Pane>
-				<Pane fx:id="uto_pn" layoutX="170.0" layoutY="150.0" prefHeight="90.0" prefWidth="130.0" styleClass="day_pn">
+				<Pane fx:id="uto_pn" layoutX="200.0" layoutY="150.0" prefHeight="90.0" prefWidth="140.0" styleClass="day_pn">
 					<children>
-						<Button fx:id="uto_izab_btn" mnemonicParsing="false" onAction="#handle_change_uto" prefHeight="90.0" prefWidth="130.0" styleClass="kalendar_novi_btn" text="">
+						<Button fx:id="uto_izab_btn" mnemonicParsing="false" onAction="#handle_change_uto" prefHeight="90.0" prefWidth="140.0" styleClass="kalendar_novi_btn" text="">
 							<graphic>
 								<VBox prefHeight="84.0" prefWidth="84.0">
 									<children>
@@ -840,9 +934,9 @@
 						</Button>
 					</children>
 				</Pane>
-				<Pane fx:id="sre_pn" layoutX="310.0" layoutY="150.0" prefHeight="90.0" prefWidth="130.0" styleClass="day_pn">
+				<Pane fx:id="sre_pn" layoutX="350.0" layoutY="150.0" prefHeight="90.0" prefWidth="140.0" styleClass="day_pn">
 					<children>
-						<Button fx:id="sre_izab_btn" mnemonicParsing="false" onAction="#handle_change_sre" prefHeight="90.0" prefWidth="130.0" styleClass="kalendar_novi_btn" text="">
+						<Button fx:id="sre_izab_btn" mnemonicParsing="false" onAction="#handle_change_sre" prefHeight="90.0" prefWidth="140.0" styleClass="kalendar_novi_btn" text="">
 							<graphic>
 								<VBox prefHeight="84.0" prefWidth="84.0">
 									<children>
@@ -854,9 +948,9 @@
 						</Button>
 					</children>
 				</Pane>
-				<Pane fx:id="cet_pn" layoutX="450.0" layoutY="150.0" prefHeight="90.0" prefWidth="130.0" styleClass="day_pn">
+				<Pane fx:id="cet_pn" layoutX="500.0" layoutY="150.0" prefHeight="90.0" prefWidth="140.0" styleClass="day_pn">
 					<children>
-						<Button fx:id="cet_izab_btn" mnemonicParsing="false" onAction="#handle_change_cet" prefHeight="90.0" prefWidth="130.0" styleClass="kalendar_novi_btn" text="">
+						<Button fx:id="cet_izab_btn" mnemonicParsing="false" onAction="#handle_change_cet" prefHeight="90.0" prefWidth="140.0" styleClass="kalendar_novi_btn" text="">
 							<graphic>
 								<VBox prefHeight="84.0" prefWidth="84.0">
 									<children>
@@ -868,9 +962,9 @@
 						</Button>
 					</children>
 				</Pane>
-				<Pane fx:id="pet_pn" layoutX="590.0" layoutY="150.0" prefHeight="90.0" prefWidth="130.0" styleClass="day_pn">
+				<Pane fx:id="pet_pn" layoutX="650.0" layoutY="150.0" prefHeight="90.0" prefWidth="140.0" styleClass="day_pn">
 					<children>
-						<Button fx:id="pet_izab_btn" mnemonicParsing="false" onAction="#handle_change_pet" prefHeight="90.0" prefWidth="130.0" styleClass="kalendar_novi_btn" text="">
+						<Button fx:id="pet_izab_btn" mnemonicParsing="false" onAction="#handle_change_pet" prefHeight="90.0" prefWidth="140.0" styleClass="kalendar_novi_btn" text="">
 							<graphic>
 								<VBox prefHeight="84.0" prefWidth="84.0">
 									<children>
@@ -882,9 +976,9 @@
 						</Button>
 					</children>
 				</Pane>
-				<Pane fx:id="sub_pn" layoutX="730.0" layoutY="150.0" prefHeight="90.0" prefWidth="130.0" styleClass="day_pn">
+				<Pane fx:id="sub_pn" layoutX="800.0" layoutY="150.0" prefHeight="90.0" prefWidth="140.0" styleClass="day_pn">
 					<children>
-						<Button fx:id="sub_izab_btn" mnemonicParsing="false" onAction="#handle_change_sub" prefHeight="90.0" prefWidth="130.0" styleClass="kalendar_novi_btn" text="">
+						<Button fx:id="sub_izab_btn" mnemonicParsing="false" onAction="#handle_change_sub" prefHeight="90.0" prefWidth="140.0" styleClass="kalendar_novi_btn" text="">
 							<graphic>
 								<VBox prefHeight="84.0" prefWidth="84.0">
 									<children>
@@ -896,9 +990,9 @@
 						</Button>
 					</children>
 				</Pane>
-				<Pane fx:id="ned_pn" layoutX="870.0" layoutY="150.0" prefHeight="90.0" prefWidth="130.0" styleClass="day_pn">
+				<Pane fx:id="ned_pn" layoutX="950.0" layoutY="150.0" prefHeight="90.0" prefWidth="140.0" styleClass="day_pn">
 					<children>
-						<Button fx:id="ned_izab_btn" mnemonicParsing="false" onAction="#handle_change_ned" prefHeight="90.0" prefWidth="130.0" styleClass="kalendar_novi_btn" text="">
+						<Button fx:id="ned_izab_btn" mnemonicParsing="false" onAction="#handle_change_ned" prefHeight="90.0" prefWidth="140.0" styleClass="kalendar_novi_btn" text="">
 							<graphic>
 								<VBox prefHeight="84.0" prefWidth="84.0">
 									<children>
@@ -914,113 +1008,191 @@
 				
 			</children>
 		</Pane>
-		<Pane fx:id="polasci_nova_pn" layoutX="100.0" layoutY="330.0" prefHeight="600.0" prefWidth="900.0" styleClass="polasci_novo_pn">
+		<Pane fx:id="polasci_nova_pn" layoutX="50.0" layoutY="330.0" prefHeight="600.0" prefWidth="1100.0" styleClass="polasci_novo_pn">
 					<children>
-						<Button fx:id="sled_polasci_btn" layoutX="700.0" layoutY="530.0" mnemonicParsing="false" onAction="#handle_sled_polasci_pagination" prefHeight="50.0" styleClass="cal_act_btn" text="%sled_polasci_btn" />
+						<Button fx:id="sled_polasci_btn" layoutX="900.0" layoutY="530.0" mnemonicParsing="false" onAction="#handle_sled_polasci_pagination" prefHeight="50.0" styleClass="cal_act_btn" text="%sled_polasci_btn" />
 						<Button fx:id="polasci_odustani_btn" layoutX="850.0" layoutY="25.0" mnemonicParsing="false" onAction="#handle_polasci_odustani" prefHeight="40.0" prefWidth="112.0" styleClass="cal_act_btn" text="%odustani" visible="false" />
 						<Button fx:id="pret_polasci_btn" layoutX="28.0" layoutY="530.0" mnemonicParsing="false" onAction="#handle_pred_polasci_pagination" prefHeight="50.0" styleClass="cal_act_btn" text="%pret_polasci" />
 
 
-						<Pane fx:id="prvi_pol_pn" layoutX="30.0" layoutY="30.0" prefHeight="80.0" prefWidth="840.0" styleClass="day_pn">
+						<Pane fx:id="prvi_pol_pn" layoutX="30.0" layoutY="30.0" prefHeight="80.0" prefWidth="1040.0" styleClass="day_pn">
 							<children>
-								<Label fx:id="prvi_pol_rang_opis_lbl" layoutX="14.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" />
-								<Label fx:id="prvi_pol_rang_opis_value_lbl" layoutX="14.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" />
-								<Label fx:id="prvi_pol_br_voz_lbl" layoutX="90.0" layoutY="15.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%broj_voza" />
-								<Label fx:id="prvi_pol_br_voz_value_lbl" layoutX="90.0" layoutY="30.0" prefHeight="18.0" prefWidth="100.0" styleClass="velika_bold_bela_slova" text="4601" />
-								<Label fx:id="prvi_pol_vreme_polaska_lbl" layoutX="200.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_polaska" />
-								<Label fx:id="prvi_pol_vreme_polaska_value_lbl" layoutX="200.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:30" />
-								<Label fx:id="prvi_pol_vreme_dolaska_lbl" layoutX="340.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_dolaska" />
-								<Label fx:id="prvi_pol_vreme_dolaska_value_lbl" layoutX="340.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:50" />
-								<Label fx:id="prvi_pol_trajanje_lbl" layoutX="480.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%trajanje_putovanja" />
-								<Label fx:id="prvi_pol_trajanje_value_lbl" layoutX="480.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="20 minuta" />
-								<Label fx:id="prvi_pol_cena_lbl" layoutX="630.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%cena" />
-								<Label fx:id="prvi_pol_cena_value_lbl" layoutX="630.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="83.0" />
-								<Label fx:id="prvi_pol_rang_lbl" layoutX="650.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" visible="false" />
-								<Label fx:id="prvi_pol_rang_value_lbl" layoutX="650.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" visible="false" />
-								<Button fx:id="prvi_pol_btn" layoutX="750.0" layoutY="20.0" mnemonicParsing="false" onAction="#handle_prvi_pol" prefHeight="40.0" prefWidth="80.0" styleClass="cal_day_btn" text="%izaberi" />
+							    <ImageView fx:id="soko_view_1" fitHeight="60.0" fitWidth="80.0" layoutX="10.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
+                     				<image>
+                        				<Image url="@img/soko.png" />
+                     				</image>
+                  				</ImageView>
+								<Label fx:id="prvi_pol_rang_opis_lbl" layoutX="110.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" />
+								<Label fx:id="prvi_pol_rang_opis_value_lbl" layoutX="110.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" />
+								<Label fx:id="prvi_pol_br_voz_lbl" layoutX="170.0" layoutY="15.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%broj_voza" />
+								<Label fx:id="prvi_pol_br_voz_value_lbl" layoutX="170.0" layoutY="30.0" prefHeight="18.0" prefWidth="100.0" styleClass="velika_bold_bela_slova" text="4601" />
+								<Label fx:id="prvi_pol_br_slobodnih_mesta_lbl" layoutX="250.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%broj_slobodnih_mesta" />
+								<Label fx:id="prvi_pol_br_slobodnih_mesta_value_lbl" layoutX="250.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova_centered" text="%bez_rezervacije" />								
+								<Label fx:id="prvi_pol_vreme_polaska_lbl" layoutX="410.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_polaska" />
+								<Label fx:id="prvi_pol_vreme_polaska_value_lbl" layoutX="410.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:30" />
+								<Label fx:id="prvi_pol_vreme_dolaska_lbl" layoutX="550.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_dolaska" />
+								<Label fx:id="prvi_pol_vreme_dolaska_value_lbl" layoutX="550.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:50" />
+								<Label fx:id="prvi_pol_trajanje_lbl" layoutX="680.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%trajanje_putovanja" />
+								<Label fx:id="prvi_pol_trajanje_value_lbl" layoutX="680.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="20 minuta" />
+								<Label fx:id="prvi_pol_cena_lbl" layoutX="830.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%cena" />
+								<Label fx:id="prvi_pol_cena_value_lbl" layoutX="830.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="83.0" />
+								<Label fx:id="prvi_pol_rang_lbl" layoutX="850.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" visible="false" />
+								<Label fx:id="prvi_pol_rang_value_lbl" layoutX="850.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" visible="false" />
+								<Button fx:id="prvi_pol_btn" layoutX="920.0" layoutY="10.0" mnemonicParsing="false" onAction="#handle_prvi_pol" prefHeight="60.0" prefWidth="110.0" styleClass="cal_day_btn" text="%izaberi" />
 							</children>
 						</Pane>
-						<Pane fx:id="drugi_pol_pn" layoutX="30.0" layoutY="130.0" prefHeight="80.0" prefWidth="840.0" styleClass="day_pn">
+						<Pane fx:id="drugi_pol_pn" layoutX="30.0" layoutY="130.0" prefHeight="80.0" prefWidth="1040.0" styleClass="day_pn">
 							<children>
-								<Label fx:id="drugi_pol_rang_opis_lbl" layoutX="14.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" />
-								<Label fx:id="drugi_pol_rang_opis_value_lbl" layoutX="14.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" />
-								<Label fx:id="drugi_pol_br_voz_lbl" layoutX="90.0" layoutY="15.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%broj_voza" />
-								<Label fx:id="drugi_pol_br_voz_value_lbl" layoutX="90.0" layoutY="30.0" prefHeight="18.0" prefWidth="100.0" styleClass="velika_bold_bela_slova" text="4601" />
-								<Label fx:id="drugi_pol_vreme_polaska_lbl" layoutX="200.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_polaska" />
-								<Label fx:id="drugi_pol_vreme_polaska_value_lbl" layoutX="200.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:30" />
-								<Label fx:id="drugi_pol_vreme_dolaska_lbl" layoutX="340.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_dolaska" />
-								<Label fx:id="drugi_pol_vreme_dolaska_value_lbl" layoutX="340.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:50" />
-								<Label fx:id="drugi_pol_trajanje_lbl" layoutX="480.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%trajanje_putovanja" />
-								<Label fx:id="drugi_pol_trajanje_value_lbl" layoutX="480.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="20 minuta" />
-								<Label fx:id="drugi_pol_cena_lbl" layoutX="630.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%cena" />
-								<Label fx:id="drugi_pol_cena_value_lbl" layoutX="630.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="83.0" />
-								<Label fx:id="drugi_pol_rang_lbl" layoutX="650.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" visible="false" />
-								<Label fx:id="drugi_pol_rang_value_lbl" layoutX="650.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" visible="false" />
-								<Button fx:id="drugi_pol_btn" layoutX="750.0" layoutY="20.0" mnemonicParsing="false" onAction="#handle_drugi_pol" prefHeight="40.0" prefWidth="80.0" styleClass="cal_day_btn" text="%izaberi" />
+								<ImageView fx:id="soko_view_2" fitHeight="60.0" fitWidth="80.0" layoutX="10.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
+                     				<image>
+                        				<Image url="@img/soko.png" />
+                     				</image>
+                  				</ImageView>
+								<Label fx:id="drugi_pol_rang_opis_lbl" layoutX="110.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" />
+								<Label fx:id="drugi_pol_rang_opis_value_lbl" layoutX="110.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" />
+								<Label fx:id="drugi_pol_br_voz_lbl" layoutX="170.0" layoutY="15.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%broj_voza" />
+								<Label fx:id="drugi_pol_br_voz_value_lbl" layoutX="170.0" layoutY="30.0" prefHeight="18.0" prefWidth="100.0" styleClass="velika_bold_bela_slova" text="4601" />
+								<Label fx:id="drugi_pol_br_slobodnih_mesta_lbl" layoutX="250.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%broj_slobodnih_mesta" />
+								<Label fx:id="drugi_pol_br_slobodnih_mesta_value_lbl" layoutX="250.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova_centered" text="%bez_rezervacije" />								
+								<Label fx:id="drugi_pol_vreme_polaska_lbl" layoutX="410.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_polaska" />
+								<Label fx:id="drugi_pol_vreme_polaska_value_lbl" layoutX="410.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:30" />
+								<Label fx:id="drugi_pol_vreme_dolaska_lbl" layoutX="550.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_dolaska" />
+								<Label fx:id="drugi_pol_vreme_dolaska_value_lbl" layoutX="550.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:50" />
+								<Label fx:id="drugi_pol_trajanje_lbl" layoutX="680.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%trajanje_putovanja" />
+								<Label fx:id="drugi_pol_trajanje_value_lbl" layoutX="680.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="20 minuta" />
+								<Label fx:id="drugi_pol_cena_lbl" layoutX="830.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%cena" />
+								<Label fx:id="drugi_pol_cena_value_lbl" layoutX="830.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="83.0" />
+								<Label fx:id="drugi_pol_rang_lbl" layoutX="850.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" visible="false" />
+								<Label fx:id="drugi_pol_rang_value_lbl" layoutX="850.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" visible="false" />
+								<Button fx:id="drugi_pol_btn" layoutX="920.0" layoutY="10.0" mnemonicParsing="false" onAction="#handle_drugi_pol" prefHeight="60.0" prefWidth="110.0" styleClass="cal_day_btn" text="%izaberi" />
 							</children>
 						</Pane>
-						<Pane fx:id="treci_pol_pn" layoutX="30.0" layoutY="230.0" prefHeight="80.0" prefWidth="840.0" styleClass="day_pn">
+						<Pane fx:id="treci_pol_pn" layoutX="30.0" layoutY="230.0" prefHeight="80.0" prefWidth="1040.0" styleClass="day_pn">
 							<children>
-								<Label fx:id="treci_pol_rang_opis_lbl" layoutX="14.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" />
-								<Label fx:id="treci_pol_rang_opis_value_lbl" layoutX="14.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" />
-								<Label fx:id="treci_pol_br_voz_lbl" layoutX="90.0" layoutY="15.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%broj_voza" />
-								<Label fx:id="treci_pol_br_voz_value_lbl" layoutX="90.0" layoutY="30.0" prefHeight="18.0" prefWidth="100.0" styleClass="velika_bold_bela_slova" text="4601" />
-								<Label fx:id="treci_pol_vreme_polaska_lbl" layoutX="200.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_polaska" />
-								<Label fx:id="treci_pol_vreme_polaska_value_lbl" layoutX="200.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:30" />
-								<Label fx:id="treci_pol_vreme_dolaska_lbl" layoutX="340.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_dolaska" />
-								<Label fx:id="treci_pol_vreme_dolaska_value_lbl" layoutX="340.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:50" />
-								<Label fx:id="treci_pol_trajanje_lbl" layoutX="480.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%trajanje_putovanja" />
-								<Label fx:id="treci_pol_trajanje_value_lbl" layoutX="480.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="20 minuta" />
-								<Label fx:id="treci_pol_cena_lbl" layoutX="630.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%cena" />
-								<Label fx:id="treci_pol_cena_value_lbl" layoutX="630.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="83.0" />
-								<Label fx:id="treci_pol_rang_lbl" layoutX="650.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" visible="false" />
-								<Label fx:id="treci_pol_rang_value_lbl" layoutX="650.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" visible="false" />
-								<Button fx:id="treci_pol_btn" layoutX="750.0" layoutY="20.0" mnemonicParsing="false" onAction="#handle_treci_pol" prefHeight="40.0" prefWidth="80.0" styleClass="cal_day_btn" text="%izaberi" />
+								<ImageView fx:id="soko_view_3" fitHeight="60.0" fitWidth="80.0" layoutX="10.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
+                     				<image>
+                        				<Image url="@img/soko.png" />
+                     				</image>
+                  				</ImageView>
+								<Label fx:id="treci_pol_rang_opis_lbl" layoutX="110.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" />
+								<Label fx:id="treci_pol_rang_opis_value_lbl" layoutX="110.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" />
+								<Label fx:id="treci_pol_br_voz_lbl" layoutX="170.0" layoutY="15.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%broj_voza" />
+								<Label fx:id="treci_pol_br_voz_value_lbl" layoutX="170.0" layoutY="30.0" prefHeight="18.0" prefWidth="100.0" styleClass="velika_bold_bela_slova" text="4601" />
+								<Label fx:id="treci_pol_br_slobodnih_mesta_lbl" layoutX="250.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%broj_slobodnih_mesta" />
+								<Label fx:id="treci_pol_br_slobodnih_mesta_value_lbl" layoutX="250.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova_centered" text="%bez_rezervacije" />								
+								<Label fx:id="treci_pol_vreme_polaska_lbl" layoutX="410.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_polaska" />
+								<Label fx:id="treci_pol_vreme_polaska_value_lbl" layoutX="410.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:30" />
+								<Label fx:id="treci_pol_vreme_dolaska_lbl" layoutX="550.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_dolaska" />
+								<Label fx:id="treci_pol_vreme_dolaska_value_lbl" layoutX="550.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:50" />
+								<Label fx:id="treci_pol_trajanje_lbl" layoutX="680.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%trajanje_putovanja" />
+								<Label fx:id="treci_pol_trajanje_value_lbl" layoutX="680.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="20 minuta" />
+								<Label fx:id="treci_pol_cena_lbl" layoutX="830.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%cena" />
+								<Label fx:id="treci_pol_cena_value_lbl" layoutX="830.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="83.0" />
+								<Label fx:id="treci_pol_rang_lbl" layoutX="850.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" visible="false" />
+								<Label fx:id="treci_pol_rang_value_lbl" layoutX="850.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" visible="false" />
+								<Button fx:id="treci_pol_btn" layoutX="920.0" layoutY="10.0" mnemonicParsing="false" onAction="#handle_treci_pol" prefHeight="60.0" prefWidth="110.0" styleClass="cal_day_btn" text="%izaberi" />
 							</children>
 						</Pane>
-						<Pane fx:id="cetvrti_pol_pn" layoutX="30.0" layoutY="330.0" prefHeight="80.0" prefWidth="840.0" styleClass="day_pn">
+						<Pane fx:id="cetvrti_pol_pn" layoutX="30.0" layoutY="330.0" prefHeight="80.0" prefWidth="1040.0" styleClass="day_pn">
 							<children>
-								<Label fx:id="cetvrti_pol_rang_opis_lbl" layoutX="14.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" />
-								<Label fx:id="cetvrti_pol_rang_opis_value_lbl" layoutX="14.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" />
-								<Label fx:id="cetvrti_pol_br_voz_lbl" layoutX="90.0" layoutY="15.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%broj_voza" />
-								<Label fx:id="cetvrti_pol_br_voz_value_lbl" layoutX="90.0" layoutY="30.0" prefHeight="18.0" prefWidth="100.0" styleClass="velika_bold_bela_slova" text="4601" />
-								<Label fx:id="cetvrti_pol_vreme_polaska_lbl" layoutX="200.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_polaska" />
-								<Label fx:id="cetvrti_pol_vreme_polaska_value_lbl" layoutX="200.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:30" />
-								<Label fx:id="cetvrti_pol_vreme_dolaska_lbl" layoutX="340.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_dolaska" />
-								<Label fx:id="cetvrti_pol_vreme_dolaska_value_lbl" layoutX="340.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:50" />
-								<Label fx:id="cetvrti_pol_trajanje_lbl" layoutX="480.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%trajanje_putovanja" />
-								<Label fx:id="cetvrti_pol_trajanje_value_lbl" layoutX="480.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="20 minuta" />
-								<Label fx:id="cetvrti_pol_cena_lbl" layoutX="630.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%cena" />
-								<Label fx:id="cetvrti_pol_cena_value_lbl" layoutX="630.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="83.0" />
-								<Label fx:id="cetvrti_pol_rang_lbl" layoutX="650.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" visible="false" />
-								<Label fx:id="cetvrti_pol_rang_value_lbl" layoutX="650.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" visible="false" />
-								<Button fx:id="cetvrti_pol_btn" layoutX="750.0" layoutY="20.0" mnemonicParsing="false" onAction="#handle_cetvrti_pol" prefHeight="40.0" prefWidth="80.0" styleClass="cal_day_btn" text="%izaberi" />
+								<ImageView fx:id="soko_view_4" fitHeight="60.0" fitWidth="80.0" layoutX="10.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
+                     				<image>
+                        				<Image url="@img/soko.png" />
+                     				</image>
+                  				</ImageView>
+								<Label fx:id="cetvrti_pol_rang_opis_lbl" layoutX="110.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" />
+								<Label fx:id="cetvrti_pol_rang_opis_value_lbl" layoutX="110.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" />
+								<Label fx:id="cetvrti_pol_br_voz_lbl" layoutX="170.0" layoutY="15.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%broj_voza" />
+								<Label fx:id="cetvrti_pol_br_voz_value_lbl" layoutX="170.0" layoutY="30.0" prefHeight="18.0" prefWidth="100.0" styleClass="velika_bold_bela_slova" text="4601" />
+								<Label fx:id="cetvrti_pol_br_slobodnih_mesta_lbl" layoutX="250.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%broj_slobodnih_mesta" />
+								<Label fx:id="cetvrti_pol_br_slobodnih_mesta_value_lbl" layoutX="250.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova_centered" text="%bez_rezervacije" />								
+								<Label fx:id="cetvrti_pol_vreme_polaska_lbl" layoutX="410.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_polaska" />
+								<Label fx:id="cetvrti_pol_vreme_polaska_value_lbl" layoutX="410.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:30" />
+								<Label fx:id="cetvrti_pol_vreme_dolaska_lbl" layoutX="550.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_dolaska" />
+								<Label fx:id="cetvrti_pol_vreme_dolaska_value_lbl" layoutX="550.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:50" />
+								<Label fx:id="cetvrti_pol_trajanje_lbl" layoutX="680.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%trajanje_putovanja" />
+								<Label fx:id="cetvrti_pol_trajanje_value_lbl" layoutX="680.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="20 minuta" />
+								<Label fx:id="cetvrti_pol_cena_lbl" layoutX="830.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%cena" />
+								<Label fx:id="cetvrti_pol_cena_value_lbl" layoutX="830.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="83.0" />
+								<Label fx:id="cetvrti_pol_rang_lbl" layoutX="850.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" visible="false" />
+								<Label fx:id="cetvrti_pol_rang_value_lbl" layoutX="850.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" visible="false" />
+								<Button fx:id="cetvrti_pol_btn" layoutX="920.0" layoutY="10.0" mnemonicParsing="false" onAction="#handle_cetvrti_pol" prefHeight="60.0" prefWidth="110.0" styleClass="cal_day_btn" text="%izaberi" />
 							</children>
 						</Pane>
-						<Pane fx:id="peti_pol_pn" layoutX="30.0" layoutY="430.0" prefHeight="80.0" prefWidth="840.0" styleClass="day_pn">
+						<Pane fx:id="peti_pol_pn" layoutX="30.0" layoutY="430.0" prefHeight="80.0" prefWidth="1040.0" styleClass="day_pn">
 							<children>
-								<Label fx:id="peti_pol_rang_opis_lbl" layoutX="14.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" />
-								<Label fx:id="peti_pol_rang_opis_value_lbl" layoutX="14.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" />
-								<Label fx:id="peti_pol_br_voz_lbl" layoutX="90.0" layoutY="15.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%broj_voza" />
-								<Label fx:id="peti_pol_br_voz_value_lbl" layoutX="90.0" layoutY="30.0" prefHeight="18.0" prefWidth="100.0" styleClass="velika_bold_bela_slova" text="4601" />
-								<Label fx:id="peti_pol_vreme_polaska_lbl" layoutX="200.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_polaska" />
-								<Label fx:id="peti_pol_vreme_polaska_value_lbl" layoutX="200.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:30" />
-								<Label fx:id="peti_pol_vreme_dolaska_lbl" layoutX="340.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_dolaska" />
-								<Label fx:id="peti_pol_vreme_dolaska_value_lbl" layoutX="340.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:50" />
-								<Label fx:id="peti_pol_trajanje_lbl" layoutX="480.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%trajanje_putovanja" />
-								<Label fx:id="peti_pol_trajanje_value_lbl" layoutX="480.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="20 minuta" />
-								<Label fx:id="peti_pol_cena_lbl" layoutX="630.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%cena" />
-								<Label fx:id="peti_pol_cena_value_lbl" layoutX="630.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="83.0" />
-								<Label fx:id="peti_pol_rang_lbl" layoutX="650.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" visible="false" />
-								<Label fx:id="peti_pol_rang_value_lbl" layoutX="650.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" visible="false" />
-								<Button fx:id="peti_pol_btn" layoutX="750.0" layoutY="20.0" mnemonicParsing="false" onAction="#handle_peti_pol" prefHeight="40.0" prefWidth="80.0" styleClass="cal_day_btn" text="%izaberi" />
+								<ImageView fx:id="soko_view_5" fitHeight="60.0" fitWidth="80.0" layoutX="10.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
+                     				<image>
+                        				<Image url="@img/soko.png" />
+                     				</image>
+                  				</ImageView>
+								<Label fx:id="peti_pol_rang_opis_lbl" layoutX="110.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" />
+								<Label fx:id="peti_pol_rang_opis_value_lbl" layoutX="110.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" />
+								<Label fx:id="peti_pol_br_voz_lbl" layoutX="170.0" layoutY="15.0" prefHeight="18.0" prefWidth="100.0" styleClass="mala_bela_slova" text="%broj_voza" />
+								<Label fx:id="peti_pol_br_voz_value_lbl" layoutX="170.0" layoutY="30.0" prefHeight="18.0" prefWidth="100.0" styleClass="velika_bold_bela_slova" text="4601" />
+								<Label fx:id="peti_pol_br_slobodnih_mesta_lbl" layoutX="250.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%broj_slobodnih_mesta" />
+								<Label fx:id="peti_pol_br_slobodnih_mesta_value_lbl" layoutX="250.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova_centered" text="%bez_rezervacije" />
+								<Label fx:id="peti_pol_vreme_polaska_lbl" layoutX="410.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_polaska" />
+								<Label fx:id="peti_pol_vreme_polaska_value_lbl" layoutX="410.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:30" />
+								<Label fx:id="peti_pol_vreme_dolaska_lbl" layoutX="550.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%vreme_dolaska" />
+								<Label fx:id="peti_pol_vreme_dolaska_value_lbl" layoutX="550.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="12:50" />
+								<Label fx:id="peti_pol_trajanje_lbl" layoutX="680.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%trajanje_putovanja" />
+								<Label fx:id="peti_pol_trajanje_value_lbl" layoutX="680.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="20 minuta" />
+								<Label fx:id="peti_pol_cena_lbl" layoutX="830.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%cena" />
+								<Label fx:id="peti_pol_cena_value_lbl" layoutX="830.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="83.0" />
+								<Label fx:id="peti_pol_rang_lbl" layoutX="850.0" layoutY="15.0" prefHeight="18.0" prefWidth="150.0" styleClass="mala_bela_slova" text="%rang" visible="false" />
+								<Label fx:id="peti_pol_rang_value_lbl" layoutX="850.0" layoutY="30.0" prefHeight="18.0" prefWidth="150.0" styleClass="velika_bold_bela_slova" text="2" visible="false" />
+								<Button fx:id="peti_pol_btn" layoutX="920.0" layoutY="10.0" mnemonicParsing="false" onAction="#handle_peti_pol" prefHeight="60.0" prefWidth="110.0" styleClass="cal_day_btn" text="%izaberi" />
 							</children>
 						</Pane>
 						<Line endX="939.0" layoutX="71.0" layoutY="93.0" startX="-73.0" stroke="gray" strokeWidth="0.5" visible="false" />
 					</children>
 				</Pane>
-	</children>
-</Pane>
-
+			</children>
+		</Pane>
+		<Pane fx:id="loader_pn" layoutX="0.0" layoutY="0.0" prefHeight="1024.0" prefWidth="1280.0" styleClass="loader_pn" visible="false">
+			<children>
+            		<ImageView fx:id="loader_gif" fitHeight="1024.0" fitWidth="1280.0" layoutX="0.0" layoutY="0.0" pickOnBounds="true" preserveRatio="true">
+               			<image>
+                  			<Image url="/application/img/loader.gif" />
+               			</image>
+            		</ImageView>
+			</children>
+		</Pane>
+		<!-- 
+		<Pane fx:id="fiskal_pn" layoutX="50.0" layoutY="20.0"  prefWidth="400.0" styleClass="fiscal_pn" visible="false">
+         <children>
+            <TextFlow fx:id="fiskal_tflow"  prefWidth="400.0" />
+            <ImageView fx:id="fiskal_qr_code" fitHeight="400.0" fitWidth="400.0" layoutX="0.0" layoutY="567.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../../temp/TIO_dokumenti/QRCode_sekretarijat_500.png" />
+               </image>
+            </ImageView>
+            <TextFlow fx:id="fiskal_tflow_kraj" layoutX="0.0"  prefHeight="70.0" prefWidth="400.0" />
+         </children>
+		</Pane>
+		 -->
+	   <Pane fx:id="stampanje_info_pn" layoutX="550.0" layoutY="90.0" prefHeight="420.0" prefWidth="550.0" styleClass="polasci_pn" visible="false">
+         <children>
+            <Label fx:id="stampanje_info_lbl1" layoutX="90.0" layoutY="60.0" prefHeight="18.0" prefWidth="600.0" styleClass="velika_tamno_braon_slova" text="%stampanje_info_lbl1" />
+            <Label fx:id="stampanje_info_lbl2" layoutX="90.0" layoutY="90.0" prefHeight="18.0" prefWidth="600.0" styleClass="velika_tamno_braon_slova" text="%stampanje_info_lbl2" />
+            <Label fx:id="stampanje_info_lbl3" layoutX="90.0" layoutY="120.0" prefHeight="18.0" prefWidth="600.0" styleClass="velika_tamno_braon_slova" text="%stampanje_info_lbl3" />
+            <Label fx:id="stampanje_info_lbl4" layoutX="90.0" layoutY="150.0" prefHeight="18.0" prefWidth="600.0" styleClass="velika_tamno_braon_slova" text="%stampanje_info_lbl4" />
+            <Label fx:id="stampanje_info_lbl" layoutX="90.0" layoutY="95.0" prefHeight="18.0" prefWidth="400.0" styleClass="bold_crna_slova" text="" />
+            <Label fx:id="stampanje_info_lbl5" layoutX="90.0" layoutY="180.0" prefHeight="18.0" prefWidth="600.0" styleClass="velika_tamno_braon_slova" text="%stampanje_info_lbl5" />
+            <Label fx:id="stampanje_info_lbl6" layoutX="90.0" layoutY="210.0" prefHeight="18.0" prefWidth="600.0" styleClass="velika_tamno_braon_slova" text="%stampanje_info_lbl6" />
+            <Label fx:id="stampanje_info_lbl7" layoutX="90.0" layoutY="240.0" prefHeight="18.0" prefWidth="600.0" styleClass="velika_tamno_braon_slova" text="%stampanje_info_lbl7" />
+            <Label fx:id="stampanje_info_lbl8" layoutX="90.0" layoutY="270.0" prefHeight="18.0" prefWidth="600.0" styleClass="velika_tamno_braon_slova" text="%stampanje_info_lbl8" />
+            <Label fx:id="stampanje_info_lbl9" layoutX="90.0" layoutY="300.0" prefHeight="18.0" prefWidth="600.0" styleClass="velika_tamno_braon_slova" text="%stampanje_info_lbl9" />
+            <Label fx:id="stampanje_info_lbl10" layoutX="90.0" layoutY="330.0" prefHeight="18.0" prefWidth="600.0" styleClass="velika_tamno_braon_slova" text="%stampanje_info_lbl10" />
+            <Label fx:id="stampanje_info_lbl11" layoutX="90.0" layoutY="360.0" prefHeight="18.0" prefWidth="600.0" styleClass="velika_tamno_braon_slova" text="%stampanje_info_lbl11" /> 
+         </children>
+      </Pane>
+      
+      <Pane fx:id="fiscal_check_pn" layoutX="450.0" layoutY="20.0" prefHeight="600.0" prefWidth="800.0" styleClass="polasci_pn" visible="false">
+         <children>
+         </children>
+      </Pane>
+      
    </children>
 </AnchorPane>

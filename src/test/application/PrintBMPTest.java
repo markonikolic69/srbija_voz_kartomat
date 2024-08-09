@@ -174,16 +174,18 @@ public class PrintBMPTest {
     	//C:\\npi_printer_srbija_voz\\K_2b2_Test_resized.bmp
     	//new File("C:\\Users\\38164\\eclipse-workspace\\SrbijaVoz\\src\\smily.bmp")
     	//new File("C:\\npi_printer_srbija_voz\\K_2b2_output_rotated.bmp")
-    	BufferedImage  image = ImageIO.read(new File("C:\\npi_printer_srbija_voz\\K_2b2_output_rotated.bmp"));
+    	BufferedImage  image = ImageIO.read(new File("C:\\npi_printer_srbija_voz\\K_2b2 - PRODUCTION_rotated_pomereno.bmp"));
     	
     	System.out.println("width = " + image.getWidth() + ", height = " + image.getHeight());
     	constructByteArray(image);
     	//for/ feed
-    	retBuf.addBuffer("\n\n\n\n".getBytes("CP437"));
-    	//cut paper
+    	retBuf.addBuffer("\n\n\n".getBytes("CP437"));
+
+    	//cut paper - partial
     	retBuf.addBuffer(new byte[] { 0x1b, 'm' });
+    	//full cut
+    	//retBuf.addBuffer(new byte[] { 0x1b, 'i' });
         ByteArrayInputStream inputStream = new ByteArrayInputStream(retBuf.getBuffer());
-        
 
 
         DocFlavor flavor = DocFlavor.INPUT_STREAM.AUTOSENSE;
@@ -192,7 +194,7 @@ public class PrintBMPTest {
         PrintService printService[] = PrintServiceLookup.lookupPrintServices(
                 flavor, pras);
         
-        PrintService foundService =  findPrintService("NPI Integration Driver", printService);;
+        PrintService foundService = findPrintService("EP802", printService);//findPrintService("NPI Integration Driver", printService);;
         DocPrintJob dpj = foundService.createPrintJob();
         
         
@@ -216,7 +218,8 @@ public class PrintBMPTest {
     
 	
 	public static void main(String[] args) throws Exception{
-		PrintBMPTest print_test = new PrintBMPTest("NPI Integration Driver");
+//		PrintBMPTest print_test = new PrintBMPTest("NPI Integration Driver");
+		PrintBMPTest print_test = new PrintBMPTest("EP802");
 		
 //		File outputfile = new File("C:\\\\Users\\\\38164\\\\eclipse-workspace\\\\SrbijaVoz\\\\src\\\\smily.bmp");
 //		BufferedImage image = ImageIO.read(outputfile);

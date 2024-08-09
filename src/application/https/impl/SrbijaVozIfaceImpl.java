@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
+import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 
+import application.data.BrojSlobodnihMestaBean;
 import application.data.CenaBean;
 import application.data.EtKartaBean;
 import application.data.FrekventneStaniceBean;
@@ -48,6 +50,9 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 	private static final int SIF_POV_DETE = 50;
 	private static final int SIF_SRB_PLUS_K_13 = 37;
 	private static final int SIF_RAIL_PLUS_K_30 = 38;
+	private static final int SIF_PENZIONERI = 31;
+	
+	private static final Logger logger = Logger.getLogger("SrbijaVozIfaceImpl");
 	
 	public SrbijaVozIfaceImpl(String url, int connection_timeout_in_seconds, int read_timeout_in_seconds) {
 		_url = url;
@@ -57,9 +62,30 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 	
 	@SuppressWarnings("unchecked")
 	public List<StanicaIDBean> getStanicaIDs() throws CommunicationException{
+		logger.info("Srbija voz api call: getStanicaIDs");
 		List<StanicaIDBean> to_return = new ArrayList<StanicaIDBean>();
 		String sub_path = "stanica";
 		String row_response =  HttpsClient.getUrl(_url + sub_path) ;
+		Gson gson = new Gson();
+		List outputList = gson.fromJson(row_response, ArrayList.class);
+		
+		for(Object current : outputList) {
+			to_return.add(new StanicaIDBean((LinkedTreeMap)current));
+		}
+		logger.info("Srbija voz api call: getStanicaIDs to_return = " + to_return);
+		return to_return;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<StanicaIDBean> getStanicaIDsNew(int sifra_od) throws CommunicationException{
+		logger.info("Srbija voz api call: getStanicaIDsNew, sifra_od = " + sifra_od);
+		//https://webapi1.srbvoz.rs/ekarta/api/KartomatSV/KT_Vrati_StaniceDo?sifraOd=16052
+		List<StanicaIDBean> to_return = new ArrayList<StanicaIDBean>();
+		String sub_path = "KartomatSV/KT_Vrati_StaniceDo";
+		sub_path = sub_path + "?";
+		sub_path = sub_path + "sifraOd="+sifra_od;
+		String row_response =  HttpsClient.getUrl(_url + sub_path) ;
+		logger.info("Srbija voz api call: getStanicaIDsNew, returned = " + row_response);
 		Gson gson = new Gson();
 		List outputList = gson.fromJson(row_response, ArrayList.class);
 		
@@ -72,6 +98,11 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 	
 	@SuppressWarnings("unchecked")
 	public List<VozBean> getListaVozovaNaTrasi(int sifra_stanice_od, int sifra_stanice_do, String datum, int broj_putnika, int razred) throws CommunicationException{
+		logger.info("Srbija voz api call: getListaVozovaNaTrasi, sifra_stanice_od = " + sifra_stanice_od + ", " + 
+				"sifra_stanice_do = " + sifra_stanice_do + ", " + 
+				"datum = " + datum + ", " + 
+				"broj_putnika = " + broj_putnika + ", " + 
+				"razred = " + razred );
 		List<VozBean> to_return = new ArrayList<VozBean>();
 		String sub_path = "ListaVozova/ListaVozovaKartomat";//ov je path od starog URL-a "listavozova";
 		//novi url izgleda ovako https://webapi1.srbvoz.rs/eKarta/api/ListaVozova/ListaVozovaKartomat?stanicaod=16052&stanicado=16808&datum=3-19-2022&brojputnika=1&razred=2
@@ -82,58 +113,165 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 		sub_path = sub_path + "brojputnika="+broj_putnika+"&";
 		sub_path = sub_path + "razred="+razred;
 		
-		System.out.println("getListaVozovaNaTrasi URL = " + _url + sub_path);
+		logger.info("getListaVozovaNaTrasi URL = " + _url + sub_path);
 		
 		String row_response =  HttpsClient.getUrl(_url + sub_path) ;
+		logger.info("Srbija voz api call: getListaVozovaNaTrasi, returned = " + row_response );
 		Gson gson = new Gson();
 		List outputList = gson.fromJson(row_response, ArrayList.class);
 		
 		for(Object current : outputList) {
-			to_return.add(new VozBean((LinkedTreeMap)current));
+			to_return.add(new VozBean((LinkedTreeMap)current, datum));
 		}
 		
 		return to_return;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<VozBean> getListaVozovaNaTrasiNew(int sifra_stanice_od, int sifra_stanice_do, String datum, int broj_putnika, int razred) throws CommunicationException{
+		logger.info("Srbija voz api call: getListaVozovaNaTrasiNew, sifra_stanice_od = " + sifra_stanice_od + ", " + 
+				"sifra_stanice_do = " + sifra_stanice_do + ", " + 
+				"datum = " + datum + ", " + 
+				"broj_putnika = " + broj_putnika + ", " + 
+				"razred = " + razred );
+		List<VozBean> to_return = new ArrayList<VozBean>();
+		String sub_path = "ListaVozova/ListaVozovaKartomatNEW";//ov je path od starog URL-a "listavozova";
+		//novi url izgleda ovako https://webapi1.srbvoz.rs/eKarta/api/ListaVozova/ListaVozovaKartomatNEW?stanicaod=16052&stanicado=16808&datum=4-21-2022&brojputnika=1&razred=2
+		sub_path = sub_path + "?";
+		sub_path = sub_path + "stanicaod=" + sifra_stanice_od + "&";
+		sub_path = sub_path + "stanicado=" + sifra_stanice_do + "&";
+		sub_path = sub_path + "datum=" + format_datum(datum)  + "&";
+		sub_path = sub_path + "brojputnika="+broj_putnika+"&";
+		sub_path = sub_path + "razred="+razred;
+		
+		System.out.println("getListaVozovaNaTrasi URL = " + _url + sub_path);
+		
+		String row_response =  HttpsClient.getUrl(_url + sub_path) ;
+		logger.info("Srbija voz api call: getListaVozovaNaTrasiNew, returned = " + row_response );
+		Gson gson = new Gson();
+		List outputList = gson.fromJson(row_response, ArrayList.class);
+		
+		for(Object current : outputList) {
+			to_return.add(new VozBean((LinkedTreeMap)current, datum));
+		}
+		
+		return to_return;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public int getBrojSlobodnihMesta(int broj_voza, String datum) throws CommunicationException{
+		logger.info("Srbija voz api call: getBrojSlobodnihMesta, broj_voza = " + broj_voza + ", " + 
+				"datum = " + datum );
+		String sub_path = "ListaVozova/SlobodnaMesta";//ov je path od starog URL-a "listavozova";
+//		//https://webapi1.srbvoz.rs/eKarta/api/ListaVozova/SlobodnaMesta?mBrojVoza=542&datum=4-22-2022,
+//		{
+//
+//			    "brojMesta": 164,
+//
+//			    "slobodnaMesta": "Trenutno slobodnih mesta u vozu :542 je: 164"
+//
+//			}
 
-	public CenaBean getCenaPovratna(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak) throws CommunicationException{
+		sub_path = sub_path + "?";
+		sub_path = sub_path + "mBrojVoza=" + broj_voza + "&";
+		sub_path = sub_path + "datum="+datum;
+		
+		System.out.println("getListaVozovaNaTrasi URL = " + _url + sub_path);
+		
+		String row_response =  HttpsClient.getUrl(_url + sub_path) ;
+		logger.info("Srbija voz api call: getBrojSlobodnihMesta, returned = " + row_response );
+		Gson gson = new Gson();
+		BrojSlobodnihMestaBean container = gson.fromJson(row_response, BrojSlobodnihMestaBean.class);
+
+
+		return container.getBrojMesta();
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String getTrajanjeKarte(int stanicaod, int stanicado, int via, int  smer, String datum) throws CommunicationException{
+		logger.info("Srbija voz api call: getTrajanjeKarte, stanicaod = " + stanicaod + ", " + 
+				"stanicado = " + stanicado + ", " + 
+				"via = " + via + ", " + 
+				"smer = " + smer + ", " + 
+				"datum = " + datum
+				);
+		String sub_path = "ListaVozova/RokVaznosti";//ov je path od starog URL-a "listavozova";
+//		//https://webapi1.srbvoz.rs/eKarta/api/ListaVozova/RokVaznosti?stanicaod=16052&stanicado=12551&via=1&smer=2&datum=18-4-2022
+
+
+		sub_path = sub_path + "?";
+		sub_path = sub_path + "stanicaod=" + stanicaod + "&";
+		sub_path = sub_path + "stanicado=" + stanicado + "&";
+		sub_path = sub_path + "via=" + via + "&";
+		sub_path = sub_path + "smer=" + smer + "&";
+		sub_path = sub_path + "datum="+datum;
+		
+		System.out.println("getTrajanjeKarte URL = " + _url + sub_path);
+		
+		String row_response =  HttpsClient.getUrl(_url + sub_path) ;
+		logger.info("Srbija voz api call: getTrajanjeKarte, returned = " + row_response );
+		String[] splt = row_response.split(" ");
+		return splt[0].substring(1);
+
+	}
+	
+
+	public CenaBean getCenaPovratna(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak,
+			String datum) throws CommunicationException{
 		
 		return getCenaPovratnaZaTipPutnika(broj_putnika,  kilometraza, razred_odlazak,  rang_odlazak, razred_povratak, rang_povratak, 
-				SIF_POV_POVRATNA);
+				SIF_POV_POVRATNA, datum);
 		
 	}
 	
 
-	public CenaBean getCenaPovratnaPSE(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak) 
+	public CenaBean getCenaPovratnaPSE(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak, String datum) 
 			throws CommunicationException{
 		return getCenaPovratnaZaTipPutnika(broj_putnika,  kilometraza, razred_odlazak,  rang_odlazak, razred_povratak, rang_povratak, 
-				SIF_POV_PAS);
+				SIF_POV_PAS, datum);
 	}
 	
-	public CenaBean getCenaPovratnaDETE(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak) throws CommunicationException{
+	public CenaBean getCenaPovratnaDETE(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak, String datum) throws CommunicationException{
 		return getCenaPovratnaZaTipPutnika(broj_putnika,  kilometraza, razred_odlazak,  rang_odlazak, razred_povratak, rang_povratak, 
-				SIF_POV_DETE);
+				SIF_POV_DETE, datum);
 	}
 
 	
-	public CenaBean getCenaPovratnaSRB_PLUS_K_13(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak) throws CommunicationException{
+	public CenaBean getCenaPovratnaSRB_PLUS_K_13(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak, String datum) throws CommunicationException{
 		return getCenaPovratnaZaTipPutnika(broj_putnika,  kilometraza, razred_odlazak,  rang_odlazak, razred_povratak, rang_povratak, 
-				SIF_SRB_PLUS_K_13);
+				SIF_SRB_PLUS_K_13, datum);
 	}
 	
-	public CenaBean getCenaPovratnaRAIL_PLUS_K_30(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak) throws CommunicationException{
+	public CenaBean getCenaPovratnaRAIL_PLUS_K_30(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak, String datum) throws CommunicationException{
 		return getCenaPovratnaZaTipPutnika(broj_putnika,  kilometraza, razred_odlazak,  rang_odlazak, razred_povratak, rang_povratak, 
-				SIF_RAIL_PLUS_K_30);
+				SIF_RAIL_PLUS_K_30, datum);
+	}
+	
+	public CenaBean getCenaPovratnaPenzioneri(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak, String datum) throws CommunicationException{
+		return getCenaPovratnaZaTipPutnika(broj_putnika,  kilometraza, razred_odlazak,  rang_odlazak, razred_povratak, rang_povratak, 
+				SIF_PENZIONERI, datum);
 	}
 	
 	
 	
 	private CenaBean getCenaPovratnaZaTipPutnika(int broj_putnika,  int kilometraza, int razred_odlazak,  int rang_odlazak, int razred_povratak,  int rang_povratak, 
-			int sifra_povlastice) 
+			int sifra_povlastice, String datum/*1-6-2022*/) 
 			throws CommunicationException{
+		logger.info("Srbija voz api call: getCenaPovratnaZaTipPutnika, broj_putnika = " + broj_putnika + ", " + 
+				"kilometraza = " + kilometraza + ", " + 
+				"razred_odlazak = " + razred_odlazak + ", " + 
+				"rang_odlazak = " + rang_odlazak + ", " + 
+				"razred_povratak = " + razred_povratak + ", " + 
+				"rang_povratak = " + rang_povratak + ", " + 
+				"sifra_povlastice = " + sifra_povlastice + ", " + 
+				"datum = " + datum
+				);
 		List<CenaBean> to_return = new ArrayList<CenaBean>();
 		String sub_path = "Cene/CenaZaKartomatAR";//stari path do cena "cene";
 		//https://webapi1.srbvoz.rs/eKarta/api/Cene/CenaZaKartomatAR?brojputnika=1&km=89&sifpov=20&rango=4&rangp=4&razredo=2&razredp=2
+		//novi
+		//https://webapi1.srbvoz.rs/ekarta_TEST/api/Cene/CenaZaKartomatAR/?brojputnika=1&km=89&sifpov=20&rango=2&rangp=2&razredo=2&razredp=2&datum=1-6-2022
 		sub_path = sub_path + "?";
 		sub_path = sub_path + "brojputnika=" + broj_putnika + "&";
 		sub_path = sub_path + "km=" + kilometraza + "&";
@@ -141,11 +279,13 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 		sub_path = sub_path + "rango="+ rang_odlazak + "&";
 		sub_path = sub_path + "rangp="+ rang_povratak + "&";
 		sub_path = sub_path + "razredo="+ razred_odlazak + "&";
-		sub_path = sub_path + "razredp="+ razred_povratak ;
+		sub_path = sub_path + "razredp="+ razred_povratak + "&";
+		sub_path = sub_path + "datum="+ datum ;
 
 		System.out.println("url za povratne = " + _url + sub_path);
 		
 		String row_response =  HttpsClient.getUrl(_url + sub_path) ;
+		logger.info("Srbija voz api call: getCenaPovratnaZaTipPutnika, returned = " + row_response );
 		Gson gson = new Gson();
 		List outputList = gson.fromJson(row_response, ArrayList.class);
 		
@@ -158,46 +298,62 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 	
 	
 
-	public CenaBean getCenaJedanSmerPSE(int broj_putnika, int razred, int kilometraza,  int rang) throws CommunicationException{
-		return getCenaJedanSmerZaTipPutnika(broj_putnika, razred, kilometraza, rang, SIF_POV_PAS);
+	public CenaBean getCenaJedanSmerPSE(int broj_putnika, int razred, int kilometraza,  int rang, String datum) throws CommunicationException{
+		return getCenaJedanSmerZaTipPutnika(broj_putnika, razred, kilometraza, rang, SIF_POV_PAS, datum);
 	}
 	
 	
 
-	public CenaBean getCenaJedanSmer(int broj_putnika, int razred, int kilometraza,  int rang) throws CommunicationException{
-		return getCenaJedanSmerZaTipPutnika(broj_putnika, razred, kilometraza, rang, SIF_POV_JEDAN_SMER);
+	public CenaBean getCenaJedanSmer(int broj_putnika, int razred, int kilometraza,  int rang, String datum) throws CommunicationException{
+		return getCenaJedanSmerZaTipPutnika(broj_putnika, razred, kilometraza, rang, SIF_POV_JEDAN_SMER, datum);
 	}
 
 
-	public CenaBean getCenaJedanSmerDETE(int broj_putnika, int razred, int kilometraza,  int rang) throws CommunicationException{
-		return getCenaJedanSmerZaTipPutnika(broj_putnika, razred, kilometraza, rang, SIF_POV_DETE);
-	}
-	
-
-	public CenaBean getCenaJedanSmerSRB_PLUS_K_13(int broj_putnika, int razred, int kilometraza,  int rang) throws CommunicationException{
-		return getCenaJedanSmerZaTipPutnika(broj_putnika, razred, kilometraza, rang, SIF_SRB_PLUS_K_13);
+	public CenaBean getCenaJedanSmerDETE(int broj_putnika, int razred, int kilometraza,  int rang, String datum) throws CommunicationException{
+		return getCenaJedanSmerZaTipPutnika(broj_putnika, razred, kilometraza, rang, SIF_POV_DETE,  datum);
 	}
 	
 
-	public CenaBean getCenaJedanSmerRAIL_PLUS_K_30(int broj_putnika, int razred, int kilometraza,  int rang) throws CommunicationException{
-		return getCenaJedanSmerZaTipPutnika(broj_putnika, razred, kilometraza, rang, SIF_RAIL_PLUS_K_30);
+	public CenaBean getCenaJedanSmerSRB_PLUS_K_13(int broj_putnika, int razred, int kilometraza,  int rang, String datum) throws CommunicationException{
+		return getCenaJedanSmerZaTipPutnika(broj_putnika, razred, kilometraza, rang, SIF_SRB_PLUS_K_13,  datum);
 	}
 	
-	private CenaBean getCenaJedanSmerZaTipPutnika(int broj_putnika, int razred, int kilometraza,  int rang, int sifra_povlastice) throws CommunicationException{
+
+	public CenaBean getCenaJedanSmerRAIL_PLUS_K_30(int broj_putnika, int razred, int kilometraza,  int rang, String datum) throws CommunicationException{
+		return getCenaJedanSmerZaTipPutnika(broj_putnika, razred, kilometraza, rang, SIF_RAIL_PLUS_K_30,  datum);
+	}
+	
+	public CenaBean getCenaJedanSmerPenzioneri(int broj_putnika, int razred, int kilometraza,  int rang, String datum) throws CommunicationException{
+		return getCenaJedanSmerZaTipPutnika(broj_putnika, razred, kilometraza, rang, SIF_PENZIONERI,  datum);
+	}
+	
+	private CenaBean getCenaJedanSmerZaTipPutnika(int broj_putnika, int razred, int kilometraza,  int rang, int sifra_povlastice, String datum) throws CommunicationException{
+		logger.info("Srbija voz api call: getCenaJedanSmerZaTipPutnika, broj_putnika = " + broj_putnika + ", " + 
+				"kilometraza = " + kilometraza + ", " + 
+				"razred = " + razred + ", " + 
+				"rang = " + rang + ", " + 
+				"sifra_povlastice = " + sifra_povlastice + ", " + 
+				"datum = " + datum
+				);
 		List<CenaBean> to_return = new ArrayList<CenaBean>();
-		String sub_path = "cene/CenaZaKartomat";//stari path "cene";
+		//String sub_path = "cene/CenaZaKartomat";//stari path "cene";
+		String sub_path = "cene/CenaZaDatumKartomat";//novi path za "cene";
 		//https://webapi1.srbvoz.rs/eKarta/api/cene/CenaZaKartomat?brojputnika=1&km=89&sifpov=1&rang=4&razred=2
+		//https://webapi1.srbvoz.rs/ekarta/api/Cene/CenaZaDatumKartomat/?brojputnika=1&km=206&sifpov=20&rang=1&razred=2&datum=1-6-2022
+
 		sub_path = sub_path + "?";
 		sub_path = sub_path + "brojputnika=" + broj_putnika + "&";
 		sub_path = sub_path + "km=" + kilometraza + "&";
 		sub_path = sub_path + "sifpov=" + sifra_povlastice  + "&";
 		sub_path = sub_path + "rang="+ rang + "&";
 
-		sub_path = sub_path + "razred="+ razred ;
+		sub_path = sub_path + "razred="+ razred + "&";
+		sub_path = sub_path + "datum="+ datum;
 
 		String url_full = _url + sub_path;
 		System.out.println("getCenaJedanSmerZaTipPutnika, url_full = " + url_full);
 		String row_response =  HttpsClient.getUrl(url_full) ;
+		logger.info("Srbija voz api call: getCenaJedanSmerZaTipPutnika, returned = " + row_response );
 		Gson gson = new Gson();
 		List outputList = gson.fromJson(row_response, ArrayList.class);
 		
@@ -210,6 +366,8 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 	
 	@SuppressWarnings("unchecked")
 	public List<PovlasticaBean> getPovlastice(int smer/*1 ili 2*/) throws CommunicationException{
+		logger.info("Srbija voz api call: getPovlastice, smer = " + smer 
+				);
 		List<PovlasticaBean> to_return = new ArrayList<PovlasticaBean>();
 		String sub_path = "povlastice";
 		sub_path = sub_path + "?";
@@ -219,6 +377,7 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 
 		
 		String row_response =  HttpsClient.getUrl(_url + sub_path) ;
+		logger.info("Srbija voz api call: getPovlastice, returned = " + row_response );
 		Gson gson = new Gson();
 		List outputList = gson.fromJson(row_response, ArrayList.class);
 		
@@ -232,7 +391,10 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 	
 	@SuppressWarnings("unchecked")
 	public boolean provera_legitimacije(int broj_legitimacije, int povlastica_id) throws CommunicationException{
-		String sub_path = "povlastice";
+		logger.info("Srbija voz api call: provera_legitimacije, broj_legitimacije = " + broj_legitimacije + ", " +
+				"povlastica_id = " + povlastica_id
+				);
+		String sub_path = "povlastice/LegitimacijaCheckKT";
 		sub_path = sub_path + "?";
 		sub_path = sub_path + "brleg=" + broj_legitimacije + "&";
 
@@ -240,6 +402,33 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 
 		
 		String row_response =  HttpsClient.getUrl(_url + sub_path) ;
+		logger.info("Srbija voz api call: provera_legitimacije, returned = " + row_response );
+		Gson gson = new Gson();
+		List legitimacija_list = gson.fromJson(row_response, ArrayList.class);
+		if(legitimacija_list.isEmpty()) {
+			return false;
+		}else {
+			LegitimacijaBean legitimacija = new LegitimacijaBean((LinkedTreeMap)legitimacija_list.get(0));
+			int vazido = Integer.parseInt(legitimacija.getVazI_DO().substring(0,4) + legitimacija.getVazI_DO().substring(5,7) + legitimacija.getVazI_DO().substring(8,10));
+			int danas = Integer.parseInt(new java.text.SimpleDateFormat("yyyyMMdd").format(new java.util.Date()));
+			return danas <= vazido;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public boolean provera_legitimacije(String broj_legitimacije, int povlastica_id) throws CommunicationException{
+		logger.info("Srbija voz api call: provera_legitimacije, broj_legitimacije = " + broj_legitimacije + ", " +
+				"povlastica_id = " + povlastica_id
+				);
+		String sub_path = "povlastice/LegitimacijaCheckKT";
+		sub_path = sub_path + "?";
+		sub_path = sub_path + "brleg=" + broj_legitimacije + "&";
+
+		sub_path = sub_path + "pov="+ povlastica_id ;
+
+		
+		String row_response =  HttpsClient.getUrl(_url + sub_path) ;
+		logger.info("Srbija voz api call: provera_legitimacije, returned = " + row_response );
 		Gson gson = new Gson();
 		List legitimacija_list = gson.fromJson(row_response, ArrayList.class);
 		if(legitimacija_list.isEmpty()) {
@@ -253,14 +442,16 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 	}
 	
 	public TokenBean getToken(String username, String password) throws CommunicationException{
-		
+		logger.info("Srbija voz api call: getToken, username = " + username + ", " +
+				"password = " + password
+				);
 		String sub_path = "token";
 		TokenRequestBean request = new TokenRequestBean();
 		request.setUsername(username);
 		request.setPassword(password);
 		Gson gson = new Gson();
 		String row_response =  HttpsClient.postUrl(_url + sub_path, gson.toJson(request)) ;
-		
+		logger.info("Srbija voz api call: getToken, returned = " + row_response );
 		Object container = gson.fromJson(row_response, TokenBean.class);
 		
 		return new TokenBean((LinkedTreeMap)container);
@@ -268,6 +459,8 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 	
 	@SuppressWarnings("unchecked")
 	public List<FrekventneStaniceBean> getFrekventneStanice(String mak_adresa) throws CommunicationException{
+		logger.info("Srbija voz api call: getFrekventneStanice, mak_adresa = " + mak_adresa 
+				);
 		List<FrekventneStaniceBean> to_return = new ArrayList<FrekventneStaniceBean>();
 		String sub_path = "KartomatSV/KT_Vrati_FrekfentneST";
 		sub_path = sub_path + "?";
@@ -277,6 +470,7 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 
 		
 		String row_response =  HttpsClient.getUrl(_url + sub_path) ;
+		logger.info("Srbija voz api call: getFrekventneStanice, returned = " + row_response );
 		Gson gson = new Gson();
 		List outputList = gson.fromJson(row_response, ArrayList.class);
 		
@@ -289,6 +483,8 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 	
 
 	public KartomatBean getKartomat(String mac_address) throws CommunicationException{
+		logger.info("Srbija voz api call: getKartomat, mac_address = " + mac_address 
+				);
 		String sub_path = "KartomatSV/KT_Vrati_Terminal";
 		sub_path = sub_path + "?";
 
@@ -297,6 +493,7 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 		String url_full = _url + sub_path;
 		System.out.println("getKartomat URL = " + url_full);
 		String row_response =  HttpsClient.getUrl(url_full) ;
+		logger.info("Srbija voz api call: getKartomat, returned = " + row_response );
 		Gson gson = new Gson();
 		List kartomati = gson.fromJson(row_response, ArrayList.class);
 		if(kartomati.size() > 0) {
@@ -342,7 +539,7 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 		    fields.put("DODATNI_OPIS", "");
 		    Gson gson = new Gson();
 		    String et_karta_data_str = gson.toJson(et_karta_data);
-		    System.out.println("ID_USER = " + userID + ", " +
+		    logger.info("srbija voz api upisET_ORDER, ID_USER = " + userID + ", " +
 		    		"DATUM_KUPOVINE = " + datum_kupovine + ", " + 
 		    		"ID_RELACIJE = " + ID_RELACIJE + ", " +
 		    		"OD = " + stanica_od + ", " +
@@ -363,7 +560,7 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 		    //fields.put("ETKARTADATA", "{\"vozData\":{\"datum1\":\"2021-12-14T08:08:14.358Z\",\"brojputnika\":1,\"razred\":\"2\",\"voz\":{\"odsifra\":16054,\"dosifra\":21001,\"idvoz\":1036,\"brvoz\":2607,\"nazivvoz\":\"                    \",\"rang\":6,\"vremep\":\"15:38\",\"vremed\":\"16:04             \",\"nazivod\":\"Vukov spomenik\",\"nazivdo\":\"Pancevo varos\",\"idrel\":175483,\"relkm\":21,\"ponuda\":\"Bv        \",\"cenau\":141,\"trajanje_putovanja\":\"00:26\",\"datum_dolaska\":\"2021-12-14T00:00:00\",\"etTrasaVoza\":[{\"iD_VOZ\":1036,\"rb\":1,\"sifrA_STANICE\":16052,\"vremE_DOLASKA\":\"15:30             \",\"vremE_POLASKA\":\"15:30             \",\"naziV_STANICE\":\"Beograd centar\"},{\"iD_VOZ\":1036,\"rb\":2,\"sifrA_STANICE\":16053,\"vremE_DOLASKA\":\"15:33             \",\"vremE_POLASKA\":\"15:34             \",\"naziV_STANICE\":\"Karadjordjev park\"},{\"iD_VOZ\":1036,\"rb\":3,\"sifrA_STANICE\":16054,\"vremE_DOLASKA\":\"15:37             \",\"vremE_POLASKA\":\"15:38             \",\"naziV_STANICE\":\"Vukov spomenik\"},{\"iD_VOZ\":1036,\"rb\":4,\"sifrA_STANICE\":16013,\"vremE_DOLASKA\":\"15:41             \",\"vremE_POLASKA\":\"15:42             \",\"naziV_STANICE\":\"Pancevacki most\"},{\"iD_VOZ\":1036,\"rb\":5,\"sifrA_STANICE\":22001,\"vremE_DOLASKA\":\"15:59             \",\"vremE_POLASKA\":\"16:00             \",\"naziV_STANICE\":\"Pancevo glavna stani\"},{\"iD_VOZ\":1036,\"rb\":6,\"sifrA_STANICE\":21001,\"vremE_DOLASKA\":\"16:04             \",\"vremE_POLASKA\":\"16:05             \",\"naziV_STANICE\":\"Pancevo varos\"},{\"iD_VOZ\":1036,\"rb\":7,\"sifrA_STANICE\":21002,\"vremE_DOLASKA\":\"16:18             \",\"vremE_POLASKA\":\"16:19             \",\"naziV_STANICE\":\"Banatsko Novo Selo\"},{\"iD_VOZ\":1036,\"rb\":8,\"sifrA_STANICE\":21003,\"vremE_DOLASKA\":\"16:29             \",\"vremE_POLASKA\":\"16:30             \",\"naziV_STANICE\":\"Vladimirovac\"},{\"iD_VOZ\":1036,\"rb\":9,\"sifrA_STANICE\":21004,\"vremE_DOLASKA\":\"16:38             \",\"vremE_POLASKA\":\"16:39             \",\"naziV_STANICE\":\"Alibunar\"},{\"iD_VOZ\":1036,\"rb\":10,\"sifrA_STANICE\":21005,\"vremE_DOLASKA\":\"16:45             \",\"vremE_POLASKA\":\"16:46             \",\"naziV_STANICE\":\"Banatski Karlovac\"},{\"iD_VOZ\":1036,\"rb\":11,\"sifrA_STANICE\":21006,\"vremE_DOLASKA\":\"16:50             \",\"vremE_POLASKA\":\"16:51             \",\"naziV_STANICE\":\"Nikolinci\"},{\"iD_VOZ\":1036,\"rb\":12,\"sifrA_STANICE\":21007,\"vremE_DOLASKA\":\"16:57             \",\"vremE_POLASKA\":\"16:58             \",\"naziV_STANICE\":\"Uljma\"},{\"iD_VOZ\":1036,\"rb\":13,\"sifrA_STANICE\":21008,\"vremE_DOLASKA\":\"17:03             \",\"vremE_POLASKA\":\"17:04             \",\"naziV_STANICE\":\"Vlajkovac\"},{\"iD_VOZ\":1036,\"rb\":14,\"sifrA_STANICE\":21009,\"vremE_DOLASKA\":\"17:12             \",\"vremE_POLASKA\":\"17:12             \",\"naziV_STANICE\":\"Vrsac\"}]},\"vozp\":{\"odsifra\":21001,\"dosifra\":16054,\"idvoz\":1387,\"brvoz\":22610,\"nazivvoz\":\"                    \",\"rang\":6,\"vremep\":\"20:06\",\"vremed\":\"20:33             \",\"nazivod\":\"Pancevo varos\",\"nazivdo\":\"Vukov spomenik\",\"idrel\":178662,\"relkm\":21,\"ponuda\":\"Bv        \",\"cenau\":141,\"trajanje_putovanja\":\"00:27\",\"datum_dolaska\":\"2021-12-14T00:00:00\",\"etTrasaVoza\":[{\"iD_VOZ\":1387,\"rb\":1,\"sifrA_STANICE\":21009,\"vremE_DOLASKA\":\"18:58             \",\"vremE_POLASKA\":\"18:58             \",\"naziV_STANICE\":\"Vrsac\"},{\"iD_VOZ\":1387,\"rb\":2,\"sifrA_STANICE\":21008,\"vremE_DOLASKA\":\"19:06             \",\"vremE_POLASKA\":\"19:07             \",\"naziV_STANICE\":\"Vlajkovac\"},{\"iD_VOZ\":1387,\"rb\":3,\"sifrA_STANICE\":21007,\"vremE_DOLASKA\":\"19:12             \",\"vremE_POLASKA\":\"19:13             \",\"naziV_STANICE\":\"Uljma\"},{\"iD_VOZ\":1387,\"rb\":4,\"sifrA_STANICE\":21006,\"vremE_DOLASKA\":\"19:19             \",\"vremE_POLASKA\":\"19:20             \",\"naziV_STANICE\":\"Nikolinci\"},{\"iD_VOZ\":1387,\"rb\":5,\"sifrA_STANICE\":21005,\"vremE_DOLASKA\":\"19:24             \",\"vremE_POLASKA\":\"19:25             \",\"naziV_STANICE\":\"Banatski Karlovac\"},{\"iD_VOZ\":1387,\"rb\":6,\"sifrA_STANICE\":21004,\"vremE_DOLASKA\":\"19:31             \",\"vremE_POLASKA\":\"19:32             \",\"naziV_STANICE\":\"Alibunar\"},{\"iD_VOZ\":1387,\"rb\":7,\"sifrA_STANICE\":21003,\"vremE_DOLASKA\":\"19:40             \",\"vremE_POLASKA\":\"19:41             \",\"naziV_STANICE\":\"Vladimirovac\"},{\"iD_VOZ\":1387,\"rb\":8,\"sifrA_STANICE\":21002,\"vremE_DOLASKA\":\"19:50             \",\"vremE_POLASKA\":\"19:51             \",\"naziV_STANICE\":\"Banatsko Novo Selo\"},{\"iD_VOZ\":1387,\"rb\":9,\"sifrA_STANICE\":21001,\"vremE_DOLASKA\":\"20:05             \",\"vremE_POLASKA\":\"20:06             \",\"naziV_STANICE\":\"Pancevo varos\"},{\"iD_VOZ\":1387,\"rb\":10,\"sifrA_STANICE\":22001,\"vremE_DOLASKA\":\"20:10             \",\"vremE_POLASKA\":\"20:12             \",\"naziV_STANICE\":\"Pancevo glavna stani\"},{\"iD_VOZ\":1387,\"rb\":11,\"sifrA_STANICE\":16013,\"vremE_DOLASKA\":\"20:29             \",\"vremE_POLASKA\":\"20:30             \",\"naziV_STANICE\":\"Pancevacki most\"},{\"iD_VOZ\":1387,\"rb\":12,\"sifrA_STANICE\":16054,\"vremE_DOLASKA\":\"20:33             \",\"vremE_POLASKA\":\"20:34             \",\"naziV_STANICE\":\"Vukov spomenik\"},{\"iD_VOZ\":1387,\"rb\":13,\"sifrA_STANICE\":16053,\"vremE_DOLASKA\":\"20:36             \",\"vremE_POLASKA\":\"20:37             \",\"naziV_STANICE\":\"Karadjordjev park\"},{\"iD_VOZ\":1387,\"rb\":14,\"sifrA_STANICE\":16052,\"vremE_DOLASKA\":\"20:39             \",\"vremE_POLASKA\":\"20:39             \",\"naziV_STANICE\":\"Beograd centar\"}]},\"datum2\":\"2021-12-14T08:08:56.727Z\",\"razredp\":\"2\",\"cenauk\":226},\"cenasmer1\":[],\"cenasmer2\":[[{\"cenau\":198,\"cenao\":156,\"cenad\":42,\"cenab\":0,\"cenar\":0,\"tiprez\":0}]],\"sifraod\":{\"sifra\":16054,\"naziv\":\"Vukov spomenik\"},\"sifrado\":{\"sifra\":21001,\"naziv\":\"Pancevo varos\"},\"smer\":\"2\",\"ukupnacena\":198,\"putnici\":[{\"imeprezime\":\"ALEKSANDAR BABIC\",\"datumrodjenja\":\"10-09-1997\",\"sifrapovlastice\":37,\"idleg\":\"0049116\",\"cenap\":[{\"cenau\":198,\"cenao\":156,\"cenad\":42,\"cenab\":0,\"cenar\":0,\"tiprez\":0}]}],\"uneseneleg\":[\"0049116\"]}");
 
 		String row_response =  HttpsClient.postUrl(_url + sub_path, fields) ;
-
+		logger.info("Srbija voz api call: upisET_ORDER, returned = " + row_response );
 		System.out.println("row_response = " + row_response);
 		if(row_response.contains("error")) {
 			String[] splt = row_response.split(":");
@@ -382,7 +579,11 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 	}
 	
 	public EtKartaResponse upisUPIT_KA_BANCI(boolean is_pozitivan, int userID, String orderID, double cena, TransactionDataResponse payment_transaction_data) throws CommunicationException{
-		
+		logger.info("srbija voz api upisUPIT_KA_BANCI, is_pozitivan = " + is_pozitivan + ", " +
+				"userID = " + userID + ", " +
+				"orderID = " + orderID + ", " +
+				"cena = " + cena + ", " +
+				"payment_transaction_data = " + payment_transaction_data );
 		String sub_path = "KartomatSV/KT_ET_Response";
 		
 		
@@ -416,6 +617,7 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 		fields.put("transactionStatus", payment_transaction_data.get_transactionStatus());
 		
 		String row_response =  HttpsClient.postUrl(_url + sub_path, fields) ;
+		logger.info("Srbija voz api call: upisUPIT_KA_BANCI, returned = " + row_response );
 		String row_response_replace = row_response.replaceAll("\\\\", "");
 //		String[] splt = row_response_replace.split("\\[");
 //		String strr_splt_first = splt[0] + splt[1].substring(1);
@@ -434,6 +636,8 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 	}
 
 	public void upisKARTA_ODSTAMPANA(String userID, String broj_karte) throws CommunicationException{
+		logger.info("srbija voz api upisKARTA_ODSTAMPANA, userID = " + userID + ", " +
+				"broj_karte = " + broj_karte  );
 		String sub_path = "KartomatSV/etLog";
 		
 		
@@ -451,9 +655,34 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 
 
 		String row_response =  HttpsClient.postUrl(_url + sub_path, fields) ;
-		
+		logger.info("Srbija voz api call: upisKARTA_ODSTAMPANA, returned = " + row_response );
 		System.out.println("row_response = " + row_response);
 
+	}
+	
+	public String upisU_KARTOMAT_SLIP(String broj_karte, String slip) throws CommunicationException{
+		logger.info("srbija voz api upisU_KARTOMAT_SLIP, broj_karte = " + broj_karte + ", " +
+				"slip = " + slip  );
+		String sub_path = "KartomatSV/KT_Upis_U_KARTOMAT_SLIP";
+		
+		
+	    Map<String, Object> fields = new HashMap<>();
+	    fields.put("BROJ_KARTE", broj_karte);
+	    fields.put("SLIP", slip);
+
+		
+		
+
+		
+		System.out.println("saljemo = " + fields);
+		System.out.println("URL = " + _url + sub_path);
+
+
+		String row_response =  HttpsClient.postUrl(_url + sub_path, fields) ;
+		logger.info("Srbija voz api call: upisU_KARTOMAT_SLIP, returned = " + row_response );
+		System.out.println("row_response = " + row_response);
+		
+		return row_response;
 	}
 	
 	
@@ -470,7 +699,12 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 	
 	public static void main(String[] args) throws Exception{
 //		System.out.println("stanice : " + SrbijaVozIfaceFactory.getIfaceTest().getStanicaIDs());
+//		KartomatBean kartomat = SrbijaVozIfaceFactory.getIfaceProduction().getKartomat("BC-BA-D9-17-51-90-B6-33-5D-D8-90-55-BD-A5-3F-13");
+//		System.out.println("kartomat : " + kartomat);
+//		System.out.println("stanice : " + SrbijaVozIfaceFactory.getIfaceTest().getStanicaIDsNew(kartomat.getSifrA_STANICE()));
 //		System.out.println("lista vozova : " + SrbijaVozIfaceFactory.getIfaceTest().getListaVozovaNaTrasi(16052, 22001, "09.09.2021", 1, 2));
+//		System.out.println("lista vozova NEW: " + SrbijaVozIfaceFactory.getIfaceTest().getListaVozovaNaTrasiNew(16052, 22001, "16.04.2022", 1, 2));//ihttps://webapi1.srbvoz.rs/eKarta/api/ListaVozova/ListaVozovaKartomatNEW?stanicaod=16052&stanicado=16808&datum=4-21-2022&brojputnika=1&razred=2
+
 //		System.out.println("cena jedan smer : " + SrbijaVozIfaceFactory.getIfaceTest().getCenaJedanSmer(1, 2, 18, 6));
 //		System.out.println("cena povratna : " + SrbijaVozIfaceFactory.getIfaceTest().getCenaPovratna(1, 18, 2, 6, 2, 6));
 //		System.out.println("povlastice jedan smer : " + SrbijaVozIfaceFactory.getIfaceTest().getPovlastice(1));
@@ -479,7 +713,7 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 //		System.out.println("kartomat frekventne stanice : " + SrbijaVozIfaceFactory.getIfaceTest().getFrekventneStanice("E8-38-73-6C-73-69-4C-90-8F-73-E8-3E-5F-02-43-D8"));
 		
 		
-		System.out.println("kartomat : " + SrbijaVozIfaceFactory.getIfaceProduction().getKartomat("BC-BA-D9-17-51-90-B6-33-5D-D8-90-55-BD-A5-3F-13"));
+
 		
 		
 		
@@ -632,7 +866,19 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 //		
 //		
 ////		SrbijaVozIfaceFactory.getIfaceTest().upisKARTA_ODSTAMPANA("132", "SV065000123") ;
+	
 		
+		//novi api za listuvozova sa podacima o slobodnim mestima
+		
+//		System.out.println("Broj slobodnih mesta : " + SrbijaVozIfaceFactory.getIfaceProduction().getBrojSlobodnihMesta(743, "4-17-2022") );
+//		
+//		
+//		System.out.println("Broj getTrajanjeKarte mesta : " + SrbijaVozIfaceFactory.getIfaceProduction().getTrajanjeKarte(16052, 
+//				12551, 1, 2, "23-4-2022"));
+
+
+		System.out.println("upisU_KARTOMAT_SLIP returned : " + SrbijaVozIfaceFactory.getIfaceTest().upisU_KARTOMAT_SLIP("1112", "test slip"));
+				
 	}
 
 

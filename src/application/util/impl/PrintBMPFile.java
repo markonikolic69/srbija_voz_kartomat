@@ -177,13 +177,13 @@ public class PrintBMPFile {
     	System.out.println("width = " + image.getWidth() + ", height = " + image.getHeight());
     	constructByteArray(image);
     	//for/ feed
-    	retBuf.addBuffer("\n\n".getBytes("CP437"));
+    	retBuf.addBuffer("\n\n\n".getBytes("CP437"));
     	//da dodam malo beline da bi odstampana karta pala u leziste
     	
     	//retBuf.addBuffer("\n\n".getBytes("CP437"));
     	
     	//cut paper
-    	retBuf.addBuffer(new byte[] { 0x1b, 'i' });
+    	//retBuf.addBuffer(new byte[] { 0x1b, 'i' });
         ByteArrayInputStream inputStream = new ByteArrayInputStream(retBuf.getBuffer());
         
 

@@ -57,8 +57,8 @@ public class HttpsClient {
 	
 	
 	static {
-	    SSLUtilities.trustAllHostnames();
-	    SSLUtilities.trustAllHttpsCertificates();
+//	    SSLUtilities.trustAllHostnames();
+//	    SSLUtilities.trustAllHttpsCertificates();
 	}
     
     

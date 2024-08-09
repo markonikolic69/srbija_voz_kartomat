@@ -1,0 +1,3 @@
+[11:17:09][INFO][JavaFX Application Thread][1501][MainUIController][initialize] - --> initialize, location = file:/C:/Users/38164/eclipse-workspace/SrbijaVoz/bin/application/MainUI.fxml, resources = java.util.PropertyResourceBundle@1b8db0b8
+[11:17:09][INFO][JavaFX Application Thread][1515][MainUIController][initialize] - SV_API_URL = https://webapi1.srbvoz.rs/eKarta/api/
+[11:17:09][INFO][JavaFX Application Thread][450][SrbijaVozIfaceImpl][getKartomat] - Srbija voz api call: getKartomat, mac_address = E8-38-73-6C-73-69-4C-90-8F-73-E8-3E-5F-02-43-D8

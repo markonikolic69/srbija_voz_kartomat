@@ -1,5 +1,6 @@
 package application;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,6 +37,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.css.PseudoClass;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -59,6 +61,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.TableViewSelectionModel;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TableCell;
@@ -100,6 +103,9 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
+
+import org.apache.log4j.Logger;
 
 import com.sun.corba.se.spi.ior.MakeImmutable;
 import com.sun.jmx.remote.util.OrderClassLoaders;
@@ -118,6 +124,9 @@ import application.data.SifraBean;
 import application.data.StanicaIDBean;
 import application.data.VozBean;
 import application.data.VozDataBean;
+import application.fiskalizacija.InvoiceResponse;
+import application.fiskalizacija.Service;
+import application.fiskalizacija.SrbijaVozInvoiceHandler;
 import application.https.CommunicationException;
 import application.https.ETKartaResponseBean;
 import application.https.EtKartaResponse;
@@ -134,19 +143,25 @@ import application.util.PrinterService;
 import application.util.SessionTimer;
 import application.util.StanicaNames;
 
+import javafx.scene.text.TextFlow;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import javafx.scene.text.Text;
 
 
-
-public class MainUIController extends AbstractController implements Initializable, IPaymentCallbackInfo, SessionControlIface{
+public class MainUIController extends AbstractController implements Initializable, IPaymentCallbackInfo, SessionControlIface, 
+IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	
 	
-
+	private static final Logger logger = Logger.getLogger("MainUIController");
 
 	private static int SESSION_DURATION_SECONDS = 90;
 	
 	private static  String MAC_ADDRESS  = "";//"E8-38-73-6C-73-69-4C-90-8F-73-E8-3E-5F-02-43-D8";
 	private static final int DEFAULT_BROJ_PUTNIKA = 1;
 	private static final int DEFAULT_RAZRED = 2;
+	
+	private static final int MAX_NUMBER_OF_TICKETS= 5;
 	
 	
 	public static  String PAYMENT_IP_ADDRESS = "";//"192.168.100.109";
@@ -161,7 +176,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	public static String KARTOMAT_GRAD = "Beograd";
 	
-	private List<String> _vozovi_sa_rezervacijom = new ArrayList<String>();
+//	private List<String> _vozovi_sa_rezervacijom = new ArrayList<String>();
 	
 	private static KartomatBean _kartomat = null;
 	private static List<FrekventneStaniceBean> _frekventne_stanice = null;
@@ -169,23 +184,23 @@ public class MainUIController extends AbstractController implements Initializabl
 	private static List<StanicaIDBean> _ostale_stanice_filtered = new ArrayList<StanicaIDBean>();
 	private static List<VozBean> _svi_polasci = null;
 	private static List<VozBean> _svi_povratci = null;
-	private static List<VozBean> _svi_povratci_filtered_rezervacije = new ArrayList<VozBean>();
-	private static List<VozBean> _svi_povratci_filtered_bez_rezervacije = new ArrayList<VozBean>();
+//	private static List<VozBean> _svi_povratci_filtered_rezervacije = new ArrayList<VozBean>();
+//	private static List<VozBean> _svi_povratci_filtered_bez_rezervacije = new ArrayList<VozBean>();
 	private static VozBean _selected_voz = null;
 	private static VozBean _selected_voz_povratak = null;
 	
 /////////////////////////////////////////////////////cacne potreban za kupovinu karte - protokol
-	private static LegitimacijaBean _prvi_putnik_legitimacija = null;
-	private static LegitimacijaBean _drugi_putnik_legitimacija = null;
-	private static LegitimacijaBean _treci_putnik_legitimacija = null;
-	private static LegitimacijaBean _cetvrti_putnik_legitimacija = null;
-	private static LegitimacijaBean _peti_putnik_legitimacija = null;
-	
-	private static PovlasticaBean _prvi_putnik_povlastica = null;
-	private static PovlasticaBean _drugi_putnik_povlastica = null;
-	private static PovlasticaBean _treci_putnik_povlastica = null;
-	private static PovlasticaBean _cetvrti_putnik_povlastica = null;
-	private static PovlasticaBean _peti_putnik_povlastica = null;
+//	private static LegitimacijaBean _prvi_putnik_legitimacija = null;
+//	private static LegitimacijaBean _drugi_putnik_legitimacija = null;
+//	private static LegitimacijaBean _treci_putnik_legitimacija = null;
+//	private static LegitimacijaBean _cetvrti_putnik_legitimacija = null;
+//	private static LegitimacijaBean _peti_putnik_legitimacija = null;
+//	
+//	private static PovlasticaBean _prvi_putnik_povlastica = null;
+//	private static PovlasticaBean _drugi_putnik_povlastica = null;
+//	private static PovlasticaBean _treci_putnik_povlastica = null;
+//	private static PovlasticaBean _cetvrti_putnik_povlastica = null;
+//	private static PovlasticaBean _peti_putnik_povlastica = null;
 	
 	private static CenaBean _prvi_putnik_cena = null;
 	private static CenaBean _drugi_putnik_cena = null;
@@ -287,6 +302,8 @@ public class MainUIController extends AbstractController implements Initializabl
 	@FXML private Label kartomat_stanica3_text_lbl22;
 	
 	@FXML private Label trenutno_vreme_lbl;
+	@FXML private Label trenutno_vreme_izmeni_lbl;
+	@FXML private Label trenutno_vreme_destinacije_lbl;
 	
 	@FXML private Label drugi_naslov_lbl;
 	
@@ -298,6 +315,8 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	@FXML private Label broj_voza_lbl;
 	@FXML private Label razred_lbl;
+	@FXML private Label rang_voza_polazak_lbl;
+	@FXML private Label rang_voza_polazak_value_lbl;
 	@FXML private Label povlastice_lbl;
 	@FXML private Label povlastice_polazak_lbl;
 	@FXML private Label ukupno_lbl;
@@ -435,7 +454,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	
 	
-//	@FXML private Button tip_karte_dalje_btn;
+//	@FXML private Button handle_tip_karte_odustani;
 //	@FXML private Button tip_karte_odustani_btn;
 	
 	
@@ -547,7 +566,8 @@ public class MainUIController extends AbstractController implements Initializabl
 	@FXML private Label vreme_povratka_izmena_value_lbl;
 	@FXML private Label tip_karte_dolazak_lbl;
 	@FXML private Label tip_karte_dolazak_value_lbl;
-	
+	@FXML private Label rang_voza_dolazak_lbl;
+	@FXML private Label rand_voza_odlazak_value_lbl;
 	
 	@FXML private Label relacija_dolazak_polaziste_lbl;
 	@FXML private Label relacija_dolazak_odrediste_lbl;
@@ -719,6 +739,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	@FXML private Button prvi_tip_rail_k30_btn;
 	@FXML private Button prvi_tip_dete_btn;
 	@FXML private Button prvi_tip_pas_btn;
+	@FXML private Button prvi_tip_penzioner_btn;
 	
 	@FXML private Label drugi_tip_putnik_lbl;
 	@FXML private Label drugi_tip_putnik_br_lbl;
@@ -729,6 +750,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	@FXML private Button drugi_tip_rail_k30_btn;
 	@FXML private Button drugi_tip_dete_btn;
 	@FXML private Button drugi_tip_pas_btn;
+	@FXML private Button drugi_tip_penzioner_btn;
 	
 	@FXML private Label treci_tip_putnik_lbl;
 	@FXML private Label treci_tip_putnik_br_lbl;
@@ -739,6 +761,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	@FXML private Button treci_tip_rail_k30_btn;
 	@FXML private Button treci_tip_dete_btn;
 	@FXML private Button treci_tip_pas_btn;
+	@FXML private Button treci_tip_penzioner_btn;
 	
 	
 	@FXML private Label cetvrti_tip_putnik_lbl;
@@ -750,6 +773,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	@FXML private Button cetvrti_tip_rail_k30_btn;
 	@FXML private Button cetvrti_tip_dete_btn;
 	@FXML private Button cetvrti_tip_pas_btn;
+	@FXML private Button cetvrti_tip_penzioner_btn;
 	
 	@FXML private Label peti_tip_putnik_lbl;
 	@FXML private Label peti_tip_putnik_br_lbl;
@@ -766,6 +790,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	@FXML private Button peti_tip_rail_k30_btn;
 	@FXML private Button peti_tip_dete_btn;
 	@FXML private Button peti_tip_pas_btn;
+	@FXML private Button peti_tip_penzioner_btn;
 	
 	
 	@FXML private Button tip_karte_odustani_btn;
@@ -917,6 +942,8 @@ public class MainUIController extends AbstractController implements Initializabl
 
 	@FXML private Pane tastatura_pn;
 	
+	@FXML private Pane tastatura_alfanumeric_pn;
+	
 	private SimpleDateFormat _sdfddMMyyyy = new SimpleDateFormat("dd.MM.yyyy");
 	
 	
@@ -964,9 +991,42 @@ public class MainUIController extends AbstractController implements Initializabl
 	@FXML private Label novi_izmeni_preostalo_vreme_lbl;
 	@FXML private Label novi_izmeni_vreme_value_lbl;
 	
+	@FXML private ImageView soko_view_1;
+	@FXML private Label prvi_pol_br_slobodnih_mesta_value_lbl;
+	@FXML private ImageView soko_view_2;
+	@FXML private Label drugi_pol_br_slobodnih_mesta_value_lbl;
+	@FXML private ImageView soko_view_3;
+	@FXML private Label treci_pol_br_slobodnih_mesta_value_lbl;
+	@FXML private ImageView soko_view_4;
+	@FXML private Label cetvrti_pol_br_slobodnih_mesta_value_lbl;
+	@FXML private ImageView soko_view_5;
+	@FXML private Label peti_pol_br_slobodnih_mesta_value_lbl;
+	
+	@FXML private ImageView soko_view_polazak;
+	@FXML private ImageView soko_view_povratak;
+	
+	@FXML private Pane loader_pn;
+	
+
+	@FXML private Pane fiskal_pn;
+	@FXML private TextFlow fiskal_tflow;
+	@FXML private TextFlow fiskal_tflow_kraj;
+	@FXML private ImageView fiskal_qr_code;
 	
 	
-    
+	@FXML private Button trece_pomoc_btn;
+	@FXML private Button strana1_pomoc_zatvori_btn;
+	@FXML private Button strana2_pomoc_zatvori_btn;
+	@FXML private Button strana3_pomoc_zatvori_btn;
+	
+	
+	@FXML private Button check_fiscal_btn;
+	
+	
+	@FXML private Pane fiscal_check_pn;
+	
+	@FXML private Label tast_alfa_num_value_lbl;
+
 
 	
 //	@SuppressWarnings("rawtypes")
@@ -1020,6 +1080,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	SimpleDateFormat sat = new SimpleDateFormat("HH"); 
 	SimpleDateFormat min = new SimpleDateFormat("mm");
 	
+	
 //	private ObservableList<VozBean> _data_pol = null;
 //	
 //	private ObservableList<VozBean> _data_odl = null;
@@ -1030,6 +1091,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	public static final int TIP_DETE = 3;
 	public static final int TIP_PAS = 4;
 	public static final int TIP_POVRATNA = 5;
+	public static final int TIP_PENZIONERI = 6;
 	
 	
 	private int _prva_karta_tip = TIP_REDOVNA_CENA;
@@ -1043,6 +1105,10 @@ public class MainUIController extends AbstractController implements Initializabl
 	private int _treca_karta_tip_not_confirmed = TIP_REDOVNA_CENA;
 	private int _cetvrta_karta_tip_not_confirmed = TIP_REDOVNA_CENA;
 	private int _peta_karta_tip_not_confirmed = TIP_REDOVNA_CENA;
+	
+	
+	
+	private String _previous_tip_karte = "";
 	
 	
 	private Map<Integer, PovlasticaBean> _popusti_jedan_smer = new HashMap<Integer, PovlasticaBean>();
@@ -1063,19 +1129,21 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	private boolean _polazak_true_povratak_false = true;
 	
+	private String _current_fis_qr_code = "";
+	
 	
 	private void resetButtonGroup(List<Button> group, boolean blue_background) {
-		
+		logger.debug("--> resetButtonGroup, group = " + group + ", blue_background = " + blue_background);
 		for(Button current: group) {
 			setButtonUnselected(current, blue_background);
 		}
-		
+		logger.debug("<-- resetButtonGroup");
 	}
 	
 	
 	private void setButtonUnselected(Button unselected, boolean blue_background) {
 	    
-
+		logger.debug("--> setButtonUnselected, unselected = " + unselected + ", blue_background = " + blue_background);
     
 		if(blue_background) {
 			//tamno braon 555555
@@ -1084,9 +1152,11 @@ public class MainUIController extends AbstractController implements Initializabl
 		}else {
 			unselected.setStyle("-fx-background-color: white;-fx-text-fill: black;-fx-background-radius: 10px;-fx-border-radius: 10px;");
 		}
+		logger.debug("<-- setButtonUnselected");
 	}
 
 	private void setButtonSelected(Button selected, boolean ble_background) {
+		logger.debug("--> setButtonSelected, selected = " + selected + ", blue_background = " + ble_background);
 		if(ble_background) {
 			//tamno braon 555555
 			//plavo 3a6dcf
@@ -1094,12 +1164,13 @@ public class MainUIController extends AbstractController implements Initializabl
 		}else {
 			selected.setStyle("-fx-background-color: #3a6dcf;-fx-text-fill: white;fx-font-weight: bold;-fx-background-radius: 10px;-fx-border-radius: 10px;");
 		}
+		logger.debug("<-- setButtonSelected");
 	}
 	
 	
 	private void setButtonUnselectedGray(Button unselected, boolean gray_background) {
 	    
-
+		logger.debug("--> setButtonUnselectedGray, unselected = " + unselected + ", gray_background = " + gray_background);
 	    
 		if(gray_background) {
 			//tamno braon 555555
@@ -1108,9 +1179,11 @@ public class MainUIController extends AbstractController implements Initializabl
 		}else {
 			unselected.setStyle("-fx-background-color: white;-fx-text-fill: black;-fx-background-radius: 10px;-fx-border-radius: 10px;");
 		}
+		logger.debug("<-- setButtonUnselectedGray");
 	}
 
 	private void setButtonSelectedGray(Button selected, boolean gray_background) {
+		logger.debug("--> setButtonSelectedGray, selected = " + selected + ", gray_background = " + gray_background);
 		if(gray_background) {
 			//tamno braon 555555
 			//plavo 3a6dcf
@@ -1118,10 +1191,12 @@ public class MainUIController extends AbstractController implements Initializabl
 		}else {
 			selected.setStyle("-fx-background-color: #555555;-fx-text-fill: white;fx-font-weight: bold;-fx-background-radius: 10px;-fx-border-radius: 10px;");
 		}
+		logger.debug("<-- setButtonSelectedGray");
 	}
 	
 	
 	private void setCalendarButtonSelected(int selected) {
+		logger.debug("--> setCalendarButtonSelected, selected = " + selected );
 		_calendar_button_group.add(pon_izab_btn);
 		_calendar_button_group.add(uto_izab_btn);
 		_calendar_button_group.add(sre_izab_btn);
@@ -1138,7 +1213,7 @@ public class MainUIController extends AbstractController implements Initializabl
 		case 5: sub_izab_btn.setStyle("-fx-background-color: #2880ec;-fx-text-fill: white;");sub_dat_lbl.setStyle("-fx-text-fill: white;");sub_lbl.setStyle("-fx-text-fill: white;");break;
 		case 6: ned_izab_btn.setStyle("-fx-background-color: #2880ec;-fx-text-fill: white;");ned_dat_lbl.setStyle("-fx-text-fill: white;");ned_lbl.setStyle("-fx-text-fill: white;");break;
 		}
-
+		logger.debug("<-- setCalendarButtonSelected");
 	}
 
 
@@ -1155,6 +1230,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	
 	private void init_frekventne_stanice() {
+		logger.debug("--> init_frekventne_stanice" );
 		if(_frekventne_stanice.size() >= 1) {
 			destinacija1_btn.setText(_frekventne_stanice.get(0).getNaziV_UPUTNE_STANICE());
 			destinacija1_btn.setVisible(true);
@@ -1179,14 +1255,20 @@ public class MainUIController extends AbstractController implements Initializabl
 			destinacija6_btn.setText(_frekventne_stanice.get(5).getNaziV_UPUTNE_STANICE());
 			destinacija6_btn.setVisible(true);
 		}
+		logger.debug("<-- init_frekventne_stanice" );
 	}
 
 	//////////////////////IPaymentCallbackInfo/////////////////////
 	
 	@Override
-	public void setPaymentSessionMessage(boolean is_uspesna_kupovina, String message, int broj_putnika) {
+	public void setPaymentSessionMessage(boolean is_uspesna_kupovina, String message, int broj_putnika, 
+			String fis_journal, String fis_qr_code) {
 		
-		     	
+		logger.info("--> setPaymentSessionMessage, is_uspesna_kupovina = " + is_uspesna_kupovina +
+				", message = " + message + ", broj_putnika = " + broj_putnika + ", fiscal_journal = " + 
+				fis_journal + ", fiscal_qr_code = " + fis_qr_code);    
+		
+		_current_fis_qr_code = fis_qr_code;
 
 
 		Thread thread = new Thread(() -> {
@@ -1201,6 +1283,52 @@ public class MainUIController extends AbstractController implements Initializabl
 						message_lbl_3.setText("");
 						message_lbl_4.setText("");
 						message_lbl_5.setText("");
+						//fiskalizacija
+						if(!fis_journal.equals("")) {
+							double offset_in_pixels = (MAX_NUMBER_OF_TICKETS + 1 - broj_putnika) * 24.0;
+							switch(broj_putnika) {
+							case 1 : 
+							case 2 : break;
+							case 3 : offset_in_pixels = offset_in_pixels - 12 ;break;
+							case 4 : 
+							case 5 : offset_in_pixels = offset_in_pixels - 24;break;
+							} ;
+							fiskal_pn.setPrefHeight(1000.0 - offset_in_pixels);
+							//fiskal_tflow.setPrefHeight(500.0 - 1 * 20.0);
+
+							fiskal_qr_code.setLayoutY(567.0 - offset_in_pixels);
+							fiskal_tflow_kraj.setLayoutY(950.0 - offset_in_pixels);
+							
+							if(broj_putnika > 3){
+								if(broj_putnika == 4) {
+									check_fiscal_btn.setLayoutY(fiskal_tflow_kraj.getLayoutY() + 20);
+								}else {
+									check_fiscal_btn.setLayoutY(fiskal_tflow_kraj.getLayoutY() + 10);
+								}
+							}else {
+
+								check_fiscal_btn.setLayoutY(fiskal_tflow_kraj.getLayoutY() + 40);
+							}
+
+							BufferedImage qr_code = new Service().getQRCode(fis_qr_code, 400);
+							Image qr_code_img = SwingFXUtils.toFXImage(qr_code, null);
+
+							fiskal_qr_code.setImage(qr_code_img);
+
+							fiskal_tflow.setPadding(new Insets(10, 0, 0, 30));
+							fiskal_tflow_kraj.setPadding(new Insets(0, 0, 0, 30));
+							Text text = new Text(fis_journal);
+							text.setStyle("-fx-font: 14 arial;");
+							//Text text = new Text("============ ФИСКАЛНИ РАЧУН ============\r\nRS106037154\r\nKentkart Southeast Europe DOO\r\nKentkart Southeast Europe DOO\r\nMakenzijeva 24\r\nВрачар\r\nКасир:                              1111\r\nЕСИР број:                       725/1.0\r\nЕСИР време:         13.08.2022. 22:16:18\r\n-------------ПРОМЕТ ПРОДАЈА-------------\r\nАртикли\r\n========================================\r\nНазив   Цена         Кол.         Укупно\r\nБеоградска картица (A)                  \r\n       250,00          1          250,00\r\n----------------------------------------\r\nУкупан износ:                     250,00\r\nГотовина:                         250,00\r\n========================================\r\nОзнака       Име      Стопа        Порез\r\nA             VAT    9,00%         20,64\r\n----------------------------------------\r\nУкупан износ пореза:               20,64\r\n========================================\r\nПФР време:          13.08.2022. 22:16:21\r\nПФР број рачуна:   G7ND2NT8-Dt1Ov1o0-878\r\nБројач рачуна:                 866/878ПП\r\n========================================\r\n");
+							Text text_kraj = new Text("======== КРАЈ ФИСКАЛНОГ РАЧУНА =========\r\n");
+							text_kraj.setStyle("-fx-font: 14 arial;");
+
+							fiskal_tflow.getChildren().addAll(text);
+							fiskal_tflow_kraj.getChildren().addAll(text_kraj);
+							fiskal_pn.setVisible(true);
+						}else {
+							fiskal_pn.setVisible(false);
+						}
 					}else {
 						//showSlanjeZahteva("NEUSPEŠNO plaćanje","Hvala što koristite kartomat");
 						placanje_result_pn.setStyle("-fx-background-image: url('"+resources.getString("karticq_za_placanje_neuspesna_gif")+"')");
@@ -1219,7 +1347,7 @@ public class MainUIController extends AbstractController implements Initializabl
 						}
 					}
 				});
-				Thread.sleep(10000);
+				Thread.sleep(20000);
 				placanje_pn.setVisible(false);
 				odrediste_pn.setVisible(true);
 				Platform.runLater(() -> { 
@@ -1229,13 +1357,14 @@ public class MainUIController extends AbstractController implements Initializabl
 
 			} catch (Exception exp) {
 				exp.printStackTrace();
+				logger.error("setPaymentSessionMessage, details = " + exp.getMessage(), exp); 
 			} finally {
 				placanje_result_pn.setVisible(false);
 			}
 		});
 		thread.setDaemon(true);
 		thread.start();
-
+		logger.debug("<-- setPaymentSessionMessage" ); 
 	}
 	
 	
@@ -1252,7 +1381,127 @@ public class MainUIController extends AbstractController implements Initializabl
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
+//		System.setProperty("javax.net.ssl.keyStore", "komplus_keystore.p12");
+//		System.setProperty("javax.net.ssl.keyStorePassword", "changeit");
 		
+//		System.setProperty("javax.net.ssl.keyStore", "4JG8BSMJ-DeveloperAuthenticationCertificate.pfx");
+//		System.setProperty("javax.net.ssl.keyStorePassword", "7Q4WLTNR");
+		
+		System.setProperty("javax.net.ssl.keyStore", getProperties().getProperty("keystore.file.name"));
+		System.setProperty("javax.net.ssl.keyStorePassword", getProperties().getProperty("keystore.password"));
+		
+		
+//		if(true) {
+//			
+//			placanje_result_pn.setStyle("-fx-background-image: url('"+resources.getString("karticq_za_placanje_uspesna_gif")+"')");
+//			placanje_result_pn.setVisible(true);
+//			fiskal_pn.setVisible(true);
+//			List<String> _vk_amount = new ArrayList<String>();
+////			_vk_amount.add("parking karta:200");
+//			_vk_amount.add("1234512345:50");
+//			_vk_amount.add("1234512346:250");
+//			_vk_amount.add("1234512347:260");
+//			_vk_amount.add("1234512348:270");
+//			_vk_amount.add("1234512349:280");
+//			double offset_in_pixels = (MAX_NUMBER_OF_TICKETS + 1 - _vk_amount.size()) * 24.0;
+//			switch(_vk_amount.size()) {
+//			case 1 : 
+//			case 2 : break;
+//			case 3 : offset_in_pixels = offset_in_pixels - 12 ;break;
+//			case 4 : 
+//			case 5 : offset_in_pixels = offset_in_pixels - 24;break;
+//			} ;
+//			fiskal_pn.setPrefHeight(1000.0 - offset_in_pixels);
+//			//fiskal_tflow.setPrefHeight(500.0 - 1 * 20.0);
+//			//500
+//			fiskal_qr_code.setLayoutY(590.0 - offset_in_pixels);
+//			//890
+//			fiskal_tflow_kraj.setLayoutY(980.0 - offset_in_pixels);     /*komplus esir number 1125/1.0.0.1*/ /*devellop esir number 1145/2.0*/
+//			if(_vk_amount.size() > 3){
+//				check_fiscal_btn.setLayoutY(fiskal_tflow_kraj.getLayoutY() + 10);
+//			}else {
+//				check_fiscal_btn.setLayoutY(fiskal_tflow_kraj.getLayoutY() + 40);
+//			}
+//			
+//			SrbijaVozInvoiceHandler fiskal_handler = new SrbijaVozInvoiceHandler(_vk_amount, "1145/2.0", 
+//					AbstractController.getProperties());
+//			String _fiscal_journal = "";
+//			String _fiscal_qr_code = "";
+//			InvoiceResponse poreska_response = null;
+//			try {
+//				String result = fiskal_handler.handle_request();
+//				String[] journal_qr_code = result.split("&");
+//				_fiscal_journal = journal_qr_code[0];
+//				_fiscal_qr_code = journal_qr_code[1];
+//				_current_fis_qr_code = _fiscal_qr_code;
+//				poreska_response = fiskal_handler.getInvoiceResponse();
+//				System.out.println("_fiscal_journal = " + _fiscal_journal);
+//				System.out.println("_fiscal_qr_code = " + _fiscal_qr_code);
+//				
+//		        BufferedImage qr_code = new Service().getQRCode(_fiscal_qr_code, 400);
+//		        Image qr_code_img = SwingFXUtils.toFXImage(qr_code, null);
+//
+//		        fiskal_qr_code.setImage(qr_code_img);
+//		        //fiskal_qr_code.setVisible(false);
+//			}catch(IOException ioe) {
+//				ioe.printStackTrace();
+//				System.out.println("Unable to call fiskal service, details: = " + ioe.getMessage());
+//			}
+//			
+//			
+//
+//			fiskal_tflow.setPadding(new Insets(10, 0, 0, 30));
+//			fiskal_tflow_kraj.setPadding(new Insets(0, 0, 0, 30));
+////			Text text = new Text(_fiscal_journal);
+//			
+//			
+//			StringBuffer moj_tekst = new StringBuffer("============ ФИСКАЛНИ РАЧУН ============\r\n");
+//			moj_tekst.append("                              " + "RS100351420" + "\r\n");
+//			moj_tekst.append("                              " + "Komplus DOO" + "\r\n");
+//			moj_tekst.append("                           " + "Kralja Milutina 69" + "\r\n");
+//			moj_tekst.append("                                  " + "Београд" + "\r\n");
+//			moj_tekst.append("----------------------------------------------------------------------" + "\r\n");
+//			moj_tekst.append("Касир:                                                                1111" + "\r\n");
+//			moj_tekst.append("ЕСИР број:                                                  1145/2.0" + "\r\n");
+//			moj_tekst.append("----------------------------------------------------------------------" + "\r\n");
+//			moj_tekst.append("----------------------ПРОМЕТ ПРОДАЈА--------------------" + "\r\n");
+//			moj_tekst.append("Артикли" + "\r\n");
+//			moj_tekst.append("========================================" + "\r\n");
+//			moj_tekst.append("Назив                   Цена               Кол.            Укупно" + "\r\n");
+//			moj_tekst.append("VK:1234512345 (A)" + "\r\n");
+//			moj_tekst.append("                             230.00                1              230.00" + "\r\n");
+//			moj_tekst.append("VK:1234512346 (A)" + "\r\n");
+//			moj_tekst.append("                             250.00                1              250.00" + "\r\n");
+//			moj_tekst.append("----------------------------------------------------------------------" + "\r\n");
+//			moj_tekst.append("Укупан износ:                                                 480.00" + "\r\n");
+//			moj_tekst.append("Платна картица:                                             480.00" + "\r\n");
+//			moj_tekst.append("========================================" + "\r\n");
+//			moj_tekst.append("Ознака                   Име          Стопа               Порез" + "\r\n");
+//			moj_tekst.append("A                             VAT          9.00%                39.63" + "\r\n");
+//			moj_tekst.append("----------------------------------------------------------------------" + "\r\n");
+//			moj_tekst.append("Укупан износ пореза:                                       39.63" + "\r\n");
+//			moj_tekst.append("========================================" + "\r\n");
+//			String pfr_vreme = poreska_response.getSdcDateTime();
+//			pfr_vreme = pfr_vreme.replaceAll("Z", " ");
+//			pfr_vreme = pfr_vreme.replaceAll("T", " ");
+//			moj_tekst.append("ПФР време:                              " + pfr_vreme.substring(0,19) + "\r\n");
+//			moj_tekst.append("ПФР број рачуна:       " + poreska_response.getInvoiceNumber() + "\r\n");
+//			moj_tekst.append("Бројач рачуна:                                            " + poreska_response.getInvoiceCounter() + "\r\n");
+//			moj_tekst.append("========================================" + "\r\n");
+//			Text text = new Text(moj_tekst.toString());
+//			text.setStyle("-fx-font: 14 arial;");
+//	        //Text text = new Text("============ ФИСКАЛНИ РАЧУН ============\r\nRS106037154\r\nKentkart Southeast Europe DOO\r\nKentkart Southeast Europe DOO\r\nMakenzijeva 24\r\nВрачар\r\nКасир:                              1111\r\nЕСИР број:                       725/1.0\r\nЕСИР време:         13.08.2022. 22:16:18\r\n-------------ПРОМЕТ ПРОДАЈА-------------\r\nАртикли\r\n========================================\r\nНазив   Цена         Кол.         Укупно\r\nБеоградска картица (A)                  \r\n       250,00          1          250,00\r\n----------------------------------------\r\nУкупан износ:                     250,00\r\nГотовина:                         250,00\r\n========================================\r\nОзнака       Име      Стопа        Порез\r\nA             VAT    9,00%         20,64\r\n----------------------------------------\r\nУкупан износ пореза:               20,64\r\n========================================\r\nПФР време:          13.08.2022. 22:16:21\r\nПФР број рачуна:   G7ND2NT8-Dt1Ov1o0-878\r\nБројач рачуна:                 866/878ПП\r\n========================================\r\n");
+//	        //Text text_kraj = new Text("==================================================\r\n" + "'-------------------------- adresa za proveru računa -------------------------\r\n\r\n" +_fiscal_qr_code + "\r\n\r\n" + "============= КРАЈ ФИСКАЛНОГ РАЧУНА ==============\r\n");
+//				
+//			
+//			Text text_kraj = new Text("======== КРАЈ ФИСКАЛНОГ РАЧУНА =========\r\n");
+//			text_kraj.setStyle("-fx-font: 14 arial;");
+//
+//	        fiskal_tflow.getChildren().addAll(text);
+//	        fiskal_tflow_kraj.getChildren().addAll(text_kraj);
+//		}
+		
+		logger.info("--> initialize, location = " + location + ", resources = " + resources ); 
 		SESSION_DURATION_SECONDS = Integer.parseInt(getProperties().getProperty("session.duration", "90"));
 		System.out.println("SESSION_DURATION_SECONDS = " + SESSION_DURATION_SECONDS);
 		
@@ -1266,7 +1515,7 @@ public class MainUIController extends AbstractController implements Initializabl
 		
 		
 		SV_API_URL = getProperties().getProperty("srbija.voz.api.url");
-		System.out.println("SV_API_URL = " + SV_API_URL);
+		logger.info("SV_API_URL = " + SV_API_URL);
 		SV_API_CONN_TIME = Integer.parseInt(getProperties().getProperty("srbija.voz.api.conn.timeout", "3000"));
 		SV_API_READ_TIME = Integer.parseInt(getProperties().getProperty("srbija.voz.api.read.timeout", "12000"));
 		
@@ -1276,13 +1525,13 @@ public class MainUIController extends AbstractController implements Initializabl
 		KARTOMAT_GRAD = getProperties().getProperty("kartomat.grad", "Beograd");
 		
 		
-		String lista_brzih_vozova = getProperties().getProperty("voz.br.rezervacija", "540,541,542,543,544,545,546,547,548,549,740,741,742,743,744,745,746,747");
-		String[] lista_brzih_vozova_splt = lista_brzih_vozova.split(",");
-		for(String current_br_voz : lista_brzih_vozova_splt) {
-			_vozovi_sa_rezervacijom.add(current_br_voz);
-		}
-		
-		System.out.println("Lista vozova sa rezervacijom je: " + _vozovi_sa_rezervacijom);
+//		String lista_brzih_vozova = getProperties().getProperty("voz.br.rezervacija", "540,541,542,543,544,545,546,547,548,549,740,741,742,743,744,745,746,747");
+//		String[] lista_brzih_vozova_splt = lista_brzih_vozova.split(",");
+//		for(String current_br_voz : lista_brzih_vozova_splt) {
+//			_vozovi_sa_rezervacijom.add(current_br_voz);
+//		}
+//		
+//		logger.info("Lista vozova sa rezervacijom je: " + _vozovi_sa_rezervacijom);
 		
 		Calendar today = Calendar.getInstance();
 		datum_polaska_value_lbl.setText(_sdf.format(today.getTime()));
@@ -1313,14 +1562,16 @@ public class MainUIController extends AbstractController implements Initializabl
 			
 			_frekventne_stanice = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getFrekventneStanice(MAC_ADDRESS);
 			StanicaNames.loadCirLatinFS(_frekventne_stanice);
-			_ostale_stanice = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getStanicaIDs();
+			logger.info("_frekventne_stanice: " + _frekventne_stanice);
+			_ostale_stanice = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getStanicaIDsNew(_kartomat.getSifrA_STANICE());
 			StanicaNames.loadCirLatinOS(_ostale_stanice);
+			logger.info("_ostale_stanice: " + _ostale_stanice);
 			azuriraj_listu_ostalinh_filtered_stanica("");
 			
 			//_ostale_stanice_filtered = new ArrayList<StanicaIDBean>(_ostale_stanice);
 		}catch(Exception e) {
 			e.printStackTrace();
-			System.out.println("Exception when try to init data from SV api, details: " + e.getMessage() + ", application will exit");
+			logger.error("Exception when try to init data from SV api, details: " + e.getMessage() + ", application will exit", e);
 			System.exit(-1);
 		}
 		
@@ -1392,30 +1643,35 @@ public class MainUIController extends AbstractController implements Initializabl
 		_prva_tip_karte_button_group.add(prvi_tip_rail_k30_btn);
 		_prva_tip_karte_button_group.add(prvi_tip_dete_btn);
 		_prva_tip_karte_button_group.add(prvi_tip_pas_btn);
+		_prva_tip_karte_button_group.add(prvi_tip_penzioner_btn);
 		
 		_druga_tip_karte_button_group.add(drugi_tip_redovna_btn);
 		_druga_tip_karte_button_group.add(drugi_tip_srb_k13_btn);
 		_druga_tip_karte_button_group.add(drugi_tip_rail_k30_btn);
 		_druga_tip_karte_button_group.add(drugi_tip_dete_btn);
 		_druga_tip_karte_button_group.add(drugi_tip_pas_btn);
+		_druga_tip_karte_button_group.add(drugi_tip_penzioner_btn);
 		
 		_treca_tip_karte_button_group.add(treci_tip_redovna_btn);
 		_treca_tip_karte_button_group.add(treci_tip_srb_k13_btn);
 		_treca_tip_karte_button_group.add(treci_tip_rail_k30_btn);
 		_treca_tip_karte_button_group.add(treci_tip_dete_btn);
 		_treca_tip_karte_button_group.add(treci_tip_pas_btn);
+		_treca_tip_karte_button_group.add(treci_tip_penzioner_btn);
 		
 		_cetvrta_tip_karte_button_group.add(cetvrti_tip_redovna_btn);
 		_cetvrta_tip_karte_button_group.add(cetvrti_tip_srb_k13_btn);
 		_cetvrta_tip_karte_button_group.add(cetvrti_tip_rail_k30_btn);
 		_cetvrta_tip_karte_button_group.add(cetvrti_tip_dete_btn);
 		_cetvrta_tip_karte_button_group.add(cetvrti_tip_pas_btn);
+		_cetvrta_tip_karte_button_group.add(cetvrti_tip_penzioner_btn);
 		
 		_peta_tip_karte_button_group.add(peti_tip_redovna_btn);
 		_peta_tip_karte_button_group.add(peti_tip_srb_k13_btn);
 		_peta_tip_karte_button_group.add(peti_tip_rail_k30_btn);
 		_peta_tip_karte_button_group.add(peti_tip_dete_btn);
 		_peta_tip_karte_button_group.add(peti_tip_pas_btn);
+		_peta_tip_karte_button_group.add(peti_tip_penzioner_btn);
 
 		_calendar_button_group.add(pon_izab_btn);
 		_calendar_button_group.add(uto_izab_btn);
@@ -1465,69 +1721,17 @@ public class MainUIController extends AbstractController implements Initializabl
 			red_header_placanje_pn.getChildren().add(stanica_lbl_slide_3);
 			
 			
-//			-fx-text-fill: white;
-//			 
-//			
-//			
-//			prefHeight="31.0" prefWidth="500.0" styleClass="velika_bela_slova"
+
 		
-//		datum_polaska_value_lbl.textProperty().addListener(new ChangeListener<String>() {
-//            @Override
-//            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-//               System.out.println("Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
-//               if(!t1.equals("")) {
-//            	   setPodaciOdVoza();
-//               }
-//            }
-//        }); 
+
 		
-		datum_polaska_value_lbl.textProperty().addListener(datum_polaska_changeListener);
-		
-//		datum_povratka_polazak_value_lbl.textProperty().addListener(new ChangeListener<String>() {
-//            @Override
-//            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-//               System.out.println("Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
-//               if(!t1.equals("")) {
-//            	   setPodaciOdVozaPovratak();
-//               }
-//            }
-//        }); 
-		
-		datum_povratka_polazak_value_lbl.textProperty().addListener(datum_povratka_polazak_changeListener);
-		
-//		razred_polazak_value_lbl.textProperty().addListener(new ChangeListener<String>() {
-//            @Override
-//            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-//               System.out.println("Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
-//               if(!t1.equals("")) {
-//            	   setPodaciOdVoza();
-//               }
-//            }
-//        }); 
+ 
 		
 		razred_polazak_value_lbl.textProperty().addListener(rezred_polazak_changeListener);
 			
-//		razred_odlazak_value_lbl.textProperty().addListener(new ChangeListener<String>() {
-//            @Override
-//            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-//               System.out.println("Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
-//               if(!t1.equals("")) {
-//            	   setPodaciOdVozaPovratak();
-//               }
-//            }
-//        }); 
+
 		
-//		razred_odlazak_value_lbl.textProperty().addListener(rezred_odlazak_changeListener);
-		
-//		smer_value_lbl.textProperty().addListener(new ChangeListener<String>() {
-//            @Override
-//            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-//               System.out.println("Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
-//               if(!t1.equals("")) {
-//            	   setCena();
-//               }
-//            }
-//        });
+
 		smer_value_lbl.textProperty().addListener(smer_changeListener);
 		
 		tip_karte_polazak_value_lbl.textProperty().addListener(tip_karte_changeListener);
@@ -1535,16 +1739,17 @@ public class MainUIController extends AbstractController implements Initializabl
 		
 		setSerbianCir();
 		
-				
+		logger.info("<-- initialized: " );
 		
 	}
 	
 	private ChangeListener datum_polaska_changeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-           System.out.println("datum_polaska_changeListener Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
+        	logger.info("datum_polaska_changeListener Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
            if(!t1.equals("")) {
-        	   setPodaciOdVoza();
+        	   //setPodaciOdVoza();
+        	   setPodaciOdVozaMarko();
            }
         }
     }; 
@@ -1552,9 +1757,10 @@ public class MainUIController extends AbstractController implements Initializabl
 	private ChangeListener datum_povratka_polazak_changeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-           System.out.println("datum_povratka_polazak_changeListener Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
+        	logger.info("datum_povratka_polazak_changeListener Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
            if(!t1.equals("")) {
-        	   setPodaciOdVozaPovratak();
+        	   //setPodaciOdVozaPovratak(ov.getValue());
+        	   setPodaciOdVozaPovratakMarko(ov.getValue());
            }
         }
     }; 
@@ -1562,7 +1768,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	private ChangeListener rezred_polazak_changeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-           System.out.println("rezred_polazak_changeListener Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
+        	logger.info("rezred_polazak_changeListener Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
            if(!t1.equals("")) {
         	   if((t.equals("Други") && t1.equals("Drugi")) ||
         			   (t.equals("Drugi") && t1.equals("Други")) || 
@@ -1592,7 +1798,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	private ChangeListener rezred_odlazak_changeListener =  new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-           System.out.println("rezred_odlazak_changeListener Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
+        	logger.info("rezred_odlazak_changeListener Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
            if(!t1.equals("")) {
         	   if((t.equals("Други") && t1.equals("Drugi")) ||
         			   (t.equals("Drugi") && t1.equals("Други")) || 
@@ -1611,7 +1817,10 @@ public class MainUIController extends AbstractController implements Initializabl
         			   ){
         		   
         	   }else {
-        		   setPodaciOdVozaPovratak();
+       			// za sucaj da je prethodno bila setovana povratna karta
+       			String datum_povratka = /*datum_povratka_polazak_value_lbl.getText() != null || !datum_povratka_polazak_value_lbl.getText().equals("")
+       					? datum_povratka_polazak_value_lbl.getText() : */datum_polaska_value_lbl.getText();
+        		   setPodaciOdVozaPovratak(datum_povratka);
         	   }//end if-else
         	   
            }
@@ -1621,7 +1830,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	private ChangeListener smer_changeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-           System.out.println("smer_changeListener Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
+        	logger.info("smer_changeListener Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
            if(!t1.equals("")) {
         	   setCena(t1.equals(resources.getString("smer_povratni_btn")));
            }
@@ -1631,7 +1840,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	private ChangeListener tip_karte_changeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-           System.out.println("tip_karte_changeListener Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
+        	logger.info("tip_karte_changeListener Label Text Changed, ov = " + ov.getValue() + " t = " + t + ", t1 = " + t1);
            if(!t1.equals("")) {
         	   //setCena(smer_value_lbl.getText().equals(resources.getString("smer_povratni_btn")));
            }
@@ -1639,12 +1848,14 @@ public class MainUIController extends AbstractController implements Initializabl
 	};
 	
 	
-	private boolean isVozWithReservations(String voz_id) {
-		return _vozovi_sa_rezervacijom.contains( voz_id);
+	private boolean isVozWithReservations(VozBean voz) {
+		return voz.isRezervacioni_sistem();
+		//return _vozovi_sa_rezervacijom.contains( voz_id);
 	}
 	
 	
 	private List<StanicaIDBean> getNextPagination(boolean is_napred){
+		logger.debug("--> getNextPagination, is_napred = " + is_napred);
 		List<StanicaIDBean> to_return = new ArrayList<StanicaIDBean>();
 		int start_list = is_napred ? _lista_svih_stanica_current_position :
 			Math.max(_lista_svih_stanica_current_position - OSTALE_STANICE_SIZE- OSTALE_STANICE_SIZE, 0);
@@ -1653,10 +1864,17 @@ public class MainUIController extends AbstractController implements Initializabl
 			to_return.add(_ostale_stanice_filtered.get(i));
 		}
 		_lista_svih_stanica_current_position = ( start_list + OSTALE_STANICE_SIZE) > _ostale_stanice_filtered.size() ? _lista_svih_stanica_current_position :  start_list + OSTALE_STANICE_SIZE  ;
+		logger.debug("<-- getNextPagination, to_return = " + to_return);
 		return to_return;
 	}
 	
-	private List<VozBean> getNextPaginationpPolasci(boolean is_napred){
+	private List<VozBean> getNextPaginationpPolasci(boolean is_napred, boolean is_init){
+		//ako je is_init = true onda prethodni polasci dugme je invisible
+		logger.debug("--> getNextPaginationpPolasci, is_napred = " + is_napred + ", is_init = " + is_init);
+		if(is_init) {
+			pret_polasci_btn.setVisible(false);
+			sled_polasci_btn.setVisible(true);
+		}
 		List<VozBean> to_return = new ArrayList<VozBean>();
 		
 		List<VozBean> polasci_povratci = 	_polazak_true_povratak_false ? _svi_polasci :/*_svi_povratci*/getListaPovrataka();
@@ -1666,36 +1884,44 @@ public class MainUIController extends AbstractController implements Initializabl
 		
 		if(_polazak_true_povratak_false) {
 			//polasci
-			if(is_napred) {
-				if((_lista_svih_polazaka_current_position + SVI_POLASCI_SIZE) > polasci_povratci.size()){
-					is_pagination = false;
-				}else {
-					_lista_svih_polazaka_current_position = _lista_svih_polazaka_current_position + SVI_POLASCI_SIZE;
-					is_pagination = true;
-				}
+			if(is_init) {
+				_lista_svih_polazaka_current_position = 0;
 			}else {
-				if(_lista_svih_polazaka_current_position < SVI_POLASCI_SIZE) {
-					is_pagination = false;
+				if(is_napred) {
+					if((_lista_svih_polazaka_current_position + SVI_POLASCI_SIZE) > polasci_povratci.size()){
+						is_pagination = false;
+					}else {
+						_lista_svih_polazaka_current_position = _lista_svih_polazaka_current_position + SVI_POLASCI_SIZE;
+						is_pagination = true;
+					}
 				}else {
-					_lista_svih_polazaka_current_position = _lista_svih_polazaka_current_position - SVI_POLASCI_SIZE;
-					is_pagination = true;
+					if(_lista_svih_polazaka_current_position < SVI_POLASCI_SIZE) {
+						is_pagination = false;
+					}else {
+						_lista_svih_polazaka_current_position = _lista_svih_polazaka_current_position - SVI_POLASCI_SIZE;
+						is_pagination = true;
+					}
 				}
 			}
 		}else {
 			//povratci
-			if(is_napred) {
-				if((_lista_svih_povrataka_current_position + SVI_POLASCI_SIZE) > polasci_povratci.size()){
-					is_pagination = false;
-				}else {
-					_lista_svih_povrataka_current_position = _lista_svih_povrataka_current_position + SVI_POLASCI_SIZE;
-					is_pagination = true;
-				}
+			if(is_init) {
+				_lista_svih_povrataka_current_position = 0;
 			}else {
-				if(_lista_svih_povrataka_current_position < SVI_POLASCI_SIZE) {
-					is_pagination = false;
+				if(is_napred) {
+					if((_lista_svih_povrataka_current_position + SVI_POLASCI_SIZE) > polasci_povratci.size()){
+						is_pagination = false;
+					}else {
+						_lista_svih_povrataka_current_position = _lista_svih_povrataka_current_position + SVI_POLASCI_SIZE;
+						is_pagination = true;
+					}
 				}else {
-					_lista_svih_povrataka_current_position = _lista_svih_povrataka_current_position - SVI_POLASCI_SIZE;
-					is_pagination = true;
+					if(_lista_svih_povrataka_current_position < SVI_POLASCI_SIZE) {
+						is_pagination = false;
+					}else {
+						_lista_svih_povrataka_current_position = _lista_svih_povrataka_current_position - SVI_POLASCI_SIZE;
+						is_pagination = true;
+					}
 				}
 			}
 		}
@@ -1706,26 +1932,35 @@ public class MainUIController extends AbstractController implements Initializabl
 		for(int i = lista_current_position ; i < Math.min (polasci_povratci.size() , lista_current_position + SVI_POLASCI_SIZE ) ; i++ ) {
 			to_return.add(polasci_povratci.get(i));
 		}
+		
+		logger.info("_polazak_true_povratak_false=" + _polazak_true_povratak_false + 
+				"_lista_svih_polazaka_current_position = " + _lista_svih_polazaka_current_position + 
+				", SVI_POLASCI_SIZE=" + SVI_POLASCI_SIZE + ", polasci_povratci.size() = " + polasci_povratci.size() + 
+				", lista_current_position = " + lista_current_position);
+		if(_polazak_true_povratak_false) {
+			if(_lista_svih_polazaka_current_position + SVI_POLASCI_SIZE >= polasci_povratci.size()) {
+				sled_polasci_btn.setVisible(false);
+			}
+			if(_lista_svih_polazaka_current_position == 0) {
+				pret_polasci_btn.setVisible(false);
+			}
+		}else {
+			if(_lista_svih_povrataka_current_position + SVI_POLASCI_SIZE >= polasci_povratci.size()) {
+				sled_polasci_btn.setVisible(false);
+			}
+			if(_lista_svih_povrataka_current_position == 0) {
+				pret_polasci_btn.setVisible(false);
+			}
+		}
 
-//		int start_list = is_napred ? lista_current_position :
-//			Math.max(lista_current_position - SVI_POLASCI_SIZE- SVI_POLASCI_SIZE, 0);
-//		if( start_list >  polasci_povratci.size() || start_list < 0) return null;
-//		for(int i = start_list ; i < Math.min (polasci_povratci.size() , start_list + SVI_POLASCI_SIZE ) ; i++ ) {
-//			to_return.add(polasci_povratci.get(i));
-//		}
-//		if(polazak_true_povratak_false) {
-//			_lista_svih_polazaka_current_position = ( start_list + SVI_POLASCI_SIZE) > polasci_povratci.size() ? 
-//					_lista_svih_polazaka_current_position :  start_list + SVI_POLASCI_SIZE  ;
-//		}else {
-//			_lista_svih_povrataka_current_position = ( start_list + SVI_POLASCI_SIZE) > polasci_povratci.size() ? 
-//					_lista_svih_povrataka_current_position :  start_list + SVI_POLASCI_SIZE  ;
-//		}
-		System.out.println("_lista_svih_polazaka_current_position = " + _lista_svih_polazaka_current_position + ", is_pagination = " + is_pagination);
-		System.out.println("_lista_svih_povrataka_current_position = " + _lista_svih_povrataka_current_position + ", is_pagination = " + is_pagination);
+		logger.info("_lista_svih_polazaka_current_position = " + _lista_svih_polazaka_current_position + ", is_pagination = " + is_pagination);
+		logger.info("_lista_svih_povrataka_current_position = " + _lista_svih_povrataka_current_position + ", is_pagination = " + is_pagination);
+		logger.debug("<-- getNextPaginationpPolasci, to_return = " + to_return );
 		return to_return;
 	}
 	
 	private String from_tip_karte_id(int id) {
+		logger.debug("--> from_tip_karte_id, id = " + id );
 		switch(id) {
 		case TIP_REDOVNA_CENA: return resources.getString("redovna_cena");
 		case TIP_SRB_K13: return "SRB K-13";
@@ -1733,12 +1968,14 @@ public class MainUIController extends AbstractController implements Initializabl
 		case TIP_DETE: return resources.getString("dete");
 		case TIP_PAS: return resources.getString("pas");
 		case TIP_POVRATNA: return resources.getString("povratna");
+		case TIP_PENZIONERI: return resources.getString("penzioner");
 		}
 		return "";
 	}
 	
 	
 	private void show_poslednja_provera_slide() {
+		logger.debug("--> show_poslednja_provera_slide " );
 		handleOsvezi();
 		int broj_karata = Integer.parseInt(broj_putnika_lbl.getText());
 		boolean is_povratna = _selected_voz_povratak != null;
@@ -1756,12 +1993,12 @@ public class MainUIController extends AbstractController implements Initializabl
 				prva_vreme_povratak_value_lbl.setText(vreme_dolazak_dolazak_value_lbl.getText());
 				prva_povratak_broj_voza_value_lbl.setText("" + _selected_voz_povratak.getBrvoz());
 			}
-			prva_datum_povratak_lbl.setVisible(false);        		
-			prva_datum_povratak_separator_lbl.setVisible(false);  
-			prva_povratak_broj_voza_lbl.setVisible(false);  
-			prva_datum_povratak_value_lbl.setVisible(false); 
-			prva_vreme_povratak_value_lbl.setVisible(false); 
-			prva_povratak_broj_voza_value_lbl.setVisible(false); 
+			prva_datum_povratak_lbl.setVisible(is_povratna);        		
+			prva_datum_povratak_separator_lbl.setVisible(is_povratna);  
+			prva_povratak_broj_voza_lbl.setVisible(is_povratna);  
+			prva_datum_povratak_value_lbl.setVisible(is_povratna); 
+			prva_vreme_povratak_value_lbl.setVisible(is_povratna); 
+			prva_povratak_broj_voza_value_lbl.setVisible(is_povratna); 
 
 			prva_tip_value_lbl.setText(from_tip_karte_id(_prva_karta_tip));
 			prva_razred_value_lbl.setText(razred_polazak_value_lbl.getText());
@@ -1783,12 +2020,12 @@ public class MainUIController extends AbstractController implements Initializabl
 				druga_vreme_povratak_value_lbl.setText(vreme_dolazak_dolazak_value_lbl.getText());
 				druga_povratak_broj_voza_value_lbl.setText("" + _selected_voz_povratak.getBrvoz());
 			}
-			druga_datum_povratak_lbl.setVisible(false);        		
-			druga_datum_povratak_separator_lbl.setVisible(false);  
-			druga_povratak_broj_voza_lbl.setVisible(false);  
-			druga_datum_povratak_value_lbl.setVisible(false); 
-			druga_vreme_povratak_value_lbl.setVisible(false); 
-			druga_povratak_broj_voza_value_lbl.setVisible(false); 
+			druga_datum_povratak_lbl.setVisible(is_povratna);        		
+			druga_datum_povratak_separator_lbl.setVisible(is_povratna);  
+			druga_povratak_broj_voza_lbl.setVisible(is_povratna);  
+			druga_datum_povratak_value_lbl.setVisible(is_povratna); 
+			druga_vreme_povratak_value_lbl.setVisible(is_povratna); 
+			druga_povratak_broj_voza_value_lbl.setVisible(is_povratna); 
 
 			druga_tip_value_lbl.setText(from_tip_karte_id(_druga_karta_tip));
 			druga_razred_value_lbl.setText(razred_polazak_value_lbl.getText());
@@ -1812,12 +2049,12 @@ public class MainUIController extends AbstractController implements Initializabl
 				treca_vreme_povratak_value_lbl.setText(vreme_dolazak_dolazak_value_lbl.getText());
 				treca_povratak_broj_voza_value_lbl.setText("" + _selected_voz_povratak.getBrvoz());
 			}
-			treca_datum_povratak_lbl.setVisible(false);        		
-			treca_datum_povratak_separator_lbl.setVisible(false);  
-			treca_povratak_broj_voza_lbl.setVisible(false);  
-			treca_datum_povratak_value_lbl.setVisible(false); 
-			treca_vreme_povratak_value_lbl.setVisible(false); 
-			treca_povratak_broj_voza_value_lbl.setVisible(false); 
+			treca_datum_povratak_lbl.setVisible(is_povratna);        		
+			treca_datum_povratak_separator_lbl.setVisible(is_povratna);  
+			treca_povratak_broj_voza_lbl.setVisible(is_povratna);  
+			treca_datum_povratak_value_lbl.setVisible(is_povratna); 
+			treca_vreme_povratak_value_lbl.setVisible(is_povratna); 
+			treca_povratak_broj_voza_value_lbl.setVisible(is_povratna); 
 
 			treca_tip_value_lbl.setText(from_tip_karte_id(_treca_karta_tip));
 			treca_razred_value_lbl.setText(razred_polazak_value_lbl.getText());
@@ -1841,12 +2078,12 @@ public class MainUIController extends AbstractController implements Initializabl
 				cetvrta_vreme_povratak_value_lbl.setText(vreme_dolazak_dolazak_value_lbl.getText());
 				cetvrta_povratak_broj_voza_value_lbl.setText("" + _selected_voz_povratak.getBrvoz());
 			}
-			cetvrta_datum_povratak_lbl.setVisible(false);        		
-			cetvrta_datum_povratak_separator_lbl.setVisible(false);  
-			cetvrta_povratak_broj_voza_lbl.setVisible(false);  
-			cetvrta_datum_povratak_value_lbl.setVisible(false); 
-			cetvrta_vreme_povratak_value_lbl.setVisible(false); 
-			cetvrta_povratak_broj_voza_value_lbl.setVisible(false); 
+			cetvrta_datum_povratak_lbl.setVisible(is_povratna);        		
+			cetvrta_datum_povratak_separator_lbl.setVisible(is_povratna);  
+			cetvrta_povratak_broj_voza_lbl.setVisible(is_povratna);  
+			cetvrta_datum_povratak_value_lbl.setVisible(is_povratna); 
+			cetvrta_vreme_povratak_value_lbl.setVisible(is_povratna); 
+			cetvrta_povratak_broj_voza_value_lbl.setVisible(is_povratna); 
 
 			cetvrta_tip_value_lbl.setText(from_tip_karte_id(_cetvrta_karta_tip));
 			cetvrta_razred_value_lbl.setText(razred_polazak_value_lbl.getText());
@@ -1870,12 +2107,14 @@ public class MainUIController extends AbstractController implements Initializabl
 				peta_vreme_povratak_value_lbl.setText(vreme_dolazak_dolazak_value_lbl.getText());
 				peta_povratak_broj_voza_value_lbl.setText("" + _selected_voz_povratak.getBrvoz());
 			}
-			peta_datum_povratak_lbl.setVisible(false);        		
-			peta_datum_povratak_separator_lbl.setVisible(false);  
-			peta_povratak_broj_voza_lbl.setVisible(false);  
-			peta_datum_povratak_value_lbl.setVisible(false); 
-			peta_vreme_povratak_value_lbl.setVisible(false); 
-			peta_povratak_broj_voza_value_lbl.setVisible(false); 
+			
+			peta_datum_povratak_lbl.setVisible(is_povratna);        		
+			peta_datum_povratak_separator_lbl.setVisible(is_povratna);  
+			peta_povratak_broj_voza_lbl.setVisible(is_povratna);  
+			peta_datum_povratak_value_lbl.setVisible(is_povratna); 
+			peta_vreme_povratak_value_lbl.setVisible(is_povratna); 
+			peta_povratak_broj_voza_value_lbl.setVisible(is_povratna); 
+
 
 			peta_tip_value_lbl.setText(from_tip_karte_id(_peta_karta_tip));
 			peta_razred_value_lbl.setText(razred_polazak_value_lbl.getText());
@@ -1889,8 +2128,8 @@ public class MainUIController extends AbstractController implements Initializabl
 		ukupna_cena_value_lbl.setText(ukupno_cena_value_lbl.getText());
 
 		placanje_pn.setVisible(true);
-//		restartSessionExpiration();
-		
+
+		logger.debug("<-- show_poslednja_provera_slide " );
 	}
 
 
@@ -1911,7 +2150,7 @@ public class MainUIController extends AbstractController implements Initializabl
 
 
 	private void setSerbian() {
-		System.out.println("setLocale on locale = SRPSKI");
+		logger.debug("setLocale on locale = SRPSKI");
 		_is_english= false;
 		_is_cirilica = false;
 		
@@ -1920,21 +2159,23 @@ public class MainUIController extends AbstractController implements Initializabl
 		stanica_lbl_slide_2.setText(KARTOMAT_STANICA_NAZIV_LATIN);
 		stanica_lbl_slide_3.setText(KARTOMAT_STANICA_NAZIV_LATIN);
 		kartomat_stanica_lbl.setText(KARTOMAT_STANICA_NAZIV_LATIN.substring("Polazna stanica : ".length())/*this.resources.getString("beograd_centar")*//*_kartomat.getNaziV_STANICE().toUpperCase()*/);
+		logger.debug("<--setLocale on locale = SRPSKI");
 	}
 
 	private void setEnglish() {
-		System.out.println("setLocale on locale = ENGLISH");
+		logger.debug("setLocale on locale = ENGLISH");
 		_is_english = true;
 		_is_cirilica = false;
 		setLocale(resources_eng);
-		stanica_lbl_slide_1.setText(KARTOMAT_STANICA_NAZIV_LATIN);
-		stanica_lbl_slide_2.setText(KARTOMAT_STANICA_NAZIV_LATIN);
-		stanica_lbl_slide_3.setText(KARTOMAT_STANICA_NAZIV_LATIN);
+		stanica_lbl_slide_1.setText("Starting station:" + KARTOMAT_STANICA_NAZIV_LATIN.substring("Polazna stanica : ".length()));
+		stanica_lbl_slide_2.setText("Starting station:" + KARTOMAT_STANICA_NAZIV_LATIN.substring("Polazna stanica : ".length()));
+		stanica_lbl_slide_3.setText("Starting station:" + KARTOMAT_STANICA_NAZIV_LATIN.substring("Polazna stanica : ".length()));
 		kartomat_stanica_lbl.setText(KARTOMAT_STANICA_NAZIV_LATIN.substring("Polazna stanica : ".length())/*this.resources.getString("beograd_centar")*//*_kartomat.getNaziV_STANICE().toUpperCase()*/);
+		logger.debug("<--setLocale on locale = ENGLISH");
 	}
 	
 	private void setSerbianCir() {
-		System.out.println("setLocale on locale = SRPSKI cirilica");
+		logger.debug("setLocale on locale = SRPSKI cirilica");
 		_is_english = false;
 		_is_cirilica = true;
 		setLocale(resources_cir);
@@ -1942,13 +2183,22 @@ public class MainUIController extends AbstractController implements Initializabl
 		stanica_lbl_slide_2.setText(KARTOMAT_STANICA_NAZIV_CIR);
 		stanica_lbl_slide_3.setText(KARTOMAT_STANICA_NAZIV_CIR);
 		kartomat_stanica_lbl.setText(KARTOMAT_STANICA_NAZIV_CIR.substring("Polazna stanica : ".length())/*this.resources.getString("beograd_centar")*//*_kartomat.getNaziV_STANICE().toUpperCase()*/);
+		try {
+			//uvidi se zbog izmene trake. Kada se traka izmeni
+			//printer automatski isece traku sto kasnije predstavlja problem
+			logger.info("printer , form_feed_n ");
+			new PrinterService().form_feed_n();
+		}catch(Exception e) {
+			
+		}
+		logger.debug("<--setLocale on locale = SRPSKI cirilica");
 	}
 
 	private void setLocale(ResourceBundle bundle) {
-
+		logger.debug("setLocale, bundle = " + bundle);
 		ResourceBundle.clearCache();
 		this.resources = bundle;
-		System.out.println("resetLocale finished");
+		logger.info("resetLocale finished");
 		
 		biraj_odrediste_lbl.setText(resources.getString("biraj_odrediste_lbl"));
 		ostale_destinacije_btn.setText(resources.getString("ostale_destinacije_btn"));
@@ -2024,7 +2274,7 @@ public class MainUIController extends AbstractController implements Initializabl
 		kartomat_stanica3_text_lbl21.setText(resources.getString("kartomat_stanica3_text_lbl21"));
 		kartomat_stanica3_text_lbl22.setText(resources.getString("kartomat_stanica3_text_lbl22"));
 		
-		trenutno_vreme_lbl.setText(resources.getString("trenutno_vreme_lbl"));
+
 		//stanica_lbl.setText(resources.getString("stanica_lbl"));
 		
 		novi_pomoc_btn.setText(resources.getString("novi_pomoc_btn"));
@@ -2164,7 +2414,7 @@ public class MainUIController extends AbstractController implements Initializabl
         placanje_posruka_5_lbl.setText(resources.getString("placanje_posruka_5_lbl"));
         
         plati_kartu_final_btn.setText(resources.getString("plati_kartu_final_btn"));
-        placanje_preostalo_vreme_lbl.setText(resources.getString("placanje_preostalo_vreme_lbl"));
+        
         
         tip_karte_odustani_btn.setText(resources.getString("odustani"));
         
@@ -2244,7 +2494,30 @@ public class MainUIController extends AbstractController implements Initializabl
 		placanje_pocetna_btn.setText(resources.getString("pocetna"));
 		
 		strana1_pomoc_btn.setText(resources.getString("novi_pomoc_btn"));
-
+		trece_pomoc_btn.setText(resources.getString("novi_pomoc_btn"));
+		rang_voza_dolazak_lbl.setText(resources.getString("rang"));
+		rang_voza_polazak_lbl.setText(resources.getString("rang"));
+		
+		
+		strana1_pomoc_zatvori_btn.setText(resources.getString("zatvori"));
+		strana2_pomoc_zatvori_btn.setText(resources.getString("zatvori"));
+		strana3_pomoc_zatvori_btn.setText(resources.getString("zatvori"));
+		
+		novi_izmeni_nazad_btn.setText(resources.getString("nazad"));
+		novi_izmeni_pocetna_btn.setText(resources.getString("pocetna"));
+		String prefix = "";
+		String prefix_trenutno_vreme = "";
+		if(_is_english) {
+			prefix = "              ";
+			prefix_trenutno_vreme = "          ";
+		}
+		novi_izmeni_preostalo_vreme_lbl.setText(prefix + resources.getString("placanje_preostalo_vreme_lbl"));
+		placanje_preostalo_vreme_lbl.setText(prefix + resources.getString("placanje_preostalo_vreme_lbl"));
+		trenutno_vreme_lbl.setText(prefix_trenutno_vreme + resources.getString("trenutno_vreme_lbl"));
+		trenutno_vreme_izmeni_lbl.setText(prefix_trenutno_vreme + resources.getString("trenutno_vreme_lbl"));
+		trenutno_vreme_destinacije_lbl.setText(prefix_trenutno_vreme + resources.getString("trenutno_vreme_lbl"));
+		
+		logger.debug("<--setLocale" );
 	}
 
 
@@ -2286,7 +2559,7 @@ public class MainUIController extends AbstractController implements Initializabl
 
 
 	public void update_recycling_session(int broj_sekundi) {
-		System.out.println("update_recycling_session, broj_sekundi = " + broj_sekundi);
+		logger.info("update_recycling_session, broj_sekundi = " + broj_sekundi);
 
 		Task<Void> task = new Task<Void>() {
 			@Override
@@ -2317,11 +2590,11 @@ public class MainUIController extends AbstractController implements Initializabl
 
 
 	public void handlePomoc() {
-		System.out.println("handlePomoc");
+		logger.info("handlePomoc");
 	}
 
 	public void handleIzmeniPolaske() {
-		System.out.println("handleIzmeniPolaske");
+		logger.info("handleIzmeniPolaske");
 //		prvi_panel_set_visible(false);
 		//polasci_pn.setVisible(!polasci_pn.isVisible());
 //		polasci_nova_pn.setVisible(true);
@@ -2337,37 +2610,37 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handleIzmeniTipKarte() {
-		System.out.println("handleIzmeniTipKarte");
-
+		logger.info("handleIzmeniTipKarte");
+		_previous_tip_karte = tip_karte_polazak_value_lbl.getText();
 		int broj_karata = Integer.parseInt(broj_putnika_lbl.getText());
 		prvi_tip_karte_pn.setVisible(broj_karata > 0);
 		prvi_tip_putnik_lbl.setVisible(broj_karata > 0);
 		prvi_tip_putnik_br_lbl.setVisible(broj_karata > 0);
-		prvi_tip_tf.setVisible(broj_karata > 0 && _prva_karta_tip == TIP_SRB_K13 || _prva_karta_tip == TIP_RAIL_K30);
+		prvi_tip_tf.setVisible(broj_karata > 0 && _prva_karta_tip == TIP_SRB_K13 || _prva_karta_tip == TIP_RAIL_K30 || _prva_karta_tip == TIP_PENZIONERI);
 		prvi_tip_ln.setVisible(broj_karata > 0);
 		
 		drugi_tip_karte_pn.setVisible(broj_karata > 1);
 		drugi_tip_putnik_lbl.setVisible(broj_karata > 1);
 		drugi_tip_putnik_br_lbl.setVisible(broj_karata > 1);
-		drugi_tip_tf.setVisible(broj_karata > 1 && _druga_karta_tip == TIP_SRB_K13 || _druga_karta_tip == TIP_RAIL_K30);
+		drugi_tip_tf.setVisible(broj_karata > 1 && _druga_karta_tip == TIP_SRB_K13 || _druga_karta_tip == TIP_RAIL_K30 || _druga_karta_tip == TIP_PENZIONERI);
 		drugi_tip_ln.setVisible(broj_karata > 1);
 		
 		treci_tip_karte_pn.setVisible(broj_karata > 2);
 		treci_tip_putnik_lbl.setVisible(broj_karata > 2);
 		treci_tip_putnik_br_lbl.setVisible(broj_karata > 2);
-		treci_tip_tf.setVisible(broj_karata > 2 && _treca_karta_tip == TIP_SRB_K13 || _treca_karta_tip == TIP_RAIL_K30);
+		treci_tip_tf.setVisible(broj_karata > 2 && _treca_karta_tip == TIP_SRB_K13 || _treca_karta_tip == TIP_RAIL_K30 || _treca_karta_tip == TIP_PENZIONERI);
 		treci_tip_ln.setVisible(broj_karata > 2);
 		
 		cetvrti_tip_karte_pn.setVisible(broj_karata > 3);
 		cetvrti_tip_putnik_lbl.setVisible(broj_karata > 3);
 		cetvrti_tip_putnik_br_lbl.setVisible(broj_karata > 3);
-		cetvrti_tip_tf.setVisible(broj_karata > 3 && _cetvrta_karta_tip == TIP_SRB_K13 || _cetvrta_karta_tip == TIP_RAIL_K30) ;
+		cetvrti_tip_tf.setVisible(broj_karata > 3 && _cetvrta_karta_tip == TIP_SRB_K13 || _cetvrta_karta_tip == TIP_RAIL_K30 || _cetvrta_karta_tip == TIP_PENZIONERI) ;
 		cetvrti_tip_ln.setVisible(broj_karata > 3);
 		
 		peti_tip_karte_pn.setVisible(broj_karata > 4);
 		peti_tip_putnik_lbl.setVisible(broj_karata > 4);
 		peti_tip_putnik_br_lbl.setVisible(broj_karata > 4);
-		peti_tip_tf.setVisible(broj_karata > 4 && _peta_karta_tip == TIP_SRB_K13 || _peta_karta_tip == TIP_RAIL_K30);
+		peti_tip_tf.setVisible(broj_karata > 4 && _peta_karta_tip == TIP_SRB_K13 || _peta_karta_tip == TIP_RAIL_K30 || _peta_karta_tip == TIP_PENZIONERI);
 		peti_tip_ln.setVisible(broj_karata > 4);
 		
 		boolean is_drugi_razred = _selected_razred_polazak == DEFAULT_RAZRED && _selected_razred_povratak == DEFAULT_RAZRED;
@@ -2507,22 +2780,23 @@ public class MainUIController extends AbstractController implements Initializabl
 //	}
 	
 
-	public void handleLanguage(){
-		if(!_is_cirilica) {
-			setSerbianCir();
-		}else {
-			if(_is_english) {
-				setSerbian();
-			}else {
-				setEnglish();
-			}
-		}
-
-	}
+//	public void handleLanguage(){
+//		if(!_is_cirilica) {
+//			setSerbianCir();
+//		}else {
+//			if(_is_english) {
+//				setSerbian();
+//			}else {
+//				setEnglish();
+//			}
+//		}
+//
+//	}
 	
 
 	
 	public void handle_destinacija1() {
+		logger.info("handle_destinacija1");
 		FrekventneStaniceBean dest = _frekventne_stanice.get(0);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2532,7 +2806,8 @@ public class MainUIController extends AbstractController implements Initializabl
 			//destinacija1_btn.setStyle("-fx-background-color: #108f64;-fx-text-fill: white;");
 			setButtonSelected(destinacija1_btn, true);
 			//uslov_za_drugi_korak();
-			setPodaciOdVoza();
+			//setPodaciOdVoza();
+			setPodaciOdVozaMarko();
 			handleOsvezi();
 		}
 		
@@ -2540,6 +2815,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_destinacija2() {
+		logger.info("handle_destinacija2");
 		FrekventneStaniceBean dest = _frekventne_stanice.get(1);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2549,12 +2825,14 @@ public class MainUIController extends AbstractController implements Initializabl
 			//destinacija2_btn.setStyle("-fx-background-color: #108f64;-fx-text-fill: white;");
 			setButtonSelected(destinacija2_btn, true);
 			//uslov_za_drugi_korak();
-			setPodaciOdVoza();
+			//setPodaciOdVoza();
+			setPodaciOdVozaMarko();
 			handleOsvezi();
 		}
 	}
 	
 	public void handle_destinacija3() {
+		logger.info("handle_destinacija3");
 		FrekventneStaniceBean dest = _frekventne_stanice.get(2);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2564,12 +2842,14 @@ public class MainUIController extends AbstractController implements Initializabl
 			//destinacija3_btn.setStyle("-fx-background-color: #108f64;-fx-text-fill: white;");
 			setButtonSelected(destinacija3_btn, true);
 			//uslov_za_drugi_korak();
-			setPodaciOdVoza();
+			//setPodaciOdVoza();
+			setPodaciOdVozaMarko();
 			handleOsvezi();
 		}
 	}
 	
 	public void handle_destinacija4() {
+		logger.info("handle_destinacija4");
 		FrekventneStaniceBean dest = _frekventne_stanice.get(3);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2579,12 +2859,14 @@ public class MainUIController extends AbstractController implements Initializabl
 			//destinacija4_btn.setStyle("-fx-background-color: #108f64;-fx-text-fill: white;");
 			setButtonSelected(destinacija4_btn, true);
 			//uslov_za_drugi_korak();
-			setPodaciOdVoza();
+			//setPodaciOdVoza();
+			setPodaciOdVozaMarko();
 			handleOsvezi();
 		}
 	}
 	
 	public void handle_destinacija5() {
+		logger.info("handle_destinacija5");
 		FrekventneStaniceBean dest = _frekventne_stanice.get(4);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2594,12 +2876,14 @@ public class MainUIController extends AbstractController implements Initializabl
 			//destinacija5_btn.setStyle("-fx-background-color: #108f64;-fx-text-fill: white;");
 			setButtonSelected(destinacija5_btn, true);
 			//uslov_za_drugi_korak();
-			setPodaciOdVoza();
+			//setPodaciOdVoza();
+			setPodaciOdVozaMarko();
 			handleOsvezi();
 		}
 	}
 	
 	public void handle_destinacija6() {
+		logger.info("handle_destinacija6");
 		FrekventneStaniceBean dest = _frekventne_stanice.get(5);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2609,12 +2893,14 @@ public class MainUIController extends AbstractController implements Initializabl
 			//destinacija6_btn.setStyle("-fx-background-color: #108f64;-fx-text-fill: white;");
 			setButtonSelected(destinacija6_btn, true);
 			//uslov_za_drugi_korak();
-			setPodaciOdVoza();
+			//setPodaciOdVoza();
+			setPodaciOdVozaMarko();
 			handleOsvezi();
 		}
 	}
 	
 	public void handle_destinacija7() {
+		logger.info("handle_destinacija7");
 		FrekventneStaniceBean dest = _frekventne_stanice.get(6);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2624,12 +2910,14 @@ public class MainUIController extends AbstractController implements Initializabl
 			//destinacija6_btn.setStyle("-fx-background-color: #108f64;-fx-text-fill: white;");
 			setButtonSelected(destinacija7_btn, true);
 			//uslov_za_drugi_korak();
-			setPodaciOdVoza();
+			//setPodaciOdVoza();
+			setPodaciOdVozaMarko();
 			handleOsvezi();
 		}
 	}
 	
 	public void handle_destinacija8() {
+		logger.info("handle_destinacija8");
 		FrekventneStaniceBean dest = _frekventne_stanice.get(7);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2639,12 +2927,14 @@ public class MainUIController extends AbstractController implements Initializabl
 			//destinacija6_btn.setStyle("-fx-background-color: #108f64;-fx-text-fill: white;");
 			setButtonSelected(destinacija8_btn, true);
 			//uslov_za_drugi_korak();
-			setPodaciOdVoza();
+			//setPodaciOdVoza();
+			setPodaciOdVozaMarko();
 			handleOsvezi();
 		}
 	}
 	
 	public void handle_ostale() {
+		logger.info("handle_ostale");
 //		System.out.println("jebeni naziv stanice je: " + _kartomat.getNaziV_STANICE());
 //		stanica_lbl.setText(_kartomat.getNaziV_STANICE());
 		ostale_stanice_pn.setVisible(true);
@@ -2716,27 +3006,141 @@ public class MainUIController extends AbstractController implements Initializabl
 		handle_ostale_common(ostale_stanice_16);
 	}
 	
+	private void setSelectedVoz(VozBean selected) {
+		logger.info("setSelectedVoz, selected = " + selected);
+		try {
+		_selected_voz = selected;
+		_selected_voz.set_trajanje_datum(datum_polaska_value_lbl.getText(), SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).
+				getTrajanjeKarte(_selected_voz.getOdsifra(), _selected_voz.getDosifra(), 1/*via*/, 2/*smer - povratna*/, _selected_voz.getDatumPolaska()));
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void setPodaciOdVozaMarko() {
+		logger.info("setPodaciOdVozaMarko" );
+		loader_pn.setVisible(true);
+		loader_pn.toFront();
+		
+
+		GetListaVozovaPolazakThread getPolasci = new GetListaVozovaPolazakThread(this, SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME,_kartomat.getSifrA_STANICE(), 
+				getSifraStaniceFromNaziv(odrediste_value_lbl.getText()), datum_polaska_value_lbl.getText(), 
+				Integer.parseInt(broj_putnika_lbl.getText()), _selected_razred_polazak);
+		Thread thread = new Thread(getPolasci);
+		thread.start();
+	}
+	
+
+
+///////////////////////////////////////////////////	IGetListaVozovaPolasci start///////////////////////////////
+
+	public void setListaVozovaPolasciCallbackSuccess(List<VozBean> lista_vozova) {
+		logger.info("setListaVozovaPolasciCallbackSuccess, lista_vozova = " + lista_vozova );
+		_svi_polasci = lista_vozova;
+		loader_pn.setVisible(false);
+		loader_pn.toFront();
+		
+		Platform.runLater(new Runnable() {
+		    @Override
+		    public void run() {
+		    	setPodaciOdVoza();
+		    }
+		});
+	}
+	
+	public void setListaVozovaPolasciCallbackNOTSuccess(String error) {
+		logger.info("setListaVozovaPolasciCallbackNOTSuccess, error = " + error );
+		run_error("connectiontimeout, probajte ponovo", "probajte ponovo", "", "", "", "", "", 3);
+		
+		Platform.runLater(new Runnable() {
+		    @Override
+		    public void run() {
+				loader_pn.setVisible(false);
+				resetForNewSession();
+		    }
+		});
+	}
+
+	///////////////////////////////////////////////////IGetListaVozovaPolasci iface end///////////////////////////
+	
+	
+	
+	private void setPodaciOdVozaPovratakMarko(String datum_povratka) {
+		logger.info("setPodaciOdVozaPovratakMarko, datum_povratka = " + datum_povratka );
+		loader_pn.setVisible(true);
+			
+		GetListaVozovaPovratakThread getPovratci = new GetListaVozovaPovratakThread(this, SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME,
+				getSifraStaniceFromNaziv(odrediste_value_lbl.getText()), 
+				 _kartomat.getSifrA_STANICE(), datum_povratka, 
+				Integer.parseInt(broj_putnika_lbl.getText()), _selected_razred_povratak);
+		Thread thread = new Thread(getPovratci);
+		thread.start();
+	}
+	
+///////////////////////////////////////////////////	IGetListaVozovaPovratak start///////////////////////////////
+	
+	public void setListaVozovaPovratakCallbackSuccess(String datum_povratka, List<VozBean> lista_vozova) {
+		logger.info("setListaVozovaPovratakCallbackSuccess, datum_povratka = " + datum_povratka + ", lista_vozova = " + lista_vozova );
+		loader_pn.setVisible(false);
+		
+		Platform.runLater(new Runnable() {
+		    @Override
+		    public void run() {
+		    	setPodaciOdVozaPovratakMarko(datum_povratka, lista_vozova);
+		    }
+		});
+	}
+	
+	public void setListaVozovaPovratakCallbackNOTSuccess(String error) {
+		logger.info("setListaVozovaPovratakCallbackNOTSuccess, error = " + error );
+		run_error("connectiontimeout, probajte ponovo", "probajte ponovo", "", "", "", "", "", 3);
+		
+		Platform.runLater(new Runnable() {
+		    @Override
+		    public void run() {
+				loader_pn.setVisible(false);
+				resetForNewSession();
+		    }
+		});
+		
+	}
+	
+///////////////////////////////////////////////////	IGetListaVozovaPovratak end///////////////////////////////	
+	
+	
 	
 	private void setPodaciOdVoza() {
+		logger.info("setPodaciOdVoza" );
 		_selected_voz = null;
 		try {
 			if(_selected_voz == null) {
-				List<VozBean> lista_vozova = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getListaVozovaNaTrasi(_kartomat.getSifrA_STANICE(), 
-						getSifraStaniceFromNaziv(odrediste_value_lbl.getText()), datum_polaska_value_lbl.getText(), 
-						Integer.parseInt(broj_putnika_lbl.getText()), _selected_razred_polazak);
-				_svi_polasci = lista_vozova;
+//				List<VozBean> lista_vozova = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getListaVozovaNaTrasiNew(_kartomat.getSifrA_STANICE(), 
+//						getSifraStaniceFromNaziv(odrediste_value_lbl.getText()), datum_polaska_value_lbl.getText(), 
+//						Integer.parseInt(broj_putnika_lbl.getText()), _selected_razred_polazak);
+//				_svi_polasci = lista_vozova;
 
-				if(lista_vozova.size() > 0) {
+				if(_svi_polasci.size() > 0) {
 
-					for( VozBean current : lista_vozova) {
-						String[] splt = current.getVremep().split(":");
-						int vreme_pol = Integer.parseInt(splt[0]) *100 + Integer.parseInt(splt[1]);
-						int current_time = Integer.parseInt(new SimpleDateFormat("HH").format(new Date())) * 100 + Integer.parseInt(new SimpleDateFormat("mm").format(new Date()));
-						if(true/*vreme_pol > current_time + 5/*5 minuta*/) {
-							_selected_voz = current;
-							
+					for( VozBean current : _svi_polasci) {
+						
+						if(!is_vreme_polaska_manje_od_5_minuta(current.getVremep())) {
+//							_selected_voz = current;
+//							_selected_voz.set_trajanje_datum(SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).
+//									getTrajanjeKarte(_selected_voz.getOdsifra(), _selected_voz.getDosifra(), 1/*via*/, 2/*smer - povratna*/, _selected_voz.getDatumPolaska()));
+							setSelectedVoz(current);
 							break;
-						} 
+						}
+//						String[] splt = current.getVremep().split(":");
+//						int vreme_pol = Integer.parseInt(splt[0]) *100 + Integer.parseInt(splt[1]);
+//						Calendar current_plus_pet_minuta = Calendar.getInstance();
+//						current_plus_pet_minuta.add(Calendar.MINUTE, 5);
+//						int current_time_plus_5_min = Integer.parseInt(new SimpleDateFormat("HH").format(current_plus_pet_minuta.getTime())) * 100 + 
+//								Integer.parseInt(new SimpleDateFormat("mm").format(current_plus_pet_minuta.getTime()));
+//						if(vreme_pol > current_time_plus_5_min) {
+//							_selected_voz = current;
+//							
+//							break;
+//						} 
 						
 						
 						//current.getVremep()
@@ -2750,99 +3154,285 @@ public class MainUIController extends AbstractController implements Initializabl
 			}// end if _selected_voz == null
 		}catch(Exception e) {
 			e.printStackTrace();
-			System.out.println("Exception when try to find selected voz, details: " + e.getMessage());
+			logger.error("Exception when try to find selected voz, details: " + e.getMessage(), e);
 		}
 		
 		if(_selected_voz_povratak != null) {
 			// za sucaj da je prethodno bila setovana povratna karta
-			setPodaciOdVozaPovratak();
+			String datum_povratka = /*datum_povratka_polazak_value_lbl.getText() != null || !datum_povratka_polazak_value_lbl.getText().equals("")
+					? datum_povratka_polazak_value_lbl.getText() :*/ datum_polaska_value_lbl.getText();
+			setPodaciOdVozaPovratak(datum_povratka);
 		}
 		
 		
-		uslov_za_drugi_korak();
-		handle_pagination_polasci_povratci(true);
-		setCena(smer_value_lbl.getText().equals(resources.getString("smer_povratni_btn")));
+		
+		
+
+		    	uslov_za_drugi_korak();
+				handle_pagination_polasci_povratci(true, true);
+				setCena(smer_value_lbl.getText().equals(resources.getString("smer_povratni_btn")));
+
+				logger.info("<--");
 	}
 	
 	
-	private void setPodaciOdVozaPovratak() {
-		
+	private void setPodaciOdVozaPovratakMarko(String datum_polaska_povratak, List<VozBean> lista_vozova) {
+		logger.info("setPodaciOdVozaPovratakMarko, datum_polaska_povratak = " + datum_polaska_povratak + ", lista_vozova = " + lista_vozova);
 		_selected_voz_povratak = null;
 		//setuj uvek jedan dan posle da bi uhvatio makar jedan polazak su povratku jer nije bitno kada je polazak zbog tarifnog sistema
 		//zato cemo uraditi od sutrasnjeg dana
-		String datum_polaska = datum_polaska_value_lbl.getText();
+		//doslo je do promene, sada moramo da posmatramo selektovani datum povratka zbog npp karata
+		//String datum_polaska = datum_polaska_value_lbl.getText();
 		Calendar datum_povratka_date = Calendar.getInstance();
 		try {
-		datum_povratka_date.setTime(_sdf.parse(datum_polaska));
+			
+		datum_povratka_date.setTime(_sdf.parse(datum_polaska_povratak));
 		}catch(Exception e) {
 			//onda uzimamo danasnji dan - ovo nikad ne bi trebalo da se desi
-			System.out.println("PARSE EXCEPTION when parse datum_polaska_value_lbl.getText() = " + 
-					datum_polaska_value_lbl.getText() + ", will use todays date for return date");
+			logger.error("PARSE EXCEPTION when parse datum_polaska_value_lbl.getText() = " + 
+					datum_polaska_value_lbl.getText() + ", will use todays date for return date", e);
 		}
-		if(!isVozWithReservations("" + _selected_voz.getBrvoz())) {
-			datum_povratka_date.add(Calendar.DAY_OF_YEAR, 1);
-		}
+//		if(!isVozWithReservations(_selected_voz/*"" + _selected_voz.getBrvoz()*/)) {
+//			datum_povratka_date.add(Calendar.DAY_OF_YEAR, 1);
+//		}
 		
-		datum_povratka_polazak_value_lbl.setText(_sdf.format(datum_povratka_date.getTime()));
+		String datum_povratka = _sdf.format(datum_povratka_date.getTime());
+		datum_povratka_polazak_value_lbl.setText(datum_povratka);
 		/////////////////u slucaju da je polazni voz
 		try {
-			List<VozBean> lista_vozova = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getListaVozovaNaTrasi(getSifraStaniceFromNaziv(odrediste_value_lbl.getText()), 
-					 _kartomat.getSifrA_STANICE(), datum_povratka_polazak_value_lbl.getText(), 
-					Integer.parseInt(broj_putnika_lbl.getText()), _selected_razred_povratak);
-			_svi_povratci = lista_vozova;
-			_svi_povratci_filtered_rezervacije.clear();
-			_svi_povratci_filtered_bez_rezervacije.clear();
+
+			_svi_povratci = new ArrayList<VozBean>();
+//			_svi_povratci = lista_vozova;
+//			_svi_povratci_filtered_rezervacije.clear();
+//			_svi_povratci_filtered_bez_rezervacije.clear();
 			////////////////filterovano/////////////////
-			for (VozBean current : lista_vozova) {
-				if(isVozWithReservations("" + current.getBrvoz())) {
-					//ovde imamo dodatak, ubacicemo samo one koji su posle vremena dolaska polaznog voza
-					String vreme_dolaska_polaznog_voza = _selected_voz.getVremed();
-					
-					String vreme_polaska_povratnog_voza = current.getVremep();
-					//treba ih uporediti, u formi su HH:mm
-					vreme_dolaska_polaznog_voza = vreme_dolaska_polaznog_voza.replace(":", "");
-					vreme_polaska_povratnog_voza = vreme_polaska_povratnog_voza.replace(":", "");
-					int vreme_dolaska_polaznog_voza_int = Integer.parseInt(vreme_dolaska_polaznog_voza);
-					int vreme_polaska_povratnog_voza_int = Integer.parseInt(vreme_polaska_povratnog_voza);
-					if(vreme_polaska_povratnog_voza_int > vreme_dolaska_polaznog_voza_int) {
-						_svi_povratci_filtered_rezervacije.add(current);
+			System.out.println(" ################## datum polaska = " + _selected_voz.getDatumPolaska());
+			System.out.println(" ################## datum povratka = " + datum_povratka);
+			if(_selected_voz.getDatumPolaska().equals(datum_povratka)) {
+				logger.info("_selected_voz.getDatum_dolaska() = " + _selected_voz.getDatum_dolaska() + 
+						", _selected_voz.getDatumPolaska() = " + _selected_voz.getDatumPolaska());
+				if(_selected_voz.getDatum_dolaska().equals(_selected_voz.getDatumPolaska())) {
+					for (VozBean current : lista_vozova) {
+						//				if(isVozWithReservations(current/*"" + current.getBrvoz()*/)) {
+						//ovde imamo dodatak, ubacicemo samo one koji su posle vremena dolaska polaznog voza
+						String datum_polaska = _selected_voz.getDatumPolaska();
+						//					if(datum_polaska.equals(datum_polaska_povratak)) {
+
+
+						String vreme_polaska_povratnog_voza = current.getVremep();
+						//treba ih uporediti, u formi su HH:mm
+						String vreme_dolaska_polaznog_voza = _selected_voz.getVremed();
+						vreme_dolaska_polaznog_voza = vreme_dolaska_polaznog_voza.replace(":", "");
+						vreme_polaska_povratnog_voza = vreme_polaska_povratnog_voza.replace(":", "");
+						int vreme_dolaska_polaznog_voza_int = Integer.parseInt(vreme_dolaska_polaznog_voza);
+						int vreme_polaska_povratnog_voza_int = Integer.parseInt(vreme_polaska_povratnog_voza);
+						logger.info("vreme_dolaska_polaznog_voza  = " + 
+								vreme_dolaska_polaznog_voza + ", vreme_polaska_povratnog_voza_int = " + vreme_polaska_povratnog_voza_int);
+						if(vreme_polaska_povratnog_voza_int > vreme_dolaska_polaznog_voza_int) {
+							_svi_povratci.add(current);
+							//							_svi_povratci_filtered_rezervacije.add(current);
+						}
+						//					}else {
+						//						_svi_povratci.add(current);
+						//						_svi_povratci_filtered_rezervacije.add(current);
+						//					}
+						//				}else {
+						//					_svi_povratci.add(current);
+						//					_svi_povratci_filtered_bez_rezervacije.add(current);
+						//				}
 					}
+					logger.info("List size of return trains based on fitered returned time in same date is:  = " + 
+							_svi_povratci.size());
 				}else {
-					_svi_povratci_filtered_bez_rezervacije.add(current);
+
+					handle_smer_u_jednom();
+					run_info("Ne postoje povratni polasci za", 
+							"izabrano odredište " + odrediste_value_lbl.getText() , "i izabrani datum " + datum_polaska_value_lbl.getText(), 
+							"i izabrabi broj putnika " + broj_putnika_lbl.getText(), "i izabrani razred. Promenite ", "neki od parametara i ", "pokušajte ponovo", 10);
 				}
-			}
-			
 			/////////////////end filterovano////////////
 			
 			///ovo se radi jer je dogovor da ako polazak ima rezervaciju, mora i povratak da je ima
-			if(isVozWithReservations("" + _selected_voz.getBrvoz())) {
-				lista_vozova = _svi_povratci_filtered_rezervacije;
-			}else {
-				lista_vozova = _svi_povratci_filtered_bez_rezervacije;
-			}
+//			if(isVozWithReservations(_selected_voz/*"" + _selected_voz.getBrvoz()*/)) {
+//				lista_vozova = _svi_povratci;
+//				lista_vozova = _svi_povratci_filtered_rezervacije;
+//			}else {
+//				lista_vozova = _svi_povratci;
+//				lista_vozova = _svi_povratci_filtered_bez_rezervacije;
+//			}
 //			setPovratakTable(lista_vozova);
-			if(lista_vozova.size() > 0) {
-				for( VozBean current : lista_vozova) {
+			}else {
+				_svi_povratci.addAll( lista_vozova );
+			}
+			if(_svi_povratci.size() > 0) {
+				for( VozBean current : _svi_povratci) {
 //					String[] splt = current.getVremep().split(":");
 //					int vreme_pol = Integer.parseInt(splt[0]) *100 + Integer.parseInt(splt[1]);
 //					int current_time = Integer.parseInt(new SimpleDateFormat("HH").format(new Date())) * 100 + Integer.parseInt(new SimpleDateFormat("mm").format(new Date()));
 					if(true/*vreme_pol > current_time + 5/*5 minuta*/) {
 						_selected_voz_povratak = current;
 						//stigla izmena - ukoliko je bez rezervacija, onda povratni voz mora biti ranga regio
-						if(!isVozWithReservations("" + _selected_voz.getBrvoz())) {
-							if(current.getRang() == 4 || current.getRang() == 6 ) {
-								//nasli smo ga, ako ne, nastavljamo sa pretragom u loop-u
-								System.out.println("############ nasli smo POVRATNI sa rangom = " + current.getRang());
-							}else {
-								System.out.println("############ NISMO nasli POVRATNI, rang je = " + current.getRang() + " , nastavljamo dalje u petlji");
-								continue;
-							}
-						}
+//						if(!isVozWithReservations(_selected_voz/*"" + _selected_voz.getBrvoz()*/)) {
+//							if(current.getRang() == 4 || current.getRang() == 6 ) {
+//								//nasli smo ga, ako ne, nastavljamo sa pretragom u loop-u
+//								logger.info("############ nasli smo POVRATNI sa rangom = " + current.getRang());
+//							}else {
+//								logger.info("############ NISMO nasli POVRATNI, rang je = " + current.getRang() + " , nastavljamo dalje u petlji");
+//								continue;
+//							}
+//						}
 						if(_selected_voz_povratak == null) {
-							_selected_voz_povratak = lista_vozova.get(0);
+							_selected_voz_povratak = _svi_povratci.get(0);
 						}
 						if(_selected_voz_povratak.getRelkm() <= 100/*daljina u kilometrima*/) {
 							vaznost_value_lbl.setText(resources.getString("na_dan_kupovine") );
+							int broj_dana = _selected_voz.get_trajanje_broj_dana() - 1;
+							logger.info("############ trajanje broj dana = " + broj_dana);
+							switch(broj_dana) {
+							case -1:
+							case 0:
+							case 1: vaznost_value_lbl.setText(resources.getString("jedan_dan") );break;
+							case 2: vaznost_value_lbl.setText(resources.getString("dva_dana") );break;
+							case 3: vaznost_value_lbl.setText(resources.getString("tri_dana") );break;
+							case 4: vaznost_value_lbl.setText(resources.getString("cetiri_dana") );break;
+							case 5: vaznost_value_lbl.setText(resources.getString("pet_dana") );break;
+							case 6: vaznost_value_lbl.setText(resources.getString("sest_dana") );break;
+							default: vaznost_value_lbl.setText( resources.getString("narednih_petnaest_dana") );
+							}
+						}else {
+							vaznost_value_lbl.setText( resources.getString("narednih_petnaest_dana") );
+						}
+						break;
+					} 
+					//current.getVremep()
+				}
+			}else {
+
+				
+				handle_smer_u_jednom();
+				run_info("Ne postoje povratni polasci za", 
+						"izabrano odredište " + odrediste_value_lbl.getText() , "i izabrani datum " + datum_polaska_value_lbl.getText(), 
+						"i izabrabi broj putnika " + broj_putnika_lbl.getText(), "i izabrani razred. Promenite ", "neki od parametara i ", "pokušajte ponovo", 10);
+				
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.error("Exception when try to find selected voz, details: " + e.getMessage(), e);
+		}
+		
+		
+		uslov_za_drugi_korak();
+		handle_pagination_polasci_povratci(true, true);
+		setCena(_selected_voz_povratak != null /*true*/);
+		logger.info("<--");
+	}
+	
+	
+	private void setPodaciOdVozaPovratak(String datum_polaska_povratak) {
+		logger.info("#######setPodaciOdVozaPovratak, datum_polaska_povratak = " + datum_polaska_povratak);
+		_selected_voz_povratak = null;
+		//setuj uvek jedan dan posle da bi uhvatio makar jedan polazak su povratku jer nije bitno kada je polazak zbog tarifnog sistema
+		//zato cemo uraditi od sutrasnjeg dana
+		//doslo je do promene, sada moramo da posmatramo selektovani datum povratka zbog npp karata
+		//String datum_polaska = datum_polaska_value_lbl.getText();
+		Calendar datum_povratka_date = Calendar.getInstance();
+		try {
+			
+		datum_povratka_date.setTime(_sdf.parse(datum_polaska_povratak));
+		}catch(Exception e) {
+			//onda uzimamo danasnji dan - ovo nikad ne bi trebalo da se desi
+			logger.error("PARSE EXCEPTION when parse datum_polaska_value_lbl.getText() = " + 
+					datum_polaska_value_lbl.getText() + ", will use todays date for return date", e);
+		}
+		//if(!isVozWithReservations(_selected_voz/*"" + _selected_voz.getBrvoz()*/)) {
+//			datum_povratka_date.add(Calendar.DAY_OF_YEAR, 1);
+		//}
+		
+		datum_povratka_polazak_value_lbl.setText(_sdf.format(datum_povratka_date.getTime()));
+		/////////////////u slucaju da je polazni voz
+		try {
+			List<VozBean> lista_vozova = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getListaVozovaNaTrasiNew(getSifraStaniceFromNaziv(odrediste_value_lbl.getText()), 
+					 _kartomat.getSifrA_STANICE(), datum_polaska_povratak/*datum_povratka_polazak_value_lbl.getText()*/, 
+					Integer.parseInt(broj_putnika_lbl.getText()), _selected_razred_povratak);
+			logger.info("#######setPodaciOdVozaPovratak, lista_vozova u POVRATKU velicina = " + lista_vozova.size());
+			_svi_povratci = new ArrayList<VozBean>();
+//			_svi_povratci = lista_vozova;
+//			_svi_povratci_filtered_rezervacije.clear();
+//			_svi_povratci_filtered_bez_rezervacije.clear();
+			////////////////filterovano/////////////////
+			for (VozBean current : lista_vozova) {
+//				if(isVozWithReservations(_selected_voz/*"" + current.getBrvoz()*/)) {
+					//ovde imamo dodatak, ubacicemo samo one koji su posle vremena dolaska polaznog voza
+					String datum_polaska = _selected_voz.getDatumPolaska();
+//					if(datum_polaska.equals(datum_polaska_povratak)) {
+						String vreme_dolaska_polaznog_voza = _selected_voz.getVremed();
+
+						String vreme_polaska_povratnog_voza = current.getVremep();
+						//treba ih uporediti, u formi su HH:mm
+						vreme_dolaska_polaznog_voza = vreme_dolaska_polaznog_voza.replace(":", "");
+						vreme_polaska_povratnog_voza = vreme_polaska_povratnog_voza.replace(":", "");
+						int vreme_dolaska_polaznog_voza_int = Integer.parseInt(vreme_dolaska_polaznog_voza);
+						int vreme_polaska_povratnog_voza_int = Integer.parseInt(vreme_polaska_povratnog_voza);
+						if(vreme_polaska_povratnog_voza_int > vreme_dolaska_polaznog_voza_int) {
+							_svi_povratci.add(current);
+//							_svi_povratci_filtered_rezervacije.add(current);
+						}
+//					}
+//					else {
+//						_svi_povratci.add(current);
+//						_svi_povratci_filtered_rezervacije.add(current);
+//					}
+//				}else {
+//					_svi_povratci.add(current);
+//					_svi_povratci_filtered_bez_rezervacije.add(current);
+//				}
+			}
+			
+			/////////////////end filterovano////////////
+			
+			///ovo se radi jer je dogovor da ako polazak ima rezervaciju, mora i povratak da je ima
+//			if(isVozWithReservations(_selected_voz/*"" + _selected_voz.getBrvoz()*/)) {
+//			lista_vozova = _svi_povratci;
+//				lista_vozova = _svi_povratci_filtered_rezervacije;
+//			}else {
+//				lista_vozova = _svi_povratci;
+//				lista_vozova = _svi_povratci_filtered_bez_rezervacije;
+//			}
+//			setPovratakTable(lista_vozova);
+			if(_svi_povratci.size() > 0) {
+				for( VozBean current : _svi_povratci) {
+//					String[] splt = current.getVremep().split(":");
+//					int vreme_pol = Integer.parseInt(splt[0]) *100 + Integer.parseInt(splt[1]);
+//					int current_time = Integer.parseInt(new SimpleDateFormat("HH").format(new Date())) * 100 + Integer.parseInt(new SimpleDateFormat("mm").format(new Date()));
+					if(true/*vreme_pol > current_time + 5/*5 minuta*/) {
+						_selected_voz_povratak = current;
+						//stigla izmena - ukoliko je bez rezervacija, onda povratni voz mora biti ranga regio
+//						if(!isVozWithReservations(_selected_voz/*"" + _selected_voz.getBrvoz()*/)) {
+//							if(current.getRang() == 4 || current.getRang() == 6 ) {
+//								//nasli smo ga, ako ne, nastavljamo sa pretragom u loop-u
+//								logger.info("############ nasli smo POVRATNI sa rangom = " + current.getRang());
+//							}else {
+//								logger.info("############ NISMO nasli POVRATNI, rang je = " + current.getRang() + " , nastavljamo dalje u petlji");
+//								continue;
+//							}
+//						}
+						if(_selected_voz_povratak == null) {
+							_selected_voz_povratak = _svi_povratci.get(0);
+						}
+						if(_selected_voz_povratak.getRelkm() <= 100/*daljina u kilometrima*/) {
+							vaznost_value_lbl.setText(resources.getString("na_dan_kupovine") );
+							int dana_vaznosti = _selected_voz.get_trajanje_broj_dana() - 1;
+							switch(dana_vaznosti) {
+							case -1:
+							case 0:
+							case 1: vaznost_value_lbl.setText(resources.getString("jedan_dan") );break;
+							case 2: vaznost_value_lbl.setText(resources.getString("dva_dana") );break;
+							case 3: vaznost_value_lbl.setText(resources.getString("tri_dana") );break;
+							case 4: vaznost_value_lbl.setText(resources.getString("cetiri_dana") );break;
+							case 5: vaznost_value_lbl.setText(resources.getString("pet_dana") );break;
+							case 6: vaznost_value_lbl.setText(resources.getString("sest_dana") );break;
+							default: vaznost_value_lbl.setText( resources.getString("narednih_petnaest_dana") );
+							}
 						}else {
 							vaznost_value_lbl.setText( resources.getString("narednih_petnaest_dana") );
 						}
@@ -2858,31 +3448,37 @@ public class MainUIController extends AbstractController implements Initializabl
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
-			System.out.println("Exception when try to find selected voz, details: " + e.getMessage());
+			logger.error("Exception when try to find selected voz, details: " + e.getMessage(), e);
 		}
 		
 		
 		uslov_za_drugi_korak();
-		handle_pagination_polasci_povratci(true);
+		handle_pagination_polasci_povratci(true, true);
 		setCena(true/*smer_value_lbl.getText().equals(resources.getString("smer_povratni_btn"))*/);
+		logger.info("<--");
 	}
 	
 	
 	private List<VozBean> getListaPovrataka(){
-		System.out.println("_svi_povratci_filtered_rezervacije size = " + _svi_povratci_filtered_rezervacije.size());
-		System.out.println("_svi_povratci_filtered_bez_rezervacije size = " + _svi_povratci_filtered_bez_rezervacije.size());
-		if(isVozWithReservations(broj_voza_polazak_value_lbl.getText())) {
-			
-			return _svi_povratci_filtered_rezervacije;
-		}else {
-			
-			return _svi_povratci_filtered_bez_rezervacije;
-		}
+		//29.10.2023
+		//U razgovoru sa Zokijem, izbacuje se logika da ako je polazak sa rezervacijom, da i povratak mora da bude sa rezervacijom
+		// i ako je polazak bez rezervacije da i povratak mora da bude bez rezervacije
+//		logger.info("_svi_povratci_filtered_rezervacije size = " + _svi_povratci_filtered_rezervacije.size());
+//		logger.info("_svi_povratci_filtered_bez_rezervacije size = " + _svi_povratci_filtered_bez_rezervacije.size());
+//		if(isVozWithReservations(_selected_voz/*broj_voza_polazak_value_lbl.getText()*/)) {
+			return _svi_povratci;
+//			logger.info("<-- return _svi_povratci_filtered_rezervacije = " + _svi_povratci_filtered_rezervacije);
+//			return _svi_povratci_filtered_rezervacije;
+//		}else {
+//			return _svi_povratci;
+//			logger.info("<-- return _svi_povratci_filtered_bez_rezervacije = " + _svi_povratci_filtered_bez_rezervacije);
+//			return _svi_povratci_filtered_bez_rezervacije;
+//		}
 	}
 	
 	
 	private void setCena(boolean is_povratna) {
-		System.out.println("set cena, is_povratna = " + is_povratna);
+		logger.info("set cena, is_povratna = " + is_povratna);
 		if(is_povratna) {
 			setCenaPovratna();
 		}else {
@@ -2891,7 +3487,8 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	private void setCenaJedanSmer() {
-		System.out.println("setCena , _prva_karta_tip = " + _prva_karta_tip);
+		logger.info("setCena , _prva_karta_tip = " + _prva_karta_tip);
+
 		double ukupna_cena = 0;
 		if( _selected_voz != null) {
 			int broj_karata = Integer.parseInt(broj_putnika_lbl.getText());
@@ -2899,11 +3496,11 @@ public class MainUIController extends AbstractController implements Initializabl
 			try {
 				CenaBean cena = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getCenaJedanSmer( 1
 						, _selected_razred_polazak, _selected_voz.getRelkm(), 
-						_selected_voz.getRang());
+						_selected_voz.getRang(), _selected_voz.getDatumPolaskaForApi());
 				 double jedinicna_cena = cena .getCenau();
 				for(int i=0 ; i < broj_karata ; i++) {
 					int current_tip = _prva_karta_tip;
-					System.out.println("setCena, current_tip = " + current_tip);
+					logger.info("setCena, current_tip = " + current_tip);
 					switch(i) {
 					case 0 : _prvi_putnik_cena = getCenaJedanSmerFromAPI(_prva_karta_tip, cena) ; jedinicna_cena = _prvi_putnik_cena .getCenau(); break;
 					case 1 : _drugi_putnik_cena =  getCenaJedanSmerFromAPI(_druga_karta_tip, cena);
@@ -2939,8 +3536,9 @@ public class MainUIController extends AbstractController implements Initializabl
 				}
 			}catch(Exception e) {
 				e.printStackTrace();
-				System.out.println("Exception when try to find cena povratne karte, details: " + e.getMessage());
+				logger.error("Exception when try to find cena povratne karte, details: " + e.getMessage(), e);
 			}
+			
 		}
 		
 //		System.out.println("####_prvi_putnik_cena = " + _prvi_putnik_cena);
@@ -2948,36 +3546,47 @@ public class MainUIController extends AbstractController implements Initializabl
 //		System.out.println("####_treci_putnik_cena = " + _treci_putnik_cena);
 //		System.out.println("####_cetvrti_putnik_cena = " + _cetvrti_putnik_cena);
 //		System.out.println("####_peti_putnik_cena = " + _peti_putnik_cena);
+		
+		
+		logger.info("<--setCena, ukupna_cena = " + ukupna_cena );    
 		ukupno_cena_value_lbl.setText( "" + ukupna_cena);
+
+
 
 	}
 	
 	private CenaBean getCenaJedanSmerFromAPI(int karta_tip, CenaBean osnovna_cena) throws CommunicationException {
+		logger.info("--> getCenaJedanSmerFromAPI, karta_tip = " + karta_tip + ", osnovna_cena = " + osnovna_cena );   
 		if(karta_tip == TIP_REDOVNA_CENA) {
 			return (CenaBean)osnovna_cena.clone();
 		}
+		
 		if(karta_tip == TIP_PAS) {
 			return 	SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getCenaJedanSmerPSE( 1
-					, _selected_razred_polazak, _selected_voz.getRelkm(), _selected_voz.getRang());
+					, _selected_razred_polazak, _selected_voz.getRelkm(), _selected_voz.getRang(), _selected_voz.getDatumPolaskaForApi());
 		}
 		if(karta_tip == TIP_DETE) {
 			return 	SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getCenaJedanSmerDETE( 1
-					, _selected_razred_polazak, _selected_voz.getRelkm(), _selected_voz.getRang());
+					, _selected_razred_polazak, _selected_voz.getRelkm(), _selected_voz.getRang(), _selected_voz.getDatumPolaskaForApi());
 		}
 		if(karta_tip == TIP_RAIL_K30) {
 			return 	SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getCenaJedanSmerRAIL_PLUS_K_30( 1
-					, _selected_razred_polazak, _selected_voz.getRelkm(), _selected_voz.getRang());
+					, _selected_razred_polazak, _selected_voz.getRelkm(), _selected_voz.getRang(), _selected_voz.getDatumPolaskaForApi());
 		}
 		if(karta_tip == TIP_SRB_K13) {
 			return 	SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getCenaJedanSmerSRB_PLUS_K_13( 1
-					, _selected_razred_polazak, _selected_voz.getRelkm(), _selected_voz.getRang());
+					, _selected_razred_polazak, _selected_voz.getRelkm(), _selected_voz.getRang(), _selected_voz.getDatumPolaskaForApi());
+		}
+		if(karta_tip == TIP_PENZIONERI) {
+			return 	SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getCenaJedanSmerPenzioneri( 1
+					, _selected_razred_polazak, _selected_voz.getRelkm(), _selected_voz.getRang(), _selected_voz.getDatumPolaskaForApi());
 		}
 		return null;
 
 	}
 	
 	private PovlasticaBean getPopustBean(int selected_popust, boolean is_povratna) {
-		System.out.println("getPopustBean, selected_popust = " + selected_popust + ", is_povratna = " + is_povratna);
+		logger.info("getPopustBean, selected_popust = " + selected_popust + ", is_povratna = " + is_povratna);
 		Map<Integer, PovlasticaBean> source = is_povratna ? _popusti_povratna : _popusti_jedan_smer;
 		switch(selected_popust) {
 		case TIP_REDOVNA_CENA : return (PovlasticaBean)source.get(SrbijaVozPopustID.REDOVNA_CENA._app_id);
@@ -2986,13 +3595,14 @@ public class MainUIController extends AbstractController implements Initializabl
 		case TIP_DETE : return (PovlasticaBean)source.get(SrbijaVozPopustID.DETE._app_id);
 		case TIP_PAS : return (PovlasticaBean)source.get(SrbijaVozPopustID.PAS._app_id);
 		case TIP_POVRATNA : return (PovlasticaBean)source.get(SrbijaVozPopustID.POVRATNA._app_id);
+		case TIP_PENZIONERI : return (PovlasticaBean)source.get(SrbijaVozPopustID.PENZIONER._app_id);
 		}
 		return null;
 
 	}
 	
 	private void setCenaPovratna() {
-		System.out.println("setCenaPovratna");
+		logger.info("setCenaPovratna");
 		double ukupna_cena = 0;
 		if(_selected_voz_povratak != null) {
 			int broj_karata = Integer.parseInt(broj_putnika_lbl.getText());
@@ -3000,11 +3610,12 @@ public class MainUIController extends AbstractController implements Initializabl
 			try {
 				//osnovna cena
 				 CenaBean cena = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getCenaPovratna(1, _selected_voz.getRelkm(), 
-						_selected_razred_polazak, _selected_voz.getRang(), _selected_razred_povratak, _selected_voz_povratak.getRang());
+						_selected_razred_polazak, _selected_voz.getRang(), _selected_razred_povratak, _selected_voz_povratak.getRang(),_selected_voz_povratak.getDatumPolaskaForApi());
 				 double jedinicna_cena = cena.getCenau();
+				 logger.info("jedinicna_cena = " + jedinicna_cena);
 				for(int i=0 ; i < broj_karata ; i++) {
 					int current_tip = _prva_karta_tip;
-					System.out.println("setCena, current_tip = " + current_tip);
+					logger.info("setCena, current_tip = " + current_tip);
 					switch(i) {
 					case 0 :_prvi_putnik_povratna_cena = getCenaPovratnaFromAPI(_prva_karta_tip ,cena); jedinicna_cena = _prvi_putnik_povratna_cena .getCenau(); break;
 					case 1 :_drugi_putnik_povratna_cena = getCenaPovratnaFromAPI(_druga_karta_tip ,cena);current_tip = _druga_karta_tip; jedinicna_cena = _drugi_putnik_povratna_cena .getCenau(); break;
@@ -3034,46 +3645,57 @@ public class MainUIController extends AbstractController implements Initializabl
 					}
 					
 					ukupna_cena = ukupna_cena + cena_karte_sa_popustom;
-					System.out.println("ukupna_cena = " + ukupna_cena);
+					logger.info("ukupna_cena = " + ukupna_cena);
 				}
 			}catch(Exception e) {
 				e.printStackTrace();
-				System.out.println("Exception when try to find cena povratne karte, details: " + e.getMessage());
+				logger.error("Exception when try to find cena povratne karte, details: " + e.getMessage(), e);
 			}
 		}
-		System.out.println("ukupno_cena_value_lbl set ukupna_cena = " + ukupna_cena);
+		logger.info("ukupno_cena_value_lbl set ukupna_cena = " + ukupna_cena);
 		ukupno_cena_value_lbl.setText( "" + ukupna_cena);
 
 	}
 	
 	
 	private CenaBean getCenaPovratnaFromAPI(int karta_tip, CenaBean osnovna_cena) throws CommunicationException {
-		if(karta_tip == TIP_POVRATNA) {
-			return (CenaBean)osnovna_cena.clone();
-		}
+//		if(karta_tip == TIP_POVRATNA) {
+//			return (CenaBean)osnovna_cena.clone();
+//		}
+		logger.info("getCenaPovratnaFromAPI set karta_tip = " + karta_tip +  ", osnovna_cena = " + osnovna_cena);
 		if(karta_tip == TIP_PAS) {
 			return 	SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getCenaPovratnaPSE(1, _selected_voz.getRelkm(), 
-					_selected_razred_polazak, _selected_voz.getRang(), _selected_razred_povratak, _selected_voz_povratak.getRang());
+					_selected_razred_polazak, _selected_voz.getRang(), _selected_razred_povratak, _selected_voz_povratak.getRang(),_selected_voz_povratak.getDatumPolaskaForApi());
 		}
 		if(karta_tip == TIP_DETE) {
 			return 	SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getCenaPovratnaDETE(1, _selected_voz.getRelkm(), 
-					_selected_razred_polazak, _selected_voz.getRang(), _selected_razred_povratak, _selected_voz_povratak.getRang());
+					_selected_razred_polazak, _selected_voz.getRang(), _selected_razred_povratak, _selected_voz_povratak.getRang(),_selected_voz_povratak.getDatumPolaskaForApi());
 		}
 		if(karta_tip == TIP_RAIL_K30) {
 			return 	SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getCenaPovratnaRAIL_PLUS_K_30(1, _selected_voz.getRelkm(), 
-					_selected_razred_polazak, _selected_voz.getRang(), _selected_razred_povratak, _selected_voz_povratak.getRang());
+					_selected_razred_polazak, _selected_voz.getRang(), _selected_razred_povratak, _selected_voz_povratak.getRang(),_selected_voz_povratak.getDatumPolaskaForApi());
 		}
 		if(karta_tip == TIP_SRB_K13) {
 			return 	SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getCenaPovratnaSRB_PLUS_K_13(1, _selected_voz.getRelkm(), 
-					_selected_razred_polazak, _selected_voz.getRang(), _selected_razred_povratak, _selected_voz_povratak.getRang());
+					_selected_razred_polazak, _selected_voz.getRang(), _selected_razred_povratak, _selected_voz_povratak.getRang(),_selected_voz_povratak.getDatumPolaskaForApi());
+		}
+		if(karta_tip == TIP_PENZIONERI) {
+			return 	SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getCenaPovratnaPenzioneri(1, _selected_voz.getRelkm(), 
+					_selected_razred_polazak, _selected_voz.getRang(), _selected_razred_povratak, _selected_voz_povratak.getRang(),_selected_voz_povratak.getDatumPolaskaForApi());
+		}
+		if(karta_tip == TIP_POVRATNA || karta_tip == TIP_REDOVNA_CENA) {
+			return 	SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getCenaPovratna(1, _selected_voz.getRelkm(), 
+					_selected_razred_polazak, _selected_voz.getRang(), _selected_razred_povratak, _selected_voz_povratak.getRang(),_selected_voz_povratak.getDatumPolaskaForApi());
 		}
 		return null;
 
 	}
 	
 	private void setPopusti() {
+		logger.info("setPopusti" );
 		try {
 			List<PovlasticaBean> povlastice_jedan_smer = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getPovlastice(1);
+			logger.info("povlastice_jedan_smer = " + povlastice_jedan_smer );
 			for(PovlasticaBean current : povlastice_jedan_smer) {
 				switch(current.getiD_POVLASTICE()) {
 				case SrbijaVozPopustID.ID_REDOVNA_CENA : _popusti_jedan_smer.put(SrbijaVozPopustID.REDOVNA_CENA._app_id, current);break;
@@ -3081,10 +3703,12 @@ public class MainUIController extends AbstractController implements Initializabl
 				case SrbijaVozPopustID.ID_RAIL_PLUS_K_30 : _popusti_jedan_smer.put(SrbijaVozPopustID.RAIL_PLUS_K_30._app_id, current);break;
 				case SrbijaVozPopustID.ID_DETE : _popusti_jedan_smer.put(SrbijaVozPopustID.DETE._app_id, current);break;
 				case SrbijaVozPopustID.ID_PAS : _popusti_jedan_smer.put(SrbijaVozPopustID.PAS._app_id, current);break;
+				case SrbijaVozPopustID.ID_PENZIONER : _popusti_jedan_smer.put(SrbijaVozPopustID.PENZIONER._app_id, current);break;
 				}
 				
 			}
 			List<PovlasticaBean> povlastice_povratna = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getPovlastice(2);
+			logger.info("povlastice_povratna = " + povlastice_povratna );
 			for(PovlasticaBean current : povlastice_povratna) {
 				switch(current.getiD_POVLASTICE()) {
 				case SrbijaVozPopustID.ID_POVRATNA : _popusti_povratna.put(SrbijaVozPopustID.POVRATNA._app_id, current);break;
@@ -3092,11 +3716,12 @@ public class MainUIController extends AbstractController implements Initializabl
 				case SrbijaVozPopustID.ID_RAIL_PLUS_K_30 : _popusti_povratna.put(SrbijaVozPopustID.RAIL_PLUS_K_30._app_id, current);break;
 				case SrbijaVozPopustID.ID_DETE : _popusti_povratna.put(SrbijaVozPopustID.DETE._app_id, current);break;
 				case SrbijaVozPopustID.ID_PAS : _popusti_povratna.put(SrbijaVozPopustID.PAS._app_id, current);break;
+				case SrbijaVozPopustID.ID_PENZIONER : _popusti_povratna.put(SrbijaVozPopustID.PENZIONER._app_id, current);break;
 				}
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
-			System.out.println("Exception when try to find cena povratne karte, details: " + e.getMessage());
+			logger.error("Exception when try to find cena povratne karte, details: " + e.getMessage(), e);
 		}
 	}
 	
@@ -3107,7 +3732,7 @@ public class MainUIController extends AbstractController implements Initializabl
 
 	
 	private int getSifraStaniceFromNaziv(String naziv_stanice) {
-
+		logger.debug("-->getSifraStaniceFromNaziv, naziv_stanice = " + naziv_stanice );
 		for(FrekventneStaniceBean current : _frekventne_stanice) {
 			if(current.getNaziV_UPUTNE_STANICE().equalsIgnoreCase(naziv_stanice)  ) {
 				return current.getSifrA_UPUTNE_STANICE();
@@ -3124,6 +3749,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 
 	private void handle_ostale_common(Button target_btn) {
+		logger.info("handle_ostale_common, target_btn = " + target_btn);
 		_selected_voz = null;
 		odrediste_value_lbl.setText(target_btn.getText());
 		odrediste_izmena_value_lbl.setText(target_btn.getText());
@@ -3131,12 +3757,14 @@ public class MainUIController extends AbstractController implements Initializabl
 		//target_btn.setStyle("-fx-background-color: #108f64;-fx-text-fill: white;");
 		setButtonSelected(target_btn, true);
 		ostale_stanice_pn.setVisible(false);
-		setPodaciOdVoza();
+		//setPodaciOdVoza();
+		setPodaciOdVozaMarko();
 		//uslov_za_drugi_korak();
 	}
 
 	
 	public void handle_ostale_odustani() {
+		logger.info("handle_ostale_odustani");
 		_lista_svih_stanica_current_position = 0;
 		handle_ostale_napred_pagination();
 		ostale_stanice_pn.setVisible(false);
@@ -3152,6 +3780,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	
 	public void handle_1_btn() {
+		logger.info("handle_1_btn ");
 		broj_putnika_lbl.setText("1");
 		resetButtonGroup(_broj_putnika_button_group, false);
 		//jedan_btn.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
@@ -3161,7 +3790,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_2_btn() {
-
+		logger.info("handle_2_btn ");
 		broj_putnika_lbl.setText("2");
 		resetButtonGroup(_broj_putnika_button_group, false);
 		//dva_btn.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
@@ -3174,7 +3803,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_3_btn() {
-
+		logger.info("handle_3_btn ");
 		broj_putnika_lbl.setText("3");
 		resetButtonGroup(_broj_putnika_button_group, false);
 		//tri_btn.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
@@ -3186,7 +3815,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_4_btn() {
-		
+		logger.info("handle_4_btn ");
 		broj_putnika_lbl.setText("4");
 		resetButtonGroup(_broj_putnika_button_group, false);
 		//cetiri_btn.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
@@ -3198,7 +3827,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_5_btn() {
-		
+		logger.info("handle_5_btn ");
 		broj_putnika_lbl.setText("5");
 		resetButtonGroup(_broj_putnika_button_group, false);
 		//pet_btn.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
@@ -3210,7 +3839,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_smer(boolean is_povratna) {
-		
+		logger.info("handle_smer, is_povratna =  " + is_povratna);
 		resetButtonGroup(_smer_button_group, is_povratna);
 		if(is_povratna) {//#362c2d tamno braon // manje tamna braon #555555
 			//#3a6dcf plava
@@ -3226,6 +3855,7 @@ public class MainUIController extends AbstractController implements Initializabl
 		    _selected_voz_povratak = null;
 			smer_value_lbl.setText(resources.getString("smer_u_jednom"));
 			razred_odlazak_value_lbl.setText("Drugi");
+			rand_voza_odlazak_value_lbl.setText("");
 			broj_voza_dolazak_value_lbl.setText("");
 			vreme_dolazak_value_lbl.setText("");
 			vreme_povratka_izmena_value_lbl.setText("");
@@ -3236,7 +3866,7 @@ public class MainUIController extends AbstractController implements Initializabl
 		}
 		
 		
-		datum_povratka_izmena_pn.setVisible(is_povratna &&  isVozWithReservations( broj_voza_polazak_value_lbl.getText() ) );
+		datum_povratka_izmena_pn.setVisible(is_povratna /*&&  isVozWithReservations( _selected_voz )*/ );
 		
 		
 		razred_karta_izmena_povratak_pn.setVisible(false);
@@ -3249,14 +3879,14 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_smer_povratni() {
+		logger.info("-->handle_smer_povratni");
 		
+		logger.info("DA LI JE VOZ SA REZERVACIJAMA, broj voza = " + broj_voza_polazak_value_lbl.getText() 
+				+ " isVozWithReservations = " + isVozWithReservations( _selected_voz/*broj_voza_polazak_value_lbl.getText()*/ ));
 		
-		System.out.println("DA LI JE VOZ SA REZERVACIJAMA, broj voza = " + broj_voza_polazak_value_lbl.getText() 
-				+ " isVozWithReservations = " + isVozWithReservations( broj_voza_polazak_value_lbl.getText() ));
-		
-		if( isVozWithReservations( broj_voza_polazak_value_lbl.getText() ) ) {
+		//if( isVozWithReservations( _selected_voz ) ) {
 			datum_povratka_izmena_pn.setVisible(true);
-		}
+		//}
 		
 		
 		_prva_karta_tip = TIP_POVRATNA;
@@ -3280,21 +3910,27 @@ public class MainUIController extends AbstractController implements Initializabl
 		
 		resetButtonGroup(_smer_button_group, false);
 		handle_razred_drugi_dolazak();
-		setPodaciOdVozaPovratak();
-		//smer_povratni_btn.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
+		String datum_povratka = datum_povratka_polazak_value_lbl.getText() != null || !datum_povratka_polazak_value_lbl.getText().equals("")
+   					? datum_povratka_polazak_value_lbl.getText() : datum_polaska_value_lbl.getText();
+		//setPodaciOdVozaPovratak(datum_povratka);
+   					System.out.println("############ datum_povratka = " + datum_povratka);
+   		setPodaciOdVozaPovratakMarko(datum_povratka);
 
 		setButtonSelected(smer_povratni_btn, false);
 		handle_smer(true);
 	    uslov_za_drugi_korak();
+	    logger.info("<--handle_smer_povratni");
 	}
 	
 	public void handle_datum_polazakc() {
-		System.out.println("handle_datum_polazakc");
+		logger.info("handle_datum_polazakc");
 		open_datum_set_dialog(true);
+		datum_polaska_value_lbl.textProperty().addListener(datum_polaska_changeListener);
+		datum_povratka_polazak_value_lbl.textProperty().removeListener(datum_povratka_polazak_changeListener);
 	}
 	
 	public void handle_vreme_polazakc() {
-		System.out.println("handle_vreme_polazakc");
+		logger.info("handle_vreme_polazakc");
 		izaberi_polazak_lbl.setText(resources.getString("izaberi_polazak"));
 		izaberi_polazak_datum_lbl.setText(datum_izmena_value_lbl.getText());
 		polasci_calendar_pn.setVisible(true);
@@ -3304,6 +3940,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	private void open_datum_set_dialog(boolean polazak_true_povratak_false) {
+		logger.info("--> open_datum_set_dialog, polazak_true_povratak_false = " + polazak_true_povratak_false);
 		_polazak_true_povratak_false = polazak_true_povratak_false;
 		Calendar cal_pol = Calendar.getInstance();
 		try {
@@ -3317,10 +3954,11 @@ public class MainUIController extends AbstractController implements Initializabl
 		
 		}catch(Exception e) {
 			e.printStackTrace();
-			System.out.println("parse exception in handle_datum_polazakc, details: " + e.getMessage());
+			logger.error("parse exception in handle_datum_polazakc, details: " + e.getMessage(), e);
 		}
 		String datum_polaska_povratka = _sdfddMMyyyy.format(cal_pol.getTime());
 		Calendar monday = Calendar.getInstance();
+		Calendar today = Calendar.getInstance();
 		//monday.add(Calendar.DAY_OF_WEEK, (Calendar.DAY_OF_WEEK -2 ) * -1);cal.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
 //		monday.clear(Calendar.MINUTE);
 //		monday.clear(Calendar.SECOND);
@@ -3329,12 +3967,15 @@ public class MainUIController extends AbstractController implements Initializabl
 		// get start of this week in milliseconds
 		monday.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		String day_in_week = _sdfddMMyyyy.format(monday.getTime());
+		
 		pon_dat_lbl.setText(day_in_week);
 		//pon_izab_btn.setVisible(!cal_pol.after(monday) || monday.equals(cal_pol));
 		if(polazak_true_povratak_false) {
-			pon_pn.setVisible(!cal_pol.after(monday) || datum_polaska_povratka.equals(day_in_week));
+			pon_pn.setVisible(!today.after(monday) || datum_polaska_povratka.equals(day_in_week));
 		}else {
-			pon_pn.setVisible(datum_polaska_povratka.equals(day_in_week));
+			pon_pn.setVisible(datum_polaska_povratka.equals(day_in_week) 
+					|| (monday.after(cal_pol) && monday.before(_selected_voz.get_trajanje_datum_Calendar()))
+					);
 		}
 		if(datum_polaska_povratka.equals(day_in_week)) {
 			resetCalendarButtonGroup( 0 );
@@ -3346,9 +3987,11 @@ public class MainUIController extends AbstractController implements Initializabl
 		
 		//uto_izab_btn.setVisible(!cal_pol.after(monday) || monday.equals(cal_pol));
 		if(polazak_true_povratak_false) {
-			uto_pn.setVisible(!cal_pol.after(monday) || datum_polaska_povratka.equals(day_in_week));
+			uto_pn.setVisible(!today.after(monday) || datum_polaska_povratka.equals(day_in_week));
 		}else {
-			uto_pn.setVisible(datum_polaska_povratka.equals(day_in_week));
+			uto_pn.setVisible(datum_polaska_povratka.equals(day_in_week) 
+					|| (monday.after(cal_pol) && monday.before(_selected_voz.get_trajanje_datum_Calendar()))
+					);
 		}
 		if(datum_polaska_povratka.equals(day_in_week)) {
 			resetCalendarButtonGroup( 1 );
@@ -3359,9 +4002,11 @@ public class MainUIController extends AbstractController implements Initializabl
 		sre_dat_lbl.setText(day_in_week);
 		//sre_izab_btn.setVisible(!cal_pol.after(monday) || monday.equals(cal_pol));
 		if(polazak_true_povratak_false) {
-			sre_pn.setVisible(!cal_pol.after(monday) || datum_polaska_povratka.equals(day_in_week));
+			sre_pn.setVisible(!today.after(monday) || datum_polaska_povratka.equals(day_in_week));
 		}else {
-			sre_pn.setVisible(datum_polaska_povratka.equals(day_in_week));
+			sre_pn.setVisible(datum_polaska_povratka.equals(day_in_week) 
+					|| (monday.after(cal_pol) && monday.before(_selected_voz.get_trajanje_datum_Calendar()))
+					);
 		}
 		if(datum_polaska_povratka.equals(day_in_week)) {
 			resetCalendarButtonGroup( 2 );
@@ -3372,9 +4017,11 @@ public class MainUIController extends AbstractController implements Initializabl
 		cet_dat_lbl.setText(day_in_week);
 		//cet_izab_btn.setVisible(!cal_pol.after(monday) || monday.equals(cal_pol));
 		if(polazak_true_povratak_false) {
-			cet_pn.setVisible(!cal_pol.after(monday) || datum_polaska_povratka.equals(day_in_week));
+			cet_pn.setVisible(!today.after(monday) || datum_polaska_povratka.equals(day_in_week));
 		}else {
-			cet_pn.setVisible(datum_polaska_povratka.equals(day_in_week));
+			cet_pn.setVisible(datum_polaska_povratka.equals(day_in_week) 
+					|| (monday.after(cal_pol) && monday.before(_selected_voz.get_trajanje_datum_Calendar()))
+					);
 		}
 		if(datum_polaska_povratka.equals(day_in_week)) {
 			resetCalendarButtonGroup( 3 );
@@ -3385,9 +4032,11 @@ public class MainUIController extends AbstractController implements Initializabl
 		pet_dat_lbl.setText(day_in_week);
 		//pet_izab_btn.setVisible(!cal_pol.after(monday) || monday.equals(cal_pol));
 		if(polazak_true_povratak_false) {
-			pet_pn.setVisible(!cal_pol.after(monday) || datum_polaska_povratka.equals(day_in_week));
+			pet_pn.setVisible(!today.after(monday) || datum_polaska_povratka.equals(day_in_week));
 		}else {
-			pet_pn.setVisible(datum_polaska_povratka.equals(day_in_week));
+			pet_pn.setVisible(datum_polaska_povratka.equals(day_in_week) 
+					|| (monday.after(cal_pol) && monday.before(_selected_voz.get_trajanje_datum_Calendar()))
+					);
 		}
 		if(datum_polaska_povratka.equals(day_in_week)) {
 			resetCalendarButtonGroup( 4 );
@@ -3398,9 +4047,11 @@ public class MainUIController extends AbstractController implements Initializabl
 		sub_dat_lbl.setText(day_in_week);
 		//sub_izab_btn.setVisible(!cal_pol.after(monday) || monday.equals(cal_pol));
 		if(polazak_true_povratak_false) {
-			sub_pn.setVisible(!cal_pol.after(monday) || datum_polaska_povratka.equals(day_in_week));
+			sub_pn.setVisible(!today.after(monday) || datum_polaska_povratka.equals(day_in_week));
 		}else {
-			sub_pn.setVisible(datum_polaska_povratka.equals(day_in_week));
+			sub_pn.setVisible(datum_polaska_povratka.equals(day_in_week) 
+					|| (monday.after(cal_pol) && monday.before(_selected_voz.get_trajanje_datum_Calendar()))
+					);
 		}
 		if(datum_polaska_povratka.equals(day_in_week)) {
 			resetCalendarButtonGroup( 5 );
@@ -3411,9 +4062,12 @@ public class MainUIController extends AbstractController implements Initializabl
 		ned_dat_lbl.setText(day_in_week);
 		//ned_izab_btn.setVisible(!cal_pol.after(monday) || monday.equals(cal_pol));
 		if(polazak_true_povratak_false) {
-			ned_pn.setVisible(!cal_pol.after(monday) || datum_polaska_povratka.equals(day_in_week));
+			ned_pn.setVisible(!today.after(monday) || datum_polaska_povratka.equals(day_in_week));
 		}else {
-			ned_pn.setVisible(datum_polaska_povratka.equals(day_in_week));
+			
+			ned_pn.setVisible(datum_polaska_povratka.equals(day_in_week) 
+					|| (monday.after(cal_pol) && monday.before(_selected_voz.get_trajanje_datum_Calendar()))
+					);
 		}
 		if(datum_polaska_povratka.equals(day_in_week)) {
 			resetCalendarButtonGroup( 6 );
@@ -3422,13 +4076,23 @@ public class MainUIController extends AbstractController implements Initializabl
 		//calendar_pn.setVisible(true);
 
 		//ne mozes da pomeras kalendar akoje povratak u pitanju, mora istog dana kad i polazak
-		sled_ned_cal_btn.setVisible(polazak_true_povratak_false);
+		//ovde je doslo do izmene, u pitanju su npp karte koje ciji povratak moze da bude par dana (na primer vikendi)
+		if(polazak_true_povratak_false) {
+			sled_ned_cal_btn.setVisible(true);
+		}else {
+			monday.add(Calendar.DAY_OF_YEAR, 1);
+			sled_ned_cal_btn.setVisible(monday.before(_selected_voz.get_trajanje_datum_Calendar()) && ned_pn.isVisible());
+		}
+		
+		
 		//inicijano je uvek invisible
 		pret_ned_cal_btn.setVisible(false/*polazak_true_povratak_false*/);
 		
-		handle_pagination_polasci_povratci(false);
+		handle_pagination_polasci_povratci(false,true);
 
 		polasci_calendar_pn.setVisible(true);
+		
+		logger.info("<-- open_datum_set_dialog" );
 	}
 
 	public void handle_razred_prvi_polazak() {
@@ -3443,22 +4107,26 @@ public class MainUIController extends AbstractController implements Initializabl
 		//uslov_za_drugi_korak();
 	}
 	public void handle_datum_dolazak() {
-		System.out.println("handle_datum_dolazak");
+		logger.info("--> handle_datum_dolazak");
 		open_datum_set_dialog(false);
+		datum_polaska_value_lbl.textProperty().removeListener(datum_polaska_changeListener);
+		datum_povratka_polazak_value_lbl.textProperty().addListener(datum_povratka_polazak_changeListener);
+		logger.info("<-- handle_datum_dolazak");
 	}
 	
 	public void handle_vreme_dolazak() {
-		System.out.println("handle_vreme_dolazak");
+		logger.info("--> handle_vreme_dolazak");
 		izaberi_polazak_lbl.setText(resources.getString("izaberi_povratak"));
 		polasci_calendar_pn.setVisible(true);
 		polasci_calendar_pn.toFront();
+		logger.info("<-- handle_vreme_dolazak");
 //		polasci_nova_pn.setVisible(true);
 //		polasci_nova_pn.toFront();
 	}
 	
 	
 	public void handle_razred_prvi_dolazak() {
-		
+		logger.info("--> handle_razred_prvi_dolazak");
 		resetButtonGroup(_razred_dolazak_button_group, false);		
 		_selected_razred_povratak = 1;
 		
@@ -3467,26 +4135,29 @@ public class MainUIController extends AbstractController implements Initializabl
 		razred_polazak_value_lbl.setText(resources.getString("prvi_razred"));
 		razred_odlazak_value_lbl.setText(resources.getString("prvi_razred"));
 		//uslov_za_drugi_korak();
+		logger.info("<-- handle_razred_prvi_dolazak");
 	}
 	public void handle_razred_drugi_polazak() {
-		
+		logger.info("--> handle_razred_drugi_polazak");
 		resetButtonGroup(_razred_polazak_button_group, false);		
 		//razred_drugi_polazak_btn.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
 		setButtonSelectedGray(razred_drugi_polazak_btn, false);
 		_selected_razred_polazak = 2;
 		razred_polazak_value_lbl.setText(resources.getString("drugi_razred"));
 		razred_odlazak_value_lbl.setText(resources.getString("drugi_razred"));
+		logger.info("<-- handle_razred_drugi_polazak");
 		//setPodaciOdVoza();
 		//uslov_za_drugi_korak();
 	}
 	public void handle_razred_drugi_dolazak() {
-		
+		logger.info("--> handle_razred_drugi_dolazak");
 		resetButtonGroup(_razred_dolazak_button_group, false);		
 		//razred_drugi_dolazak_btn.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
 		setButtonSelectedGray(razred_drugi_dolazak_btn, false);
 		_selected_razred_povratak = 2;
 
 		razred_odlazak_value_lbl.setText(resources.getString("drugi_razred"));
+		logger.info("<-- handle_razred_drugi_dolazak");
 		//uslov_za_drugi_korak();
 	}
 	
@@ -3506,12 +4177,13 @@ public class MainUIController extends AbstractController implements Initializabl
 //	}
 	
 	public void handleKupiKartuOpcije() {
-		System.out.println("handleKupiKartuOpcije");
+		logger.info("--> handleKupiKartuOpcije");
 		//handleDaljePolasci();
 //		odabrane_opcije_pn.setVisible(false);
 //		izmeni_opcije_pn.setVisible(false);
 		odrediste_pn.setVisible(false);
 		show_poslednja_provera_slide();
+		logger.info("<-- handleKupiKartuOpcije");
 	}
 	
 	public void handle_ostale_napred_pagination(){
@@ -3524,6 +4196,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	private void refresh_ostale_stanice() {
+		logger.info("--> refresh_ostale_stanice");
 		if(_ostale_stanice_filtered == null || _ostale_stanice_filtered.isEmpty())return;
 		//ost stan 1
 		if(_ostale_stanice_filtered.size() > 0) {
@@ -3749,10 +4422,11 @@ public class MainUIController extends AbstractController implements Initializabl
 		}else {
 			ostale_stanice_16.setVisible(false);
 		}
-
+		logger.info("<-- refresh_ostale_stanice");
 	}
 	
 	private void handle_pagination(boolean is_napred) {
+		logger.info("--> handle_pagination, is_napred = " + is_napred);
 		List<StanicaIDBean> ostale_stanice = getNextPagination(is_napred);
 		if(ostale_stanice == null) return;
 		if(ostale_stanice.size() > 0) {
@@ -3980,11 +4654,12 @@ public class MainUIController extends AbstractController implements Initializabl
 		}
 		
 		
-		
+		logger.info("<-- handle_pagination" );
 	}
 	
-	private void handle_pagination_polasci_povratci(boolean is_napred) {
-		List<VozBean> svi_vozovi = getNextPaginationpPolasci(is_napred);
+	private void handle_pagination_polasci_povratci(boolean is_napred, boolean is_init) {
+		logger.info("--> handle_pagination_polasci_povratci, is_napred = " + is_napred + ", is_init = " + is_init );
+		List<VozBean> svi_vozovi = getNextPaginationpPolasci(is_napred, is_init);
 		if(svi_vozovi == null) return;
 		String vreme_polaska = _polazak_true_povratak_false ? vreme_polazak_value_lbl.getText() : vreme_dolazak_dolazak_value_lbl.getText();
 		if(svi_vozovi.size() > 0) {
@@ -3997,13 +4672,27 @@ public class MainUIController extends AbstractController implements Initializabl
 			prvi_pol_cena_value_lbl.setText("" + svi_vozovi.get(0).getCenau());
 			prvi_pol_rang_value_lbl.setText("" + svi_vozovi.get(0).getRangNaziv());
 			prvi_pol_rang_opis_value_lbl.setText("" + svi_vozovi.get(0).getRangOpis());
-			if(prvi_pol_vreme_polaska_value_lbl.getText().equals(vreme_polaska)) {
-				setButtonSelected(prvi_pol_btn, false);
-				//ostale_stanice_2.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
-			}else {
+			soko_view_1.setVisible(svi_vozovi.get(0).isSoko());
+			prvi_pol_br_slobodnih_mesta_value_lbl.setText(svi_vozovi.get(0).isRezervacioni_sistem() ? "" + svi_vozovi.get(0).getBr_slobodnih_mesta() : resources.getString("bez_rezervacije"));
+
+			if(svi_vozovi.get(0).isRezervacioni_sistem() && svi_vozovi.get(0).getBr_slobodnih_mesta() < 1) {
 				setButtonUnselected(prvi_pol_btn, false);
-				//ostale_stanice_2.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
+				prvi_pol_btn.setDisable(true);
+				prvi_pol_pn.setStyle("-fx-background-color: lightgray;");
+			}else {
+				prvi_pol_btn.setDisable(false);
+				prvi_pol_pn.setStyle("-fx-background-color: #3a6dcf;");
+				if(prvi_pol_vreme_polaska_value_lbl.getText().equals(vreme_polaska)) {
+					setButtonSelected(prvi_pol_btn, false);
+					//ostale_stanice_2.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
+				}else {
+					setButtonUnselected(prvi_pol_btn, false);
+					//ostale_stanice_2.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
+				}
 			}
+			
+			
+
 		}else {
 			prvi_pol_pn.setVisible(false);
 		}
@@ -4018,12 +4707,26 @@ public class MainUIController extends AbstractController implements Initializabl
 			drugi_pol_cena_value_lbl.setText("" + svi_vozovi.get(1).getCenau());
 			drugi_pol_rang_value_lbl.setText("" + svi_vozovi.get(1).getRangNaziv());
 			drugi_pol_rang_opis_value_lbl.setText("" + svi_vozovi.get(1).getRangOpis());
-			if(drugi_pol_vreme_polaska_value_lbl.getText().equals(vreme_polaska)) {
-				setButtonSelected(drugi_pol_btn, false);
-				//ostale_stanice_2.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
-			}else {
+			soko_view_2.setVisible(svi_vozovi.get(1).isSoko());
+			drugi_pol_br_slobodnih_mesta_value_lbl.setText(svi_vozovi.get(1).isRezervacioni_sistem() ? "" + svi_vozovi.get(1).getBr_slobodnih_mesta() : resources.getString("bez_rezervacije"));
+
+			if(svi_vozovi.get(1).isRezervacioni_sistem() && svi_vozovi.get(1).getBr_slobodnih_mesta() < 1) {
 				setButtonUnselected(drugi_pol_btn, false);
+				drugi_pol_btn.setDisable(true);
+				drugi_pol_pn.setStyle("-fx-background-color: lightgray;");
+			}else {
+				drugi_pol_btn.setDisable(false);
+				drugi_pol_pn.setStyle("-fx-background-color: #3a6dcf;");
+				if(drugi_pol_vreme_polaska_value_lbl.getText().equals(vreme_polaska)) {
+					setButtonSelected(drugi_pol_btn, false);
+					//ostale_stanice_2.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
+				}else {
+					setButtonUnselected(drugi_pol_btn, false);
+				}
 			}
+			
+			
+
 		}else {
 			drugi_pol_pn.setVisible(false);
 		}
@@ -4038,12 +4741,26 @@ public class MainUIController extends AbstractController implements Initializabl
 			treci_pol_cena_value_lbl.setText("" + svi_vozovi.get(2).getCenau());
 			treci_pol_rang_value_lbl.setText("" + svi_vozovi.get(2).getRangNaziv());
 			treci_pol_rang_opis_value_lbl.setText("" + svi_vozovi.get(2).getRangOpis());
-			if(treci_pol_vreme_polaska_value_lbl.getText().equals(vreme_polaska)) {
-				setButtonSelected(treci_pol_btn, false);
-				//ostale_stanice_2.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
-			}else {
+			soko_view_3.setVisible(svi_vozovi.get(2).isSoko());
+			treci_pol_br_slobodnih_mesta_value_lbl.setText(svi_vozovi.get(2).isRezervacioni_sistem() ? "" + svi_vozovi.get(2).getBr_slobodnih_mesta() : resources.getString("bez_rezervacije"));
+
+			if(svi_vozovi.get(2).isRezervacioni_sistem() && svi_vozovi.get(2).getBr_slobodnih_mesta() < 1) {
 				setButtonUnselected(treci_pol_btn, false);
+				treci_pol_btn.setDisable(true);
+				treci_pol_pn.setStyle("-fx-background-color: lightgray;");
+			}else {
+				treci_pol_btn.setDisable(false);
+				treci_pol_pn.setStyle("-fx-background-color: #3a6dcf;");
+				if(treci_pol_vreme_polaska_value_lbl.getText().equals(vreme_polaska)) {
+					setButtonSelected(treci_pol_btn, false);
+					//ostale_stanice_2.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
+				}else {
+					setButtonUnselected(treci_pol_btn, false);
+				}
 			}
+			
+			
+
 		}else {
 			treci_pol_pn.setVisible(false);
 		}
@@ -4057,13 +4774,28 @@ public class MainUIController extends AbstractController implements Initializabl
 			cetvrti_pol_trajanje_value_lbl.setText("" + svi_vozovi.get(3).getTrajanje_putovanja());
 			cetvrti_pol_cena_value_lbl.setText("" + svi_vozovi.get(3).getCenau());
 			cetvrti_pol_rang_value_lbl.setText("" + svi_vozovi.get(3).getRangNaziv());
-			cetvrti_pol_rang_opis_value_lbl.setText("" + svi_vozovi.get(3).getRangOpis());
-			if(cetvrti_pol_vreme_polaska_value_lbl.getText().equals(vreme_polaska)) {
-				setButtonSelected(cetvrti_pol_btn, false);
-				//ostale_stanice_2.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
-			}else {
+			cetvrti_pol_rang_opis_value_lbl.setText("" + svi_vozovi.get(3).getRangOpis());			
+			soko_view_4.setVisible(svi_vozovi.get(3).isSoko());
+			cetvrti_pol_br_slobodnih_mesta_value_lbl.setText(svi_vozovi.get(3).isRezervacioni_sistem() ? "" + svi_vozovi.get(3).getBr_slobodnih_mesta() : resources.getString("bez_rezervacije"));
+
+			if(svi_vozovi.get(3).isRezervacioni_sistem() && svi_vozovi.get(3).getBr_slobodnih_mesta() < 1) {
 				setButtonUnselected(cetvrti_pol_btn, false);
+				cetvrti_pol_btn.setDisable(true);
+				cetvrti_pol_pn.setStyle("-fx-background-color: lightgray;");
+			}else {
+				cetvrti_pol_btn.setDisable(false);
+				cetvrti_pol_pn.setStyle("-fx-background-color: #3a6dcf;");
+				if(cetvrti_pol_vreme_polaska_value_lbl.getText().equals(vreme_polaska)) {
+					setButtonSelected(cetvrti_pol_btn, false);
+					//ostale_stanice_2.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
+				}else {
+					setButtonUnselected(cetvrti_pol_btn, false);
+				}
 			}
+			
+			
+			
+
 		}else {
 			cetvrti_pol_pn.setVisible(false);
 		}
@@ -4078,16 +4810,27 @@ public class MainUIController extends AbstractController implements Initializabl
 			peti_pol_cena_value_lbl.setText("" + svi_vozovi.get(4).getCenau());
 			peti_pol_rang_value_lbl.setText("" + svi_vozovi.get(4).getRangNaziv());
 			peti_pol_rang_opis_value_lbl.setText("" + svi_vozovi.get(4).getRangOpis());
-			if(peti_pol_vreme_polaska_value_lbl.getText().equals(vreme_polaska)) {
-				setButtonSelected(peti_pol_btn, false);
-				//ostale_stanice_2.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
-			}else {
+			soko_view_5.setVisible(svi_vozovi.get(4).isSoko());
+			peti_pol_br_slobodnih_mesta_value_lbl.setText(svi_vozovi.get(4).isRezervacioni_sistem() ? "" + svi_vozovi.get(4).getBr_slobodnih_mesta() : resources.getString("bez_rezervacije"));
+
+			if(svi_vozovi.get(4).isRezervacioni_sistem() && svi_vozovi.get(4).getBr_slobodnih_mesta() < 1) {
 				setButtonUnselected(peti_pol_btn, false);
+				peti_pol_btn.setDisable(true);
+				peti_pol_pn.setStyle("-fx-background-color: lightgray;");
+			}else {
+				peti_pol_btn.setDisable(false);
+				peti_pol_pn.setStyle("-fx-background-color: #3a6dcf;");
+				if(peti_pol_vreme_polaska_value_lbl.getText().equals(vreme_polaska)) {
+					setButtonSelected(peti_pol_btn, false);
+					//ostale_stanice_2.setStyle("-fx-background-color: white;-fx-text-fill: black;fx-font-weight: bold;");
+				}else {
+					setButtonUnselected(peti_pol_btn, false);
+				}
 			}
 		}else {
 			peti_pol_pn.setVisible(false);
 		}	
-		
+		logger.info("<-- handle_pagination_polasci_povratci"  );
 	}
 	
 	
@@ -4121,6 +4864,8 @@ public class MainUIController extends AbstractController implements Initializabl
 		tip_karte_button_group.get(2).setStyle("-fx-background-color: white;-fx-text-fill: #362c2d;");
 		tip_karte_button_group.get(3).setStyle("-fx-background-color: white;-fx-text-fill: #362c2d;");
 		tip_karte_button_group.get(4).setStyle("-fx-background-color: white;-fx-text-fill: #362c2d;");
+		tip_karte_button_group.get(5).setStyle("-fx-background-color: white;-fx-text-fill: #362c2d;");
+		
 		Button selected_one = tip_karte_button_group.get(0);
 		switch(selected_id) {
 		case 0: break;
@@ -4128,6 +4873,9 @@ public class MainUIController extends AbstractController implements Initializabl
 		case 2: selected_one = tip_karte_button_group.get(2);break;
 		case 3: selected_one = tip_karte_button_group.get(3);break;
 		case 4: selected_one = tip_karte_button_group.get(4);break;
+		case 5: selected_one = tip_karte_button_group.get(5);break;
+		case 6: selected_one = tip_karte_button_group.get(5);break;
+		
 		}
 		setButtonSelected(selected_one, false);
 		//selected_one.setStyle("-fx-background-color: white;-fx-text-fill: #362c2d;");
@@ -4169,11 +4917,30 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	
 	public void handle_change_pon() {
+		logger.info("--> handle_change_pon" );
 		resetCalendarButtonGroup( 0);
 		if(izaberi_datum_cal_lbl.getText().contains("POLASKA") || izaberi_datum_cal_lbl.getText().contains("ПОЛАСКА")
 				|| izaberi_datum_cal_lbl.getText().contains("DEPARTURE")) {
 			datum_polaska_value_lbl.setText(pon_dat_lbl.getText());
 			datum_izmena_value_lbl.setText(pon_dat_lbl.getText());
+			
+			if(datum_povratka_polazak_value_lbl.getText().equals("")) {
+				datum_povratka_polazak_value_lbl.setText(pon_dat_lbl.getText());
+				datum_povratka_izmena_value_lbl.setText(pon_dat_lbl.getText());
+			}else {
+				try {
+				Calendar cal_selected = Calendar.getInstance();
+				cal_selected.setTime(_sdf.parse(pon_dat_lbl.getText()));
+				Calendar dat_pov = Calendar.getInstance();
+				dat_pov.setTime(_sdf.parse(datum_povratka_polazak_value_lbl.getText()));
+				if(cal_selected.after(dat_pov)) {
+					datum_povratka_polazak_value_lbl.setText(pon_dat_lbl.getText());
+					datum_povratka_izmena_value_lbl.setText(pon_dat_lbl.getText());
+				}
+				}catch(Exception e) {
+					
+				}
+			}
 			
 		}else {
 			datum_povratka_polazak_value_lbl.setText(pon_dat_lbl.getText());
@@ -4184,11 +4951,30 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_change_uto() {
+		logger.info("--> handle_change_uto" );
 		resetCalendarButtonGroup( 1);
 		if(izaberi_datum_cal_lbl.getText().contains("POLASKA") || izaberi_datum_cal_lbl.getText().contains("ПОЛАСКА")
 				|| izaberi_datum_cal_lbl.getText().contains("DEPARTURE")) {
 			datum_polaska_value_lbl.setText(uto_dat_lbl.getText());
 			datum_izmena_value_lbl.setText(uto_dat_lbl.getText());
+			
+			if(datum_povratka_polazak_value_lbl.getText().equals("")) {
+				datum_povratka_polazak_value_lbl.setText(uto_dat_lbl.getText());
+				datum_povratka_izmena_value_lbl.setText(uto_dat_lbl.getText());
+			}else {
+				try {
+				Calendar cal_selected = Calendar.getInstance();
+				cal_selected.setTime(_sdf.parse(uto_dat_lbl.getText()));
+				Calendar dat_pov = Calendar.getInstance();
+				dat_pov.setTime(_sdf.parse(datum_povratka_polazak_value_lbl.getText()));
+				if(cal_selected.after(dat_pov)) {
+					datum_povratka_polazak_value_lbl.setText(uto_dat_lbl.getText());
+					datum_povratka_izmena_value_lbl.setText(uto_dat_lbl.getText());
+				}
+				}catch(Exception e) {
+					
+				}
+			}
 		}else {
 			datum_povratka_polazak_value_lbl.setText(uto_dat_lbl.getText());
 			datum_povratka_izmena_value_lbl.setText(uto_dat_lbl.getText());
@@ -4197,11 +4983,31 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_change_sre() {
+		logger.info("--> handle_change_sre" );
 		resetCalendarButtonGroup( 2);
 		if(izaberi_datum_cal_lbl.getText().contains("POLASKA") || izaberi_datum_cal_lbl.getText().contains("ПОЛАСКА")
 				|| izaberi_datum_cal_lbl.getText().contains("DEPARTURE")) {
 			datum_polaska_value_lbl.setText(sre_dat_lbl.getText());
 			datum_izmena_value_lbl.setText(sre_dat_lbl.getText());
+			
+			if(datum_povratka_polazak_value_lbl.getText().equals("")) {
+				datum_povratka_polazak_value_lbl.setText(sre_dat_lbl.getText());
+				datum_povratka_izmena_value_lbl.setText(sre_dat_lbl.getText());
+			}else {
+				try {
+				Calendar cal_selected = Calendar.getInstance();
+				cal_selected.setTime(_sdf.parse(sre_dat_lbl.getText()));
+				Calendar dat_pov = Calendar.getInstance();
+				dat_pov.setTime(_sdf.parse(datum_povratka_polazak_value_lbl.getText()));
+				if(cal_selected.after(dat_pov)) {
+					datum_povratka_polazak_value_lbl.setText(sre_dat_lbl.getText());
+					datum_povratka_izmena_value_lbl.setText(sre_dat_lbl.getText());
+				}
+				}catch(Exception e) {
+					
+				}
+			}
+			
 		}else {
 			datum_povratka_polazak_value_lbl.setText(sre_dat_lbl.getText());
 			datum_povratka_izmena_value_lbl.setText(sre_dat_lbl.getText());
@@ -4210,11 +5016,30 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_change_cet() {
+		logger.info("--> handle_change_cet" );
 		resetCalendarButtonGroup( 3);
 		if(izaberi_datum_cal_lbl.getText().contains("POLASKA") || izaberi_datum_cal_lbl.getText().contains("ПОЛАСКА")
 				|| izaberi_datum_cal_lbl.getText().contains("DEPARTURE")) {
 			datum_polaska_value_lbl.setText(cet_dat_lbl.getText());
 			datum_izmena_value_lbl.setText(cet_dat_lbl.getText());
+			
+			if(datum_povratka_polazak_value_lbl.getText().equals("")) {
+				datum_povratka_polazak_value_lbl.setText(cet_dat_lbl.getText());
+				datum_povratka_izmena_value_lbl.setText(cet_dat_lbl.getText());
+			}else {
+				try {
+				Calendar cal_selected = Calendar.getInstance();
+				cal_selected.setTime(_sdf.parse(cet_dat_lbl.getText()));
+				Calendar dat_pov = Calendar.getInstance();
+				dat_pov.setTime(_sdf.parse(datum_povratka_polazak_value_lbl.getText()));
+				if(cal_selected.after(dat_pov)) {
+					datum_povratka_polazak_value_lbl.setText(cet_dat_lbl.getText());
+					datum_povratka_izmena_value_lbl.setText(cet_dat_lbl.getText());
+				}
+				}catch(Exception e) {
+					
+				}
+			}
 		}else {
 			datum_povratka_polazak_value_lbl.setText(cet_dat_lbl.getText());
 			datum_povratka_izmena_value_lbl.setText(cet_dat_lbl.getText());
@@ -4223,11 +5048,30 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_change_pet() {
+		logger.info("--> handle_change_pet" );
 		resetCalendarButtonGroup( 4);
 		if(izaberi_datum_cal_lbl.getText().contains("POLASKA") || izaberi_datum_cal_lbl.getText().contains("ПОЛАСКА")
 				|| izaberi_datum_cal_lbl.getText().contains("DEPARTURE")) {
 			datum_polaska_value_lbl.setText(pet_dat_lbl.getText());
 			datum_izmena_value_lbl.setText(pet_dat_lbl.getText());
+			
+			if(datum_povratka_polazak_value_lbl.getText().equals("")) {
+				datum_povratka_polazak_value_lbl.setText(pet_dat_lbl.getText());
+				datum_povratka_izmena_value_lbl.setText(pet_dat_lbl.getText());
+			}else {
+				try {
+				Calendar cal_selected = Calendar.getInstance();
+				cal_selected.setTime(_sdf.parse(pet_dat_lbl.getText()));
+				Calendar dat_pov = Calendar.getInstance();
+				dat_pov.setTime(_sdf.parse(datum_povratka_polazak_value_lbl.getText()));
+				if(cal_selected.after(dat_pov)) {
+					datum_povratka_polazak_value_lbl.setText(pet_dat_lbl.getText());
+					datum_povratka_izmena_value_lbl.setText(pet_dat_lbl.getText());
+				}
+				}catch(Exception e) {
+					
+				}
+			}
 		}else {
 			datum_povratka_polazak_value_lbl.setText(pet_dat_lbl.getText());
 			datum_povratka_izmena_value_lbl.setText(pet_dat_lbl.getText());
@@ -4236,11 +5080,29 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_change_sub() {
+		logger.info("--> handle_change_sub" );
 		resetCalendarButtonGroup( 5);
 		if(izaberi_datum_cal_lbl.getText().contains("POLASKA") || izaberi_datum_cal_lbl.getText().contains("ПОЛАСКА")
 				|| izaberi_datum_cal_lbl.getText().contains("DEPARTURE")) {
 			datum_polaska_value_lbl.setText(sub_dat_lbl.getText());
 			datum_izmena_value_lbl.setText(sub_dat_lbl.getText());
+			if(datum_povratka_polazak_value_lbl.getText().equals("")) {
+				datum_povratka_polazak_value_lbl.setText(sub_dat_lbl.getText());
+				datum_povratka_izmena_value_lbl.setText(sub_dat_lbl.getText());
+			}else {
+				try {
+				Calendar cal_selected = Calendar.getInstance();
+				cal_selected.setTime(_sdf.parse(sub_dat_lbl.getText()));
+				Calendar dat_pov = Calendar.getInstance();
+				dat_pov.setTime(_sdf.parse(datum_povratka_polazak_value_lbl.getText()));
+				if(cal_selected.after(dat_pov)) {
+					datum_povratka_polazak_value_lbl.setText(sub_dat_lbl.getText());
+					datum_povratka_izmena_value_lbl.setText(sub_dat_lbl.getText());
+				}
+				}catch(Exception e) {
+					
+				}
+			}
 		}else {
 			datum_povratka_polazak_value_lbl.setText(sub_dat_lbl.getText());
 			datum_povratka_izmena_value_lbl.setText(sub_dat_lbl.getText());
@@ -4249,11 +5111,30 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_change_ned() {
+		logger.info("--> handle_change_ned" );
 		resetCalendarButtonGroup( 6);
 		if(izaberi_datum_cal_lbl.getText().contains("POLASKA") || izaberi_datum_cal_lbl.getText().contains("ПОЛАСКА")
 				|| izaberi_datum_cal_lbl.getText().contains("DEPARTURE")) {
 			datum_polaska_value_lbl.setText(ned_dat_lbl.getText());
 			datum_izmena_value_lbl.setText(ned_dat_lbl.getText());
+			
+			if(datum_povratka_polazak_value_lbl.getText().equals("")) {
+				datum_povratka_polazak_value_lbl.setText(ned_dat_lbl.getText());
+				datum_povratka_izmena_value_lbl.setText(ned_dat_lbl.getText());
+			}else {
+				try {
+					Calendar cal_selected = Calendar.getInstance();
+					cal_selected.setTime(_sdf.parse(ned_dat_lbl.getText()));
+					Calendar dat_pov = Calendar.getInstance();
+					dat_pov.setTime(_sdf.parse(datum_povratka_polazak_value_lbl.getText()));
+					if(cal_selected.after(dat_pov)) {
+						datum_povratka_polazak_value_lbl.setText(ned_dat_lbl.getText());
+						datum_povratka_izmena_value_lbl.setText(ned_dat_lbl.getText());
+					}
+				}catch(Exception e) {
+
+				}
+			}
 		}else {
 			datum_povratka_polazak_value_lbl.setText(ned_dat_lbl.getText());
 			datum_povratka_izmena_value_lbl.setText(ned_dat_lbl.getText());
@@ -4262,14 +5143,18 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_calendar_odustani() {
+		logger.info("--> handle_calendar_odustani" );
+		datum_polaska_value_lbl.textProperty().removeListener(datum_polaska_changeListener);
+		datum_povratka_polazak_value_lbl.textProperty().removeListener(datum_povratka_polazak_changeListener);
 		polasci_calendar_pn.setVisible(false);
 		//calendar_pn.setVisible(false);
 	}
 	
 	public void handle_calendar_pre_ned() {
+		logger.info("--> handle_calendar_pre_ned" );
 		Calendar cal_pol = Calendar.getInstance();
 		try {
-			System.out.println("######datum_polaska_value_lbl = " + datum_polaska_value_lbl);
+			logger.info("######datum_polaska_value_lbl = " + datum_polaska_value_lbl);
 			cal_pol.setTime(_sdf.parse(datum_polaska_value_lbl.getText()));
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -4330,7 +5215,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_calendar_pos_ned() {
-		
+		logger.info("--> handle_calendar_pos_ned" );
 		Calendar cal_pol = Calendar.getInstance();
 		
 		Calendar cal_dva_meseca = Calendar.getInstance();
@@ -4351,76 +5236,128 @@ public class MainUIController extends AbstractController implements Initializabl
 		}
 		pon_dat_lbl.setText(_sdfddMMyyyy.format(monday_pos_week.getTime()));
 		//pon_izab_btn.setVisible(!cal_pol.after(monday_pos_week));
-		pon_pn.setVisible(!cal_pol.after(monday_pos_week));
-		pon_pn.setVisible(monday_pos_week.before(cal_dva_meseca));
+		if(_selected_voz_povratak == null  || _polazak_true_povratak_false) {
+			pon_pn.setVisible(!cal_pol.after(monday_pos_week));
+			pon_pn.setVisible(monday_pos_week.before(cal_dva_meseca));
+		}else {
+			pon_pn.setVisible(monday_pos_week.before(_selected_voz.get_trajanje_datum_Calendar()) ||
+					pon_dat_lbl.getText().equals(_selected_voz.get_trajanje_datum()));
+		}
 		
 		monday_pos_week.add(Calendar.HOUR, 24);
 		uto_dat_lbl.setText(_sdfddMMyyyy.format(monday_pos_week.getTime()));
 		//uto_izab_btn.setVisible(!cal_pol.after(monday_pos_week));
-		uto_pn.setVisible(!cal_pol.after(monday_pos_week));
-		uto_pn.setVisible(monday_pos_week.before(cal_dva_meseca));
-		
+		if(_selected_voz_povratak == null || _polazak_true_povratak_false) {
+			uto_pn.setVisible(!cal_pol.after(monday_pos_week));
+			uto_pn.setVisible(monday_pos_week.before(cal_dva_meseca));
+		}else {
+			uto_pn.setVisible(monday_pos_week.before(_selected_voz.get_trajanje_datum_Calendar()) ||
+					uto_dat_lbl.getText().equals(_selected_voz.get_trajanje_datum()));
+		}
 		monday_pos_week.add(Calendar.HOUR, 24);
 		sre_dat_lbl.setText(_sdfddMMyyyy.format(monday_pos_week.getTime()));
 		//sre_izab_btn.setVisible(!cal_pol.after(monday_pos_week));
-		sre_pn.setVisible(!cal_pol.after(monday_pos_week));
-		sre_pn.setVisible(monday_pos_week.before(cal_dva_meseca));
-		
+		if(_selected_voz_povratak == null || _polazak_true_povratak_false) {
+			sre_pn.setVisible(!cal_pol.after(monday_pos_week));
+			sre_pn.setVisible(monday_pos_week.before(cal_dva_meseca));
+		}else {
+			sre_pn.setVisible(monday_pos_week.before(_selected_voz.get_trajanje_datum_Calendar()) ||
+					sre_dat_lbl.getText().equals(_selected_voz.get_trajanje_datum()));
+		}
 		monday_pos_week.add(Calendar.HOUR, 24);
 		cet_dat_lbl.setText(_sdfddMMyyyy.format(monday_pos_week.getTime()));
 		//cet_izab_btn.setVisible(!cal_pol.after(monday_pos_week));
-		cet_pn.setVisible(!cal_pol.after(monday_pos_week));
-		cet_pn.setVisible(monday_pos_week.before(cal_dva_meseca));
+		if(_selected_voz_povratak == null  || _polazak_true_povratak_false) {
+			cet_pn.setVisible(!cal_pol.after(monday_pos_week));
+			cet_pn.setVisible(monday_pos_week.before(cal_dva_meseca));
+		}else {
+			cet_pn.setVisible(monday_pos_week.before(_selected_voz.get_trajanje_datum_Calendar()) ||
+					cet_dat_lbl.getText().equals(_selected_voz.get_trajanje_datum()));
+		}
 		
 		monday_pos_week.add(Calendar.HOUR, 24);
 		pet_dat_lbl.setText(_sdfddMMyyyy.format(monday_pos_week.getTime()));
 		//pet_izab_btn.setVisible(!cal_pol.after(monday_pos_week));
-		pet_pn.setVisible(!cal_pol.after(monday_pos_week));
-		pet_pn.setVisible(monday_pos_week.before(cal_dva_meseca));
-		
+		if(_selected_voz_povratak == null  || _polazak_true_povratak_false) {
+			pet_pn.setVisible(!cal_pol.after(monday_pos_week));
+			pet_pn.setVisible(monday_pos_week.before(cal_dva_meseca));
+		}else {
+			pet_pn.setVisible(monday_pos_week.before(_selected_voz.get_trajanje_datum_Calendar()) ||
+					pet_dat_lbl.getText().equals(_selected_voz.get_trajanje_datum()));
+		}
 		monday_pos_week.add(Calendar.HOUR, 24);
 		sub_dat_lbl.setText(_sdfddMMyyyy.format(monday_pos_week.getTime()));
 		//sub_izab_btn.setVisible(!cal_pol.after(monday_pos_week));
-		sub_pn.setVisible(!cal_pol.after(monday_pos_week));
-		sub_pn.setVisible(monday_pos_week.before(cal_dva_meseca));
-		
+		if(_selected_voz_povratak == null  || _polazak_true_povratak_false) {
+			sub_pn.setVisible(!cal_pol.after(monday_pos_week));
+			sub_pn.setVisible(monday_pos_week.before(cal_dva_meseca));
+		}else {
+			sub_pn.setVisible(monday_pos_week.before(_selected_voz.get_trajanje_datum_Calendar()) ||
+					sub_dat_lbl.getText().equals(_selected_voz.get_trajanje_datum()));
+		}
 		monday_pos_week.add(Calendar.HOUR, 24);
 		ned_dat_lbl.setText(_sdfddMMyyyy.format(monday_pos_week.getTime()));
 		//ned_izab_btn.setVisible(!cal_pol.after(monday_pos_week));
-		ned_pn.setVisible(!cal_pol.after(monday_pos_week));
-		ned_pn.setVisible(monday_pos_week.before(cal_dva_meseca));	
-		
-		sled_ned_cal_btn.setVisible(ned_pn.isVisible());
+		if(_selected_voz_povratak == null  || _polazak_true_povratak_false) {
+			ned_pn.setVisible(!cal_pol.after(monday_pos_week));
+			ned_pn.setVisible(monday_pos_week.before(cal_dva_meseca));	
+		}else {
+			ned_pn.setVisible(monday_pos_week.before(_selected_voz.get_trajanje_datum_Calendar()) ||
+					ned_dat_lbl.getText().equals(_selected_voz.get_trajanje_datum()));
+		}
+		monday_pos_week.add(Calendar.HOUR, 24);
+		sled_ned_cal_btn.setVisible(ned_pn.isVisible() && monday_pos_week.before(_selected_voz.get_trajanje_datum_Calendar()));
 		
 
 	}
 	
 	
 	public void handle_sled_polasci_pagination() {
-		handle_pagination_polasci_povratci(true);
+		logger.info("--> handle_sled_polasci_pagination" );
+		pret_polasci_btn.setVisible(true);
+		handle_pagination_polasci_povratci(true, false);
 	}
 	
 	public void handle_polasci_odustani() {
 		//polasci_nova_pn.setVisible(false);
+		logger.info("--> handle_polasci_odustani" );
+		datum_polaska_value_lbl.textProperty().removeListener(datum_polaska_changeListener);
+		datum_povratka_polazak_value_lbl.textProperty().removeListener(datum_povratka_polazak_changeListener);
 		polasci_calendar_pn.setVisible(false);
 	}
 	
 	public void handle_pred_polasci_pagination() {
-		handle_pagination_polasci_povratci(false);
+		logger.info("--> handle_pred_polasci_pagination" );
+		sled_polasci_btn.setVisible(true);
+		handle_pagination_polasci_povratci(false, false);
 	}
 	
 	public void handle_prvi_pol() {
-		System.out.println("handle_prvi_pol, _lista_svih_polazaka_current_position = " + _lista_svih_polazaka_current_position);
-		System.out.println("handle_prvi_pol, _lista_svih_povrataka_current_position = " + _lista_svih_povrataka_current_position);
+		logger.info("handle_prvi_pol, _lista_svih_polazaka_current_position = " + _lista_svih_polazaka_current_position);
+		logger.info("handle_prvi_pol, _lista_svih_povrataka_current_position = " + _lista_svih_povrataka_current_position);
+		datum_polaska_value_lbl.textProperty().removeListener(datum_polaska_changeListener);
+		datum_povratka_polazak_value_lbl.textProperty().removeListener(datum_povratka_polazak_changeListener);
 		if(_polazak_true_povratak_false/*izaberi_polazak_lbl.getText().contains("POLAZAK") || izaberi_polazak_lbl.getText().contains("ПОЛАЗАК")
 				|| izaberi_polazak_lbl.getText().contains("DEPARTURE")*/) {
-			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 0 );
+			if(is_vreme_polaska_manje_od_5_minuta(_svi_polasci.get(_lista_svih_polazaka_current_position + 0 ).getVremep())) {
+				run_error("Polazak nije odabran", "Voz polazi za manje od ", "5 minuta", "",  "", "", "", 4);
+				return;
+			}
+
+//			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 0 );
+			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 0 ));
 			_selected_voz.setRang(Integer.parseInt(prvi_pol_rang_value_lbl.getText()));
-			setCena(false);
+			
+			setCena(_selected_voz_povratak != null);
+			soko_view_polazak.setVisible(_selected_voz.isSoko());
+			if(_selected_voz_povratak != null) {
+				handle_smer_povratni();
+			}
 		}else {
 			_selected_voz_povratak = /*_svi_povratci*/getListaPovrataka().get(_lista_svih_povrataka_current_position + 0 );
 			_selected_voz_povratak.setRang(Integer.parseInt(prvi_pol_rang_value_lbl.getText()));
 			setCena(true);
+			soko_view_povratak.setVisible(_selected_voz_povratak.isSoko());
 		}
 		resetPolazakButtonGroup(0);
 		uslov_za_drugi_korak();
@@ -4429,18 +5366,59 @@ public class MainUIController extends AbstractController implements Initializabl
 		 
 	}
 	
+	private boolean is_vreme_polaska_manje_od_5_minuta( String selected_vreme) {
+		logger.info("--> is_vreme_polaska_manje_od_5_minuta" );
+		//prvo proveravam datume
+		String selectovan_datum = datum_polaska_value_lbl.getText();
+		Calendar current_plus_pet_minuta = Calendar.getInstance();
+		String current_datum = _sdf.format(current_plus_pet_minuta.getTime());
+		if(current_datum.equals(selectovan_datum)) {
+			//ako je selektovani datum isti kao tekuci datum
+			String[] splt = selected_vreme.split(":");
+			int vreme_pol = Integer.parseInt(splt[0]) *100 + Integer.parseInt(splt[1]);
+			
+			current_plus_pet_minuta.add(Calendar.MINUTE, 5);
+			int current_time_plus_5_min = Integer.parseInt(new SimpleDateFormat("HH").format(current_plus_pet_minuta.getTime())) * 100 + 
+					Integer.parseInt(new SimpleDateFormat("mm").format(current_plus_pet_minuta.getTime()));
+			if(vreme_pol < current_time_plus_5_min) {
+				//error- izadji bez selekcije
+				//run_error("Polazak nije odabran", "Voz polazi za manje od ", "5 minuta", "",  "", "", "", 4);
+				logger.info("<-- is_vreme_polaska_manje_od_5_minuta return true" );
+				return true;
+			} 
+		}
+		logger.info("<-- is_vreme_polaska_manje_od_5_minuta return false" );
+		return false;
+	}
+	
 	public void handle_drugi_pol() {
-		System.out.println("handle_drugi_pol, _lista_svih_polazaka_current_position = " + _lista_svih_polazaka_current_position);
-		System.out.println("handle_drugi_pol, _lista_svih_povrataka_current_position = " + _lista_svih_povrataka_current_position);
+		logger.info("handle_drugi_pol, _lista_svih_polazaka_current_position = " + _lista_svih_polazaka_current_position);
+		logger.info("handle_drugi_pol, _lista_svih_povrataka_current_position = " + _lista_svih_povrataka_current_position);
+		datum_polaska_value_lbl.textProperty().removeListener(datum_polaska_changeListener);
+		datum_povratka_polazak_value_lbl.textProperty().removeListener(datum_povratka_polazak_changeListener);
 		if(_polazak_true_povratak_false/*izaberi_polazak_lbl.getText().contains("POLAZAK") || izaberi_polazak_lbl.getText().contains("ПОЛАЗАК")
 				|| izaberi_polazak_lbl.getText().contains("DEPARTURE")*/) {
-			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 1 );
+
+
+			if(is_vreme_polaska_manje_od_5_minuta(_svi_polasci.get(_lista_svih_polazaka_current_position + 1 ).getVremep())) {
+				run_error("Polazak nije odabran", "Voz polazi za manje od ", "5 minuta", "",  "", "", "", 4);
+				return;
+			}
+			
+			
+//			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 1 );
+			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 1 ));
 			_selected_voz.setRang(Integer.parseInt(drugi_pol_rang_value_lbl.getText()));
-			setCena(false);
+			setCena(_selected_voz_povratak != null);
+			soko_view_polazak.setVisible(_selected_voz.isSoko());
+			if(_selected_voz_povratak != null) {
+				handle_smer_povratni();
+			}
 		}else {
 			_selected_voz_povratak =/* _svi_povratci*/getListaPovrataka().get(_lista_svih_povrataka_current_position + 1 );
 			_selected_voz_povratak.setRang(Integer.parseInt(drugi_pol_rang_value_lbl.getText()));
 			setCena(true);
+			soko_view_povratak.setVisible(_selected_voz_povratak.isSoko());
 		}
 		resetPolazakButtonGroup(1);
 		uslov_za_drugi_korak();
@@ -4451,17 +5429,31 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 
 	public void handle_treci_pol() {
-		System.out.println("handle_treci_pol, _lista_svih_polazaka_current_position = " + _lista_svih_polazaka_current_position);
-		System.out.println("handle_treci_pol, _lista_svih_povrataka_current_position = " + _lista_svih_povrataka_current_position);
+		logger.info("handle_treci_pol, _lista_svih_polazaka_current_position = " + _lista_svih_polazaka_current_position);
+		logger.info("handle_treci_pol, _lista_svih_povrataka_current_position = " + _lista_svih_povrataka_current_position);
+		datum_polaska_value_lbl.textProperty().removeListener(datum_polaska_changeListener);
+		datum_povratka_polazak_value_lbl.textProperty().removeListener(datum_povratka_polazak_changeListener);
 		if(_polazak_true_povratak_false/*izaberi_polazak_lbl.getText().contains("POLAZAK") || izaberi_polazak_lbl.getText().contains("ПОЛАЗАК")
 				|| izaberi_polazak_lbl.getText().contains("DEPARTURE")*/) {
-			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 2 );
+			
+			if(is_vreme_polaska_manje_od_5_minuta(_svi_polasci.get(_lista_svih_polazaka_current_position + 2 ).getVremep())) {
+				run_error("Polazak nije odabran", "Voz polazi za manje od ", "5 minuta", "",  "", "", "", 4);
+				return;
+			}
+			
+//			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 2 );
+			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 2 ));
 			_selected_voz.setRang(Integer.parseInt(treci_pol_rang_value_lbl.getText()));
-			setCena(false);
+			setCena(_selected_voz_povratak != null);
+			soko_view_polazak.setVisible(_selected_voz.isSoko());
+			if(_selected_voz_povratak != null) {
+				handle_smer_povratni();
+			}
 		}else {
 			_selected_voz_povratak = /*_svi_povratci*/getListaPovrataka().get(_lista_svih_povrataka_current_position + 2 );
 			_selected_voz_povratak.setRang(Integer.parseInt(treci_pol_rang_value_lbl.getText()));
 			setCena(true);
+			soko_view_povratak.setVisible(_selected_voz_povratak.isSoko());
 		}
 		resetPolazakButtonGroup(2);
 		uslov_za_drugi_korak();
@@ -4472,37 +5464,66 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 
 	public void handle_cetvrti_pol() {
-		System.out.println("handle_cetvrti_pol, _lista_svih_polazaka_current_position = " + _lista_svih_polazaka_current_position);
-		System.out.println("handle_cetvrti_pol, _lista_svih_povrataka_current_position = " + _lista_svih_povrataka_current_position);
+		logger.info("handle_cetvrti_pol, _lista_svih_polazaka_current_position = " + _lista_svih_polazaka_current_position);
+		logger.info("handle_cetvrti_pol, _lista_svih_povrataka_current_position = " + _lista_svih_povrataka_current_position);
+		datum_polaska_value_lbl.textProperty().removeListener(datum_polaska_changeListener);
+		datum_povratka_polazak_value_lbl.textProperty().removeListener(datum_povratka_polazak_changeListener);
 		if(_polazak_true_povratak_false/*izaberi_polazak_lbl.getText().contains("POLAZAK") || izaberi_polazak_lbl.getText().contains("ПОЛАЗАК")
 				|| izaberi_polazak_lbl.getText().contains("DEPARTURE")*/) {
-			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 3 );
+			
+			if(is_vreme_polaska_manje_od_5_minuta(_svi_polasci.get(_lista_svih_polazaka_current_position + 3 ).getVremep())) {
+				run_error("Polazak nije odabran", "Voz polazi za manje od ", "5 minuta", "",  "", "", "", 4);
+				return;
+			}
+			
+//			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 3 );
+			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 3 ));
 			_selected_voz.setRang(Integer.parseInt(cetvrti_pol_rang_value_lbl.getText()));
-			setCena(false);
+			setCena(_selected_voz_povratak != null);
+			soko_view_polazak.setVisible(_selected_voz.isSoko());
+			if(_selected_voz_povratak != null) {
+				handle_smer_povratni();
+			}
 		}else {
 			_selected_voz_povratak = /*_svi_povratci*/getListaPovrataka().get(_lista_svih_povrataka_current_position + 3 );
 			_selected_voz_povratak.setRang(Integer.parseInt(cetvrti_pol_rang_value_lbl.getText()));
 			setCena(true);
+			
 		}
 		resetPolazakButtonGroup(3);
 		uslov_za_drugi_korak();
 		//polasci_nova_pn.setVisible(false);
 		polasci_calendar_pn.setVisible(false);
-		 
+		
 	}
 	
 	public void handle_peti_pol() {
-		System.out.println("handle_peti_pol, _lista_svih_polazaka_current_position = " + _lista_svih_polazaka_current_position);
-		System.out.println("handle_peti_pol, _lista_svih_povrataka_current_position = " + _lista_svih_povrataka_current_position);
+		logger.info("handle_peti_pol, _lista_svih_polazaka_current_position = " + _lista_svih_polazaka_current_position);
+		logger.info("handle_peti_pol, _lista_svih_povrataka_current_position = " + _lista_svih_povrataka_current_position);
+		datum_polaska_value_lbl.textProperty().removeListener(datum_polaska_changeListener);
+		datum_povratka_polazak_value_lbl.textProperty().removeListener(datum_povratka_polazak_changeListener);
 		if(_polazak_true_povratak_false/*izaberi_polazak_lbl.getText().contains("POLAZAK") || izaberi_polazak_lbl.getText().contains("ПОЛАЗАК")
 				|| izaberi_polazak_lbl.getText().contains("DEPARTURE")*/) {
-			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 4 );
+			
+			if(is_vreme_polaska_manje_od_5_minuta(_svi_polasci.get(_lista_svih_polazaka_current_position + 4 ).getVremep())) {
+				run_error("Polazak nije odabran", "Voz polazi za manje od ", "5 minuta", "",  "", "", "", 4);
+				return;
+			}
+			
+			
+//			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 4 );
+			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 4 ));
 			_selected_voz.setRang(Integer.parseInt(peti_pol_rang_value_lbl.getText()));
-			setCena(false);
+			setCena(_selected_voz_povratak != null);
+			soko_view_polazak.setVisible(_selected_voz.isSoko());
+			if(_selected_voz_povratak != null) {
+				handle_smer_povratni();
+			}
 		}else {
 			_selected_voz_povratak = /*_svi_povratci*/getListaPovrataka().get(_lista_svih_povrataka_current_position + 4 );
 			_selected_voz_povratak.setRang(Integer.parseInt(peti_pol_rang_value_lbl.getText()));
 			setCena(true);
+			soko_view_povratak.setVisible(_selected_voz_povratak.isSoko());
 		}
 		
 		resetPolazakButtonGroup(4);
@@ -4515,6 +5536,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	public void handle_tip_karte_izmeni() {
 //		restartSessionExpiration();
+		logger.info("handle_tip_karte_izmeni " );
 		handleOsvezi();
 		_prva_karta_tip = _prva_karta_tip_not_confirmed;
 		_druga_karta_tip = _druga_karta_tip_not_confirmed;
@@ -4528,6 +5550,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	public void handle_tip_karte_odustani() {
 //		restartSessionExpiration();
+		logger.info("handle_tip_karte_odustani " );
 		handleOsvezi();
 		_prva_karta_tip_not_confirmed = _prva_karta_tip;
 		_druga_karta_tip_not_confirmed = _druga_karta_tip;
@@ -4535,123 +5558,178 @@ public class MainUIController extends AbstractController implements Initializabl
 		_cetvrta_karta_tip_not_confirmed = _cetvrta_karta_tip;
 		_peta_karta_tip_not_confirmed = _peta_karta_tip;
 		tip_karte_pn.setVisible(false);
+		tip_karte_polazak_value_lbl.setText(_previous_tip_karte);
+		tip_karte_izmena_value_lbl.setText(_previous_tip_karte);
+		tip_karte_dolazak_value_lbl.setText(_previous_tip_karte);
+		
 	}
 	
 	public void handle_prvi_tip_redovna() {
+		logger.info("handle_prvi_tip_redovna " );
 		_prva_karta_tip_not_confirmed=TIP_REDOVNA_CENA;
 		prvi_tip_tf.setVisible(false);
 		prvi_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_prva_tip_karte_button_group, 0);
 		tastatura_pn.setVisible(false);
 	}
 	
 	public void handle_prvi_tip_srb_k13() {
+		logger.info("handle_prvi_tip_srb_k13 " );
 		_prva_karta_tip_not_confirmed=TIP_SRB_K13;
 		setTipKarteIzmeniVisible(false);
 		prvi_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		prvi_tip_tf.setVisible(true);
 		resetTipKarteButtonGroup(_prva_tip_karte_button_group, 1);
 		bindWithTastatura(prvi_tip_tf, 120, _prva_tip_karte_button_group, 1);
 	}
 	
 	public void handle_prvi_tip_rail_k30() {
+		logger.info("handle_prvi_tip_rail_k30 " );
 		_prva_karta_tip_not_confirmed = TIP_RAIL_K30;
 		setTipKarteIzmeniVisible(false);
 		prvi_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		prvi_tip_tf.setVisible(true);
 		resetTipKarteButtonGroup(_prva_tip_karte_button_group, 2);
 		bindWithTastatura(prvi_tip_tf, 120, _prva_tip_karte_button_group, 1);
 	}
 	
-	public void handle_prvi_tip_dete() { 
+	public void handle_prvi_tip_dete() {
+		logger.info("handle_prvi_tip_dete " );
 		_prva_karta_tip_not_confirmed = TIP_DETE;
 		prvi_tip_tf.setVisible(false);
 		prvi_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_prva_tip_karte_button_group, 3);
 		tastatura_pn.setVisible(false);
 	}
 	
 	public void handle_prvi_tip_pas() {
+		logger.info("handle_prvi_tip_pas " );
 		_prva_karta_tip_not_confirmed = TIP_PAS;
 		prvi_tip_tf.setVisible(false);
 		prvi_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_prva_tip_karte_button_group, 4);
 		tastatura_pn.setVisible(false);
 	}
 	
+	
+	public void handle_prvi_tip_penzioner() {		
+		logger.info("handle_prvi_tip_penzioner " );
+		_prva_karta_tip_not_confirmed = TIP_PENZIONERI;
+		setTipKarteIzmeniVisible(false);
+		prvi_tip_tf.setVisible(true);
+		prvi_tip_tf.setText("");
+		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
+		setTipKarteIzmeniVisible(false);
+		resetTipKarteButtonGroup(_prva_tip_karte_button_group, 5);
+		bindWithAlfanumericTastatura(prvi_tip_tf, 120, _prva_tip_karte_button_group, 5);
+	}
+	
 	public void handle_drugi_tip_redovna() {
+		logger.info("handle_drugi_tip_redovna " );
 		_druga_karta_tip_not_confirmed = TIP_REDOVNA_CENA;
 		drugi_tip_tf.setVisible(false);
 		drugi_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_druga_tip_karte_button_group, 0);
 		tastatura_pn.setVisible(false);
 	}
 	
 	public void handle_drugi_tip_srb_k13() {
+		logger.info("handle_drugi_tip_srb_k13 " );
 		_druga_karta_tip_not_confirmed = TIP_SRB_K13;
 		drugi_tip_tf.setVisible(true);
 		drugi_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_druga_tip_karte_button_group, 1);
 		bindWithTastatura(drugi_tip_tf, 120, _druga_tip_karte_button_group, 2);
 	}
 	
 	public void handle_drugi_tip_rail_k30() {
+		logger.info("handle_drugi_tip_rail_k30 " );
 		_druga_karta_tip_not_confirmed = TIP_RAIL_K30;
 		drugi_tip_tf.setVisible(true);
 		drugi_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_druga_tip_karte_button_group, 2);
 		bindWithTastatura(drugi_tip_tf, 120, _druga_tip_karte_button_group, 2);
 	}
 	
 	public void handle_drugi_tip_dete() {
+		logger.info("handle_drugi_tip_dete " );
 		_druga_karta_tip_not_confirmed = TIP_DETE;
 		drugi_tip_tf.setVisible(false);
 		drugi_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_druga_tip_karte_button_group, 3);
 		tastatura_pn.setVisible(false);
 	}
 	
 	public void handle_drugi_tip_pas() {
+		logger.info("handle_drugi_tip_pas " );
 		_druga_karta_tip_not_confirmed = TIP_PAS;
 		drugi_tip_tf.setVisible(false);
 		drugi_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_druga_tip_karte_button_group, 4);
 		tastatura_pn.setVisible(false);
 	}
 	
+	public void handle_drugi_tip_penzioner() {		
+		logger.info("handle_drugi_tip_penzioner " );
+		_druga_karta_tip_not_confirmed = TIP_PENZIONERI;
+		setTipKarteIzmeniVisible(false);
+		drugi_tip_tf.setVisible(true);
+		drugi_tip_tf.setText("");
+		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
+		setTipKarteIzmeniVisible(false);
+		resetTipKarteButtonGroup(_druga_tip_karte_button_group, 5);
+		bindWithAlfanumericTastatura(drugi_tip_tf, 120, _druga_tip_karte_button_group, 5);
+	}
+	
 	public void handle_treci_tip_redovna() {
+		logger.info("handle_treci_tip_redovna " );
 		_treca_karta_tip_not_confirmed = TIP_REDOVNA_CENA;
 		treci_tip_tf.setVisible(false);
 		treci_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_treca_tip_karte_button_group, 0);
 		tastatura_pn.setVisible(false);
 	}
 	
 	public void handle_treci_tip_srb_k13() {
+		logger.info("handle_treci_tip_srb_k13 " );
 		_treca_karta_tip_not_confirmed = TIP_SRB_K13;
 		treci_tip_tf.setVisible(true);
 		treci_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_treca_tip_karte_button_group, 1);
 		bindWithTastatura(treci_tip_tf, 120, _treca_tip_karte_button_group, 3);
@@ -4659,50 +5737,73 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_treci_tip_rail_k30() {
+		logger.info("handle_treci_tip_rail_k30 " );
 		_treca_karta_tip_not_confirmed = TIP_RAIL_K30;
 		treci_tip_tf.setVisible(true);
 		treci_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_treca_tip_karte_button_group, 2);
 		bindWithTastatura(treci_tip_tf, 120, _treca_tip_karte_button_group, 3);
 	}
 	
 	public void handle_treci_tip_dete() {
+		logger.info("handle_treci_tip_dete " );
 		_treca_karta_tip_not_confirmed = TIP_DETE;
 		treci_tip_tf.setVisible(false);
 		treci_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_treca_tip_karte_button_group, 3);
 		tastatura_pn.setVisible(false);
 	}
 	
 	public void handle_treci_tip_pas() {
+		logger.info("handle_treci_tip_pas " );
 		_treca_karta_tip_not_confirmed = TIP_PAS;
 		treci_tip_tf.setVisible(false);
 		treci_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_treca_tip_karte_button_group, 4);
 		tastatura_pn.setVisible(false);
 	}
 	
+	public void handle_treci_tip_penzioner() {		
+		logger.info("handle_treci_tip_penzioner " );
+		_treca_karta_tip_not_confirmed = TIP_PENZIONERI;
+		setTipKarteIzmeniVisible(false);
+		treci_tip_tf.setVisible(true);
+		treci_tip_tf.setText("");
+		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
+		setTipKarteIzmeniVisible(false);
+		resetTipKarteButtonGroup(_treca_tip_karte_button_group, 5);
+		bindWithAlfanumericTastatura(treci_tip_tf, 120, _treca_tip_karte_button_group, 5);
+	}
+	
 	public void handle_cetvrti_tip_redovna() {
+		logger.info("handle_cetvrti_tip_redovna " );
 		_cetvrta_karta_tip_not_confirmed = TIP_REDOVNA_CENA;
 		cetvrti_tip_tf.setVisible(false);
 		cetvrti_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_cetvrta_tip_karte_button_group, 0);
 		tastatura_pn.setVisible(false);
 	}
 	
 	public void handle_cetvrti_tip_srb_k13() {
+		logger.info("handle_cetvrti_tip_srb_k13 " );
 		_cetvrta_karta_tip_not_confirmed = TIP_SRB_K13;
 		cetvrti_tip_tf.setVisible(true);
 		cetvrti_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_cetvrta_tip_karte_button_group, 1);
 		bindWithTastatura(cetvrti_tip_tf, -350, _cetvrta_tip_karte_button_group, 4);
@@ -4710,88 +5811,130 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_cetvrti_tip_rail_k30() {
+		logger.info("handle_cetvrti_tip_rail_k30 " );
 		_cetvrta_karta_tip_not_confirmed = TIP_RAIL_K30;
 		cetvrti_tip_tf.setVisible(true);
 		cetvrti_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_cetvrta_tip_karte_button_group, 2);
 		bindWithTastatura(cetvrti_tip_tf, -350, _cetvrta_tip_karte_button_group, 4);
 	}
 	
 	public void handle_cetvrti_tip_dete() {
+		logger.info("handle_cetvrti_tip_dete " );
 		_cetvrta_karta_tip_not_confirmed = TIP_DETE;
 		cetvrti_tip_tf.setVisible(false);
 		cetvrti_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_cetvrta_tip_karte_button_group, 3);
 		tastatura_pn.setVisible(false);
 	}
 	
 	public void handle_cetvrti_tip_pas() {
+		logger.info("handle_cetvrti_tip_pas " );
 		_cetvrta_karta_tip_not_confirmed = TIP_PAS;
 		cetvrti_tip_tf.setVisible(false);
 		cetvrti_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_cetvrta_tip_karte_button_group, 4);
 		tastatura_pn.setVisible(false);
 	}
 	
+	public void handle_cetvrti_tip_penzioner() {		
+		logger.info("handle_cetvrti_tip_penzioner " );
+		_cetvrta_karta_tip_not_confirmed = TIP_PENZIONERI;
+		setTipKarteIzmeniVisible(false);
+		cetvrti_tip_tf.setVisible(true);
+		cetvrti_tip_tf.setText("");
+		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
+		setTipKarteIzmeniVisible(false);
+		resetTipKarteButtonGroup(_cetvrta_tip_karte_button_group, 5);
+		bindWithAlfanumericTastatura(cetvrti_tip_tf, 120, _cetvrta_tip_karte_button_group, 5);
+	}
+	
 	public void handle_peti_tip_redovna() {
-
+		logger.info("handle_peti_tip_redovna " );
 		setTipKarteIzmeniVisible(false);
 		peti_tip_tf.setVisible(false);
 		peti_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_peta_tip_karte_button_group, 0);
 		tastatura_pn.setVisible(false);
 	}
 	
 	public void handle_peti_tip_srb_k13() { 
+		logger.info("handle_peti_tip_srb_k13 " );
 		_peta_karta_tip_not_confirmed = TIP_SRB_K13;
 		peti_tip_tf.setVisible(true);
 		peti_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_peta_tip_karte_button_group, 1);
 		bindWithTastatura(peti_tip_tf, -350, _peta_tip_karte_button_group, 5);
 	}
 	
 	public void handle_peti_tip_rail_k30() {
+		logger.info("handle_peti_tip_rail_k30 " );
 		_peta_karta_tip_not_confirmed = TIP_RAIL_K30;
 		peti_tip_tf.setVisible(true);
 		peti_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_peta_tip_karte_button_group, 2);
 		bindWithTastatura(peti_tip_tf, -350, _peta_tip_karte_button_group, 5);
 	}
 	
 	public void handle_peti_tip_dete() {
+		logger.info("handle_peti_tip_dete " );
 		_peta_karta_tip_not_confirmed = TIP_DETE;
 		peti_tip_tf.setVisible(false);
 		peti_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_peta_tip_karte_button_group, 3);
 		tastatura_pn.setVisible(false);
 	}
 	
 	public void handle_peti_tip_pas() {
+		logger.info("handle_peti_tip_pas " );
 		_peta_karta_tip_not_confirmed = TIP_PAS;
 		peti_tip_tf.setVisible(false);
 		peti_tip_tf.setText("");
 		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
 		setTipKarteIzmeniVisible(false);
 		resetTipKarteButtonGroup(_peta_tip_karte_button_group, 4);
 		tastatura_pn.setVisible(false);
 	}
+	
+	public void handle_peti_tip_penzioner() {		
+		logger.info("handle_peti_tip_penzioner " );
+		_peta_karta_tip_not_confirmed = TIP_PENZIONERI;
+		setTipKarteIzmeniVisible(false);
+		peti_tip_tf.setVisible(true);
+		peti_tip_tf.setText("");
+		id_povlastice_value_lbl.setText("");
+		tast_alfa_num_value_lbl.setText("");
+		setTipKarteIzmeniVisible(false);
+		resetTipKarteButtonGroup(_peta_tip_karte_button_group, 5);
+		bindWithAlfanumericTastatura(peti_tip_tf, 120, _peta_tip_karte_button_group, 5);
+	}
 
 
 	public void handle_placanje_nazad_btn() {
+		logger.info("handle_placanje_nazad_btn " );
 		placanje_pn.setVisible(false);
 	}
 	public void handleTastJedan() {
@@ -4837,12 +5980,188 @@ public class MainUIController extends AbstractController implements Initializabl
 		id_povlastice_value_lbl.setText(_currentBindTastTF.getText());
 	}
 	
+	public void handleTastAlfaNumJedan() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "1");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handleTastAlfaNumDva() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "2");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handleTastAlfaNumTri() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "3");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handleTastAlfaNumCetiri() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "4");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handleTastAlfaNumPet() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "5");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handleTastAlfaNumSest() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "6");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handleTastAlfaNumSedam() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "7");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handleTastAlfaNumOsam() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "8");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handleTastAlfaNumDevet() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "9");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handleTastAlfaNumBackSpace() {
+		if(_currentBindTastTF.getText().length() > 0) {
+			_currentBindTastTF.setText(_currentBindTastTF.getText().substring(0,_currentBindTastTF.getText().length() -1));
+		}
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handleTastAlfaNumNula() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "0");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+
+	
+	public void handle_tast_alfa_num_A() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "A");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_B() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "B");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_C() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "C");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_D() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "D");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_E() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "E");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_F() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "F");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_G() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "G");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_H() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "H");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_I() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "I");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_J() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "J");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_K() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "K");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_L() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "L");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_M() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "M");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_N() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "N");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_O() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "O");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_P() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "P");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_R() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "R");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_T() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "T");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_CS() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "Ć");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_CH() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "Č");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_U() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "U");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_V() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "V");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_S() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "S");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_SH() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "Š");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_Z() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "Z");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_ZH() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "Ž");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	
+	public void handle_tast_alfa_num_Y() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "Y");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_W() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "W");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_Q() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "Q");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	public void handle_tast_alfa_num_X() {
+		_currentBindTastTF.setText(_currentBindTastTF.getText() + "X");
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+	}
+	
+	
+	
+	
 	public void handleTastOK() {
+		logger.info("handleTastOK " );
 		//TODO poziv za proveru
 		//ako je dobar, zatvori, ukoliko nije dobar, mora da bira neki drugi
 		int popust_id = _currentBindTastTF.getId().endsWith("30") ? 30 : 37;
+		logger.info("popust_id = " + popust_id);
 		try {
 			if(SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).provera_legitimacije(Integer.parseInt(_currentBindTastTF.getText()), popust_id)) {
+				logger.info("Popust odobren ");
 				run_info("Popust odobren", "", "", "",  "", "", "", 2);
 			}else {
 				resetTipKarteButtonGroup(_current_tip_karte_button_group, 0);
@@ -4879,13 +6198,60 @@ public class MainUIController extends AbstractController implements Initializabl
 		tastatura_pn.setVisible(false);
 	}
 	
+	public void handle_tast_alfa_num_POTVRDI() {
+		logger.info("handle_tast_alfa_num_POTVRDI " );
+		//TODO poziv za proveru
+		//ako je dobar, zatvori, ukoliko nije dobar, mora da bira neki drugi
+		int popust_id = 31;
+		logger.info("popust_id = " + popust_id);
+		try {
+			if(SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).provera_legitimacije(_currentBindTastTF.getText(), popust_id)) {
+				logger.info("Popust odobren ");
+				run_info("Popust odobren", "", "", "",  "", "", "", 2);
+			}else {
+				resetTipKarteButtonGroup(_current_tip_karte_button_group, 0);
+				_currentBindTastTF.setText("");
+				id_povlastice_value_lbl.setText(_currentBindTastTF.getText());
+				tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+				_currentBindTastTF.setVisible(false);
+
+				switch(_current_bind_tip_karte) {
+				case 1: _prva_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+				case 2: _druga_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+				case 3: _treca_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+				case 4: _cetvrta_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+				case 5: _peta_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+				}
+				setTipKarteIzmeniVisible(false);
+				run_error("Popust nije odobren", "ID legitimacije nije validan", "ili ne legitimacija istekla", "",  "", "", "", 4);
+
+			}
+		}catch(Exception e) {
+			resetTipKarteButtonGroup(_current_tip_karte_button_group, 0);
+			_currentBindTastTF.setText("");
+			_currentBindTastTF.setVisible(false);
+			switch(_current_bind_tip_karte) {
+			case 1: _prva_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+			case 2: _druga_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+			case 3: _treca_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+			case 4: _cetvrta_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+			case 5: _peta_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+			}
+			setTipKarteIzmeniVisible(false);
+			run_error("Popust nije odobren", "greska u komunikaciji prilikom", "provere validnosti", "",  "", "", "", 4);
+
+		}
+		tastatura_alfanumeric_pn.setVisible(false);
+	}
+	
 	public void handleTastNula() {
 		_currentBindTastTF.setText(_currentBindTastTF.getText() + "0");
 		id_povlastice_value_lbl.setText(_currentBindTastTF.getText());
 	}
 
 	public void handle_smer_u_jednom() {
-		
+		logger.info("handle_smer_u_jednom ");
+		_selected_voz_povratak = null;
 		_prva_karta_tip = TIP_REDOVNA_CENA;
 		_druga_karta_tip = TIP_REDOVNA_CENA;
 		_treca_karta_tip = TIP_REDOVNA_CENA;
@@ -4908,7 +6274,11 @@ public class MainUIController extends AbstractController implements Initializabl
 	}
 	
 	public void handle_plati_final_btn(){
+		int broj_putnika = Integer.parseInt( broj_putnika_lbl.getText() );
+		logger.info("handle_plati_final_btn, broj_putnika = " + broj_putnika);
+
 		try {
+			checkBrojPutnika(broj_putnika);
 			PowerShellPrinterStatus.checkPrinterStatus();
 			placanje_result_pn.setStyle("-fx-background-image: url('"+resources.getString("prisloni_karticu_za_placanje_gif")+"')");
 			placanje_result_pn.setVisible(true);
@@ -4919,12 +6289,16 @@ public class MainUIController extends AbstractController implements Initializabl
 				is_petnaest_dana = _selected_voz_povratak.getRelkm() > 100;
 			}
 			
+
+
 			
 			KartaPaymentControler controller = new KartaPaymentControler(this,_kartomat.getiD_USER(), _kartomat.getiD_TERMINALA(),_kartomat.getNaziV_STANICE(),
-					_selected_voz, _selected_voz_povratak, _selected_razred_polazak, _selected_razred_povratak, Integer.parseInt( broj_putnika_lbl.getText() ),
+					_selected_voz, _selected_voz_povratak, _selected_razred_polazak, _selected_razred_povratak, broj_putnika,
 			Double.parseDouble(ukupna_cena_value_lbl.getText()), _prvi_putnik_cena, _drugi_putnik_cena, _treci_putnik_cena, _cetvrti_putnik_cena, _peti_putnik_cena,
 			_prvi_putnik_povratna_cena, _drugi_putnik_povratna_cena, _treci_putnik_povratna_cena, _cetvrti_putnik_povratna_cena, _peti_putnik_povratna_cena, 
-			_prva_karta_tip, _druga_karta_tip, _treca_karta_tip, _treca_karta_tip, _peta_karta_tip, is_petnaest_dana);
+			_prva_karta_tip, _druga_karta_tip, _treca_karta_tip, _treca_karta_tip, _peta_karta_tip, is_petnaest_dana,
+			prvi_tip_tf.getText().trim(), drugi_tip_tf.getText().trim(), treci_tip_tf.getText().trim(),
+			cetvrti_tip_tf.getText().trim(), peti_tip_tf.getText().trim());
 			
 
 			
@@ -4935,7 +6309,11 @@ public class MainUIController extends AbstractController implements Initializabl
 
 			error_pn.setVisible(true);
 			error_pn.toFront();
-			run_error("GREŠKA NA ŠTAMPAČU", e.getMessage(), "POZOVITE OSOBLJE STANICE", "",  "", "", "", 10);
+			if(e instanceof NoSeetsAvailableException) {
+				run_error(resources.getString("nema_slobodnih_mesta"), e.getMessage(), "", "",  "", "", "", 5);
+			}else {
+				run_error("GREŠKA NA ŠTAMPAČU", e.getMessage(), "POZOVITE OSOBLJE STANICE", "",  "", "", "", 10);
+			}
 
 			Thread thread3 = new Thread(() -> {
 
@@ -4963,6 +6341,40 @@ public class MainUIController extends AbstractController implements Initializabl
 
 	}
 	
+	private void checkBrojPutnika(int broj_putnika) throws NoSeetsAvailableException{
+		logger.info("datum polaska = " + _selected_voz.getDatumPolaska());
+		logger.info("checkBrojPutnika, broj_putnika = " + broj_putnika + ", datum polaska = " + _selected_voz.getDatumPolaska());
+//		try {
+			if(isVozWithReservations(_selected_voz/*"" + _selected_voz.getBrvoz()) && (_selected_voz.getRang() == 2 || _selected_voz.getRang() == 7*/)) {
+//				int br_slob_mest = SrbijaVozIfaceFactory.getIface(MainUIController.SV_API_URL, MainUIController.SV_API_CONN_TIME, MainUIController.SV_API_READ_TIME).
+//						getBrojSlobodnihMesta(_selected_voz.getBrvoz(), convertDatumFormat(_selected_voz.getDatumPolaska()));
+				if(broj_putnika > _selected_voz.getBr_slobodnih_mesta()/*br_slob_mest*/) {
+					throw new NoSeetsAvailableException(resources.getString("nema_slobodnih_mesta_odlazak"));
+				}
+			}
+
+			if(_selected_voz_povratak != null) {
+				if(isVozWithReservations(_selected_voz_povratak/*"" + _selected_voz_povratak.getBrvoz()) && (_selected_voz_povratak.getRang() == 2 || _selected_voz_povratak.getRang() == 7*/)) {
+//					int br_slob_mest = SrbijaVozIfaceFactory.getIface(MainUIController.SV_API_URL, MainUIController.SV_API_CONN_TIME, MainUIController.SV_API_READ_TIME).
+//							getBrojSlobodnihMesta(_selected_voz_povratak.getBrvoz(), convertDatumFormat(_selected_voz_povratak.getDatumPolaska()));
+					if(broj_putnika > _selected_voz_povratak.getBr_slobodnih_mesta()/*br_slob_mest*/) {
+						throw new NoSeetsAvailableException(resources.getString("nema_slobodnih_mesta_povratak"));
+					}
+				}
+			}
+//		}catch(CommunicationException ce) {
+//			logger.error("checkBrojPutnika communication error , details:  = " + ce.getMessage(), ce);
+//		}
+
+	}
+	
+	private String convertDatumFormat(String datum_polaska) {
+		String[] prst = datum_polaska.split("\\.");
+		int mesec = Integer.parseInt(prst[1]);
+		int dan = Integer.parseInt(prst[0]);
+		return "" + mesec + "-" + dan + "-" + prst[2];
+	}
+	
 	public void handleA() {
 		azuriraj_listu_ostalinh_filtered_stanica("A");
 	}
@@ -4977,7 +6389,9 @@ public class MainUIController extends AbstractController implements Initializabl
 		
 		for(StanicaIDBean current : _ostale_stanice) {
 			if(_ostale_stanice_filter.equals("")) {
-				filter_slova.add(current.getNaziv().substring(0,1).toUpperCase());
+				if(current.getNaziv().length() > 1) {
+					filter_slova.add(current.getNaziv().substring(0,1).toUpperCase());
+				}
 			}else {
 				if(current.getNaziv().toUpperCase().startsWith(_ostale_stanice_filter)) {
 					_ostale_stanice_filtered.add(current);
@@ -5110,6 +6524,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	public void handle_cir() {
 		setSerbianCir();
+
 	}
 	
 	public void handle_lat() {
@@ -5207,9 +6622,33 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	public void handle_tastatura_zatvori(){
 
+//		resetTipKarteButtonGroup(_current_tip_karte_button_group, 0);
+//		_currentBindTastTF.setText("");
+//		id_povlastice_value_lbl.setText(_currentBindTastTF.getText());
+//		_currentBindTastTF.setVisible(false);
+//
+//		switch(_current_bind_tip_karte) {
+//		case 1: _prva_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+//		case 2: _druga_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+//		case 3: _treca_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+//		case 4: _cetvrta_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+//		case 5: _peta_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+//		}
+//
+//
+//		tastatura_pn.setVisible(false);
+		tastatura_common_zatvori();
+	}
+	
+	public void handle_alfa_tastatura_zatvori() {
+		tastatura_common_zatvori();
+	}
+	
+	private void tastatura_common_zatvori() {
 		resetTipKarteButtonGroup(_current_tip_karte_button_group, 0);
 		_currentBindTastTF.setText("");
 		id_povlastice_value_lbl.setText(_currentBindTastTF.getText());
+		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
 		_currentBindTastTF.setVisible(false);
 
 		switch(_current_bind_tip_karte) {
@@ -5222,6 +6661,7 @@ public class MainUIController extends AbstractController implements Initializabl
 
 
 		tastatura_pn.setVisible(false);
+		tastatura_alfanumeric_pn.setVisible(false);
 	}
 	
 	
@@ -5235,6 +6675,17 @@ public class MainUIController extends AbstractController implements Initializabl
 		handleIzmeniPolaske();
 	}
 	
+	public void handle_check_fiscal_btn() {
+		logger.info("#########handle_check_fiscal_btn, _current_fis_qr_code = " + _current_fis_qr_code);
+        WebView view = new WebView();
+        WebEngine engine = view.getEngine();
+        engine.load(_current_fis_qr_code);
+        
+        fiscal_check_pn.getChildren().add(view);
+        fiscal_check_pn.toFront();
+        fiscal_check_pn.setVisible(true);
+	}
+	
 	
    
 //////////////////////////////////////////end of handle buttons///////////////////////////////////////	
@@ -5243,6 +6694,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	
 	void setTipKarteIzmeniVisible(boolean is_broj_putnika_izmenjen) {
+		logger.info("setTipKarteIzmeniVisible, is_broj_putnika_izmenjen = " + is_broj_putnika_izmenjen);
 		boolean izmenjeno = is_broj_putnika_izmenjen || _prva_karta_tip != _prva_karta_tip_not_confirmed ||
 				_druga_karta_tip != _druga_karta_tip_not_confirmed ||
 						_treca_karta_tip != _treca_karta_tip_not_confirmed ||
@@ -5270,6 +6722,7 @@ public class MainUIController extends AbstractController implements Initializabl
 				case TIP_PAS : tip = tip + resources.getString("pas");break;
 				case TIP_DETE : tip = tip + resources.getString("dete");break;
 				case TIP_POVRATNA : tip = tip + resources.getString("povratna");break;
+				case TIP_PENZIONERI : tip = tip + resources.getString("penzioner");break;
 				}
 				is_first = false;
 			}
@@ -5295,18 +6748,21 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	private void uslov_za_drugi_korak() {
 
-
+		logger.info("--> uslov_za_drugi_korak");
 		
 		relacija_polaza_value_lbl.setText(_kartomat.getNaziV_STANICE());
-		povratna_karta_pn.setVisible(_selected_voz_povratak != null && isVozWithReservations("" + _selected_voz.getBrvoz()));
+		povratna_karta_pn.setVisible(_selected_voz_povratak != null );
+				//&& isVozWithReservations(_selected_voz/*"" + _selected_voz.getBrvoz()*/));
 		
 		if(_selected_voz != null) {
 			broj_voza_polazak_value_lbl.setText("" + _selected_voz.getBrvoz());
+			rang_voza_polazak_value_lbl.setText(_selected_voz.getRangOpis());
 			datum_polaska_value_lbl.setText(_selected_voz.getDatumPolaska());
 			datum_izmena_value_lbl.setText(_selected_voz.getDatumPolaska());
 			vreme_polazak_value_lbl.setText(_selected_voz.getVremep());
 			vreme_izmena_value_lbl.setText(_selected_voz.getVremep());
 			vreme_polazak_dolazak_value_lbl.setText(_selected_voz.getVremed());
+			soko_view_polazak.setVisible(_selected_voz.isSoko());
 			datum_polazak_dolazak_value_lbl.setText(_selected_voz.getDatum_dolaska());
 			tip_karte_polazak_value_lbl.setText(resources.getString("redovna_cena"));
 			tip_karte_izmena_value_lbl.setText(resources.getString("redovna_cena"));
@@ -5344,18 +6800,32 @@ public class MainUIController extends AbstractController implements Initializabl
 				if(_selected_voz_povratak != null) {
 					if(_selected_voz_povratak.getRelkm() <= 100/*daljina u kilometrima*/) {
 						vaznost_value_lbl.setText(resources.getString("na_dan_kupovine") );
+						int dana_vaznosti = _selected_voz.get_trajanje_broj_dana() - 1;
+						switch(dana_vaznosti) {
+						case -1:
+						case 0:
+						case 1: vaznost_value_lbl.setText(resources.getString("jedan_dan") );break;
+						case 2: vaznost_value_lbl.setText(resources.getString("dva_dana") );break;
+						case 3: vaznost_value_lbl.setText(resources.getString("tri_dana") );break;
+						case 4: vaznost_value_lbl.setText(resources.getString("cetiri_dana") );break;
+						case 5: vaznost_value_lbl.setText(resources.getString("pet_dana") );break;
+						case 6: vaznost_value_lbl.setText(resources.getString("sest_dana") );break;
+						default: vaznost_value_lbl.setText( resources.getString("narednih_petnaest_dana") );
+						}
+						
 					}else {
 						vaznost_value_lbl.setText( resources.getString("narednih_petnaest_dana") );
 					}
 					relacija_dolazak_value_lbl.setText(odrediste_value_lbl.getText());
 					odrediste_dolazak_value_lbl.setText(relacija_polaza_value_lbl.getText());
 					broj_voza_dolazak_value_lbl.setText("" + _selected_voz_povratak.getBrvoz());
+					rand_voza_odlazak_value_lbl.setText( _selected_voz_povratak.getRangOpis());
 					vreme_dolazak_value_lbl.setText(_selected_voz_povratak.getVremep());
 					vreme_povratka_izmena_value_lbl.setText(_selected_voz_povratak.getVremep());
 					vreme_dolazak_dolazak_value_lbl.setText(_selected_voz_povratak.getVremed());
 					datum_povratka_dolazak_value_lbl.setText(_selected_voz_povratak.getDatumPolaska());
-					datum_povratka_polazak_value_lbl.setText(_selected_voz_povratak.getDatum_dolaska());
-					datum_povratka_izmena_value_lbl.setText(_selected_voz_povratak.getDatum_dolaska());
+					//datum_povratka_polazak_value_lbl.setText(_selected_voz_povratak.getDatum_dolaska());
+					//datum_povratka_izmena_value_lbl.setText(_selected_voz_povratak.getDatum_dolaska());
 					tip_karte_polazak_value_lbl.setText(resources.getString("povratna"));
 					tip_karte_izmena_value_lbl.setText(resources.getString("povratna"));
 				}
@@ -5367,15 +6837,18 @@ public class MainUIController extends AbstractController implements Initializabl
 //			restartSessionExpiration();
 		}
 		
-		datum_povratka_izmena_pn.setVisible(_selected_voz_povratak != null && isVozWithReservations("" + _selected_voz.getBrvoz()));
+//		datum_povratka_izmena_pn.setVisible(_selected_voz_povratak != null );
 
-
+		logger.info("<-- uslov_za_drugi_korak");
 
 	}
 	
 	private void bindWithTastatura(TextField tf, int y_offset, List<Button> tip_karte_button_group, int tip_karte_ID) {
 		if(tastatura_pn.isVisible()){
 			tastatura_pn.setVisible(false);
+		}
+		if(tastatura_alfanumeric_pn.isVisible()){
+			tastatura_alfanumeric_pn.setVisible(false);
 		}
 		_currentBindTastTF = tf;
 		_current_tip_karte_button_group = tip_karte_button_group;
@@ -5384,6 +6857,22 @@ public class MainUIController extends AbstractController implements Initializabl
 //		tastatura_pn.setLayoutY(_currentBindTastTF.getLayoutY() + y_offset);
 		tastatura_pn.setVisible(true);
 		tastatura_pn.toFront();
+	}
+	
+	private void bindWithAlfanumericTastatura(TextField tf, int y_offset, List<Button> tip_karte_button_group, int tip_karte_ID) {
+		if(tastatura_alfanumeric_pn.isVisible()){
+			tastatura_alfanumeric_pn.setVisible(false);
+		}
+		if(tastatura_pn.isVisible()){
+			tastatura_pn.setVisible(false);
+		}
+		_currentBindTastTF = tf;
+		_current_tip_karte_button_group = tip_karte_button_group;
+		_current_bind_tip_karte = tip_karte_ID;
+//		tastatura_pn.setLayoutX(_currentBindTastTF.getLayoutX());
+//		tastatura_pn.setLayoutY(_currentBindTastTF.getLayoutY() + y_offset);
+		tastatura_alfanumeric_pn.setVisible(true);
+		tastatura_alfanumeric_pn.toFront();
 	}
 	
 	
@@ -5401,6 +6890,8 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	private void run_message(String naslov, String prvi_red, String drugi_red, String treci_red, 
 			String cetvrti_red,String peti_red,String sesti_red,String sedmi_red, int number_of_seconds) {
+		logger.info("--> run_message, naslov = " + ", prvi_red = " + prvi_red  + ", drugi_red = " + drugi_red + ", treci_red = " + treci_red
+				+ ", cetvrti_red = " + cetvrti_red + ", peti_red = " + peti_red + ", sesti_red = " + sesti_red + ", sedmi_red = " + sedmi_red);
 		error_lbl_1.setText(naslov);
 		error_lbl_2.setText(prvi_red);
 		error_lbl_3.setText(drugi_red);
@@ -5509,7 +7000,7 @@ public class MainUIController extends AbstractController implements Initializabl
 	
 	private void resetForNewSession() {
 
-		
+		logger.info("--> resetForNewSession " );
 
 		datum_polaska_value_lbl.textProperty().removeListener(datum_polaska_changeListener);
 		datum_povratka_polazak_value_lbl.textProperty().removeListener(datum_povratka_polazak_changeListener);
@@ -5520,17 +7011,17 @@ public class MainUIController extends AbstractController implements Initializabl
 		
 		setSerbian();
 		
-		_prvi_putnik_legitimacija = null;
-		_drugi_putnik_legitimacija = null;
-		_treci_putnik_legitimacija = null;
-		_cetvrti_putnik_legitimacija = null;
-		_peti_putnik_legitimacija = null;
-		
-		_prvi_putnik_povlastica = null;
-		_drugi_putnik_povlastica = null;
-		_treci_putnik_povlastica = null;
-		_cetvrti_putnik_povlastica = null;
-		_peti_putnik_povlastica = null;
+//		_prvi_putnik_legitimacija = null;
+//		_drugi_putnik_legitimacija = null;
+//		_treci_putnik_legitimacija = null;
+//		_cetvrti_putnik_legitimacija = null;
+//		_peti_putnik_legitimacija = null;
+//		
+//		_prvi_putnik_povlastica = null;
+//		_drugi_putnik_povlastica = null;
+//		_treci_putnik_povlastica = null;
+//		_cetvrti_putnik_povlastica = null;
+//		_peti_putnik_povlastica = null;
 		
 		_prvi_putnik_cena = null;
 		_drugi_putnik_cena = null;
@@ -5571,8 +7062,9 @@ public class MainUIController extends AbstractController implements Initializabl
 		_svi_polasci = null;
 		_svi_povratci = null;
 
-		_svi_povratci_filtered_rezervacije.clear();
-		_svi_povratci_filtered_bez_rezervacije.clear();
+		
+//		_svi_povratci_filtered_rezervacije.clear();
+//		_svi_povratci_filtered_bez_rezervacije.clear();
 		
 		
 		
@@ -5588,6 +7080,7 @@ public class MainUIController extends AbstractController implements Initializabl
 		smer_value_lbl.setText("");
 		relacija_polaza_value_lbl.setText("");
 		broj_voza_polazak_value_lbl.setText("");
+		rang_voza_polazak_value_lbl.setText("");
 		odrediste_dolazak_value_lbl.setText("");
 		vreme_polazak_value_lbl.setText("");
 		vreme_izmena_value_lbl.setText("");
@@ -5596,6 +7089,7 @@ public class MainUIController extends AbstractController implements Initializabl
 		tip_karte_izmena_value_lbl.setText(resources.getString("redovna_cena"));
 		ukupno_cena_value_lbl.setText("0.0");
 		broj_voza_dolazak_value_lbl.setText("");
+		rand_voza_odlazak_value_lbl.setText("");
 		vreme_dolazak_value_lbl.setText("");
 		vreme_povratka_izmena_value_lbl.setText("");
 		tip_karte_dolazak_value_lbl.setText(resources.getString("redovna_cena"));
@@ -5644,6 +7138,7 @@ public class MainUIController extends AbstractController implements Initializabl
 		_cetvrta_karta_tip_not_confirmed = TIP_REDOVNA_CENA;
 		_peta_karta_tip_not_confirmed = TIP_REDOVNA_CENA;
 		
+		_previous_tip_karte = "";
 		
 		resetTipKarteButtonGroup(_prva_tip_karte_button_group, _prva_karta_tip);
 		resetTipKarteButtonGroup(_druga_tip_karte_button_group, _druga_karta_tip);
@@ -5718,7 +7213,7 @@ public class MainUIController extends AbstractController implements Initializabl
     	cetvrti_tip_tf.setText("");
     	peti_tip_tf.setText("");
     	id_povlastice_value_lbl.setText("");
-    	
+    	tast_alfa_num_value_lbl.setText("");
 		message_lbl_1.setText("");
 		message_lbl_2.setText("");
 		message_lbl_3.setText("");
@@ -5727,13 +7222,93 @@ public class MainUIController extends AbstractController implements Initializabl
 		
 		_polazak_true_povratak_false = true;
     	
-		datum_polaska_value_lbl.textProperty().addListener(datum_polaska_changeListener);
-		datum_povratka_polazak_value_lbl.textProperty().addListener(datum_povratka_polazak_changeListener);
+
 		razred_polazak_value_lbl.textProperty().addListener(rezred_polazak_changeListener);
 //		razred_odlazak_value_lbl.textProperty().addListener(rezred_odlazak_changeListener);
 		smer_value_lbl.textProperty().addListener(smer_changeListener);
 		tip_karte_polazak_value_lbl.textProperty().addListener(tip_karte_changeListener);
+		soko_view_polazak.setVisible(false);
+		soko_view_povratak.setVisible(false);
 		
+		prva_polaziste_value_lbl.setText("");
+		prva_smer_value_lbl.setText("");
+		prva_odrediste_value_lbl.setText("");
+		prva_datum_polaziste_value_lbl.setText("");
+		prva_vreme_polaziste_value_lbl.setText("");
+		prva_polaziste_broj_voza_value_lbl.setText("");
+		prva_datum_povratak_value_lbl.setText("");
+		prva_vreme_povratak_value_lbl.setText("");
+		prva_povratak_broj_voza_value_lbl.setText("");
+		prva_tip_value_lbl.setText("");
+		prva_razred_value_lbl.setText("");
+		prva_cena_value_lbl.setText("");
+		
+		druga_polaziste_value_lbl.setText("");
+		druga_smer_value_lbl.setText("");
+		druga_odrediste_value_lbl.setText("");
+		druga_datum_polaziste_value_lbl.setText("");
+		druga_vreme_polaziste_value_lbl.setText("");
+		druga_polaziste_broj_voza_value_lbl.setText("");
+		druga_datum_povratak_value_lbl.setText("");
+		druga_vreme_povratak_value_lbl.setText("");
+		druga_povratak_broj_voza_value_lbl.setText("");
+		druga_tip_value_lbl.setText("");
+		druga_razred_value_lbl.setText("");
+		druga_cena_value_lbl.setText("");
+		
+		treca_polaziste_value_lbl.setText("");
+		treca_smer_value_lbl.setText("");
+		treca_odrediste_value_lbl.setText("");
+		treca_datum_polaziste_value_lbl.setText("");
+		treca_vreme_polaziste_value_lbl.setText("");
+		treca_polaziste_broj_voza_value_lbl.setText("");
+		treca_datum_povratak_value_lbl.setText("");
+		treca_vreme_povratak_value_lbl.setText("");
+		treca_povratak_broj_voza_value_lbl.setText("");
+		treca_tip_value_lbl.setText("");
+		treca_razred_value_lbl.setText("");
+		treca_cena_value_lbl.setText("");
+		
+		cetvrta_polaziste_value_lbl.setText("");
+		cetvrta_smer_value_lbl.setText("");
+		cetvrta_odrediste_value_lbl.setText("");
+		cetvrta_datum_polaziste_value_lbl.setText("");
+		cetvrta_vreme_polaziste_value_lbl.setText("");
+		cetvrta_polaziste_broj_voza_value_lbl.setText("");
+		cetvrta_datum_povratak_value_lbl.setText("");
+		cetvrta_vreme_povratak_value_lbl.setText("");
+		cetvrta_povratak_broj_voza_value_lbl.setText("");
+		cetvrta_tip_value_lbl.setText("");
+		cetvrta_razred_value_lbl.setText("");
+		cetvrta_cena_value_lbl.setText("");
+		
+		peta_polaziste_value_lbl.setText("");
+		peta_smer_value_lbl.setText("");
+		peta_odrediste_value_lbl.setText("");
+		peta_datum_polaziste_value_lbl.setText("");
+		peta_vreme_polaziste_value_lbl.setText("");
+		peta_polaziste_broj_voza_value_lbl.setText("");
+		peta_datum_povratak_value_lbl.setText("");
+		peta_vreme_povratak_value_lbl.setText("");
+		peta_povratak_broj_voza_value_lbl.setText("");
+		peta_tip_value_lbl.setText("");
+		peta_razred_value_lbl.setText("");
+		peta_cena_value_lbl.setText("");
+		
+		
+
+        fiskal_tflow.getChildren().clear();
+        fiskal_tflow_kraj.getChildren().clear();
+		if(fiskal_pn.isVisible()) {
+			fiskal_pn.setVisible(false);
+		}
+		if(fiscal_check_pn.isVisible()) {
+			fiscal_check_pn.setVisible(false);
+		}
+		_current_fis_qr_code = "";
+		
+		
+		logger.info("<-- resetForNewSession " );
 	}
 	
 	private String formirajDatumVreme(String datum, String vreme) {
@@ -5759,6 +7334,7 @@ public class MainUIController extends AbstractController implements Initializabl
 			case TIP_DETE: return 50;
 			case TIP_PAS: return 54;
 			case TIP_POVRATNA: return 20;
+			case TIP_PENZIONERI: return 31;
 				default: return 1;
 		}
 

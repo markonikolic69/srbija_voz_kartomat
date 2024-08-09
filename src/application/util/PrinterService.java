@@ -47,12 +47,18 @@ public class PrinterService implements Printable {
 			String popust_osnova, String cena, boolean is_povratna, String rezervacija_a, String rezervacija_r, String vreme_o_od, String vreme_p_od) throws Exception{
 
 
+		back_feed_n();
+		print_init();
+		print_start();
 
 		new PrintServiceImpl().print_ticket(kartomat_ime, ticketID, datum, vreme, a_voz_ID, a_voz_br_sedista, 
 				b_voz_ID, b_voz_br_sedista, a_stanica_od, b_stanica_od, a_stanica_do, b_stanica_do, a_via, b_via, 
 				vazi_od_datum, a_rang, a_razred, vazi_do, b_rang, b_razred, broj_putnika, popust_procenat, popust_osnova, cena, is_povratna,
 				rezervacija_a, rezervacija_r, vreme_o_od, vreme_p_od);
 
+		print_end();
+		full_cut();
+		form_feed_n();
 
 	}
 
@@ -65,11 +71,16 @@ public class PrinterService implements Printable {
 	//    }
 
 	public void printCreditCardSlip(String datum, String vreme, String iznos, String tID, String mID, String companyName, String terminalId,
-			String cardNumber, String expirationData, String kartomat_ime, String kartomat_grad, String authorizationCode, String transactionNumber
-			) {
+			String cardNumber, String expirationData, String kartomat_ime, String kartomat_grad, String authorizationCode, String transactionNumber, 
+			String ticket_order_id) {
+		
+		//back_feed_n();
+		print_init();
+		print_start();
+		
 		String car_num_to_display = cardNumber.substring(cardNumber.length() - 4);
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("\n\n\n");
+		//buffer.append("\n");
 		buffer.append("                  BANKA INTESA\n\n");
 
 		buffer.append("            Kartomat: "+kartomat_ime+"\n");
@@ -81,12 +92,13 @@ public class PrinterService implements Printable {
 		buffer.append("************"+car_num_to_display+"                  Vazi do "+expirationData+"\n");
 		buffer.append("KUPOVINA KARTE ZA VOZ\n");
 		buffer.append("Datum " + datum + "                      Vreme " + vreme + "\n");
-		buffer.append("Br. Tr: "+transactionNumber+"            BR odobrenja: "+authorizationCode+"\n\n");
+		buffer.append("Br. Tr: "+transactionNumber+"            BR odobrenja: "+authorizationCode+"\n");
+		buffer.append("Order ID:                        "+ticket_order_id+"\n\n");
 		buffer.append("IZNOS                                 "+ iznos +" RSD\n");
 		buffer.append("                kopija za korisnika" + "\n\n");
 		buffer.append("              Banka Intesa AD Beograd" + "\n");
 		buffer.append("                  011 30 10 160" + "\n");
-		buffer.append("                  kontant centar" + "\n\n\n\n\n");
+		buffer.append("                  kontakt centar" + "\n\n\n\n\n");
 
 
 		printString("NPI Integration Driver", buffer.toString());
@@ -101,6 +113,43 @@ public class PrinterService implements Printable {
 		//    	buffer_prazan_slip.append("\n\n\n\n\n\n\n\n\n\n\n\n");
 		//    	printString("NPI Integration Driver", buffer_prazan_slip.toString());
 		//    	full_cut();
+		
+		print_end();
+		full_cut();
+		form_feed_n();
+
+	}
+	
+	public String getCreditCardSlip(String datum, String vreme, String iznos, String tID, String mID, String companyName, String terminalId,
+			String cardNumber, String expirationData, String kartomat_ime, String kartomat_grad, String authorizationCode, String transactionNumber, 
+			String ticket_order_id) {
+		
+		
+		String car_num_to_display = cardNumber.substring(cardNumber.length() - 4);
+		StringBuffer buffer = new StringBuffer();
+		//buffer.append("\n");
+		buffer.append("                  BANKA INTESA\n\n");
+
+		buffer.append("            Kartomat: "+kartomat_ime+"\n");
+		buffer.append("                  "+kartomat_grad+"\n\n");
+		buffer.append("Terminal                               "+terminalId+"\n");
+		buffer.append("Terminal ID                            "+tID+"\n\n");
+		buffer.append("mID                                    "+mID+"\n\n");
+		buffer.append(companyName + "\n");
+		buffer.append("************"+car_num_to_display+"                  Vazi do "+expirationData+"\n");
+		buffer.append("KUPOVINA KARTE ZA VOZ\n");
+		buffer.append("Datum " + datum + "                      Vreme " + vreme + "\n");
+		buffer.append("Br. Tr: "+transactionNumber+"            BR odobrenja: "+authorizationCode+"\n");
+		buffer.append("Order ID:                        "+ticket_order_id+"\n\n");
+		buffer.append("IZNOS                                 "+ iznos +" RSD\n");
+		buffer.append("                kopija za korisnika" + "\n\n");
+		buffer.append("              Banka Intesa AD Beograd" + "\n");
+		buffer.append("                  011 30 10 160" + "\n");
+		buffer.append("                  kontakt centar" + "\n\n\n\n\n");
+		
+		
+		return buffer.toString();
+
 
 	}
 
@@ -199,32 +248,46 @@ public class PrinterService implements Printable {
 		printBytes("NPI Integration Driver", cutP);
 	}
 
-	public void back_feed_n() {
+	private void back_feed_n() {
 		//back feed 31mm
 		byte[] backf = new byte[] { 0x1b, 'B', (byte)0xFA };
 		printBytes("NPI Integration Driver", backf);
 	}
 
-	public void form_feed_n() {
+	public  void form_feed_n() {
 		//form feed 25 cm
 //		byte[] formf = new byte[] { 0x1b, 'j', (byte)0xF8 };
 //
 //		printBytes("NPI Integration Driver", formf);
-		printString("NPI Integration Driver", "\n\n\n\n\n\n\n\n\n\n\n");
+		
+		
+//		printString("NPI Integration Driver", "\n\n\n\n\n\n\n\n\n\n\n");
+		printString("NPI Integration Driver", "\n\n\n\n\n\n");
+	}
+	
+	public  void form_feed_n_small() {
+		//form feed 25 cm
+//		byte[] formf = new byte[] { 0x1b, 'j', (byte)0xF8 };
+//
+//		printBytes("NPI Integration Driver", formf);
+		
+		
+//		printString("NPI Integration Driver", "\n\n\n\n\n\n\n\n\n\n\n");
+		printString("NPI Integration Driver", "\n\n\n");
 	}
 
 
-	public void print_init() {
+	private void print_init() {
 		byte[] pr_init = new byte[] { 0x1b, '@', 0x1C, 0x43, 0x01 };
 		printBytes("NPI Integration Driver", pr_init);
 	}
 
-	public void print_start() {
+	private void print_start() {
 		byte[] pr_start = new byte[] { 0x1D, 'G', 0x01 };
 		printBytes("NPI Integration Driver", pr_start);
 	}
 
-	public void print_end() {
+	private void print_end() {
 		byte[] pr_end = new byte[] { 0x1D, 'G', 0x00 };
 		printBytes("NPI Integration Driver", pr_end);
 	}
@@ -256,18 +319,45 @@ public class PrinterService implements Printable {
 //		printerService.print_init();
 //		printerService.print_start();
 
+//		printerService.back_feed_n();
+//		printerService.print_init();
+//		printerService.print_start();
+		
+//		printerService.form_feed_n_small();
+		
+//		printerService.printCreditCardSlip("datum", "vreme", "iznos", "tID", "mID", "companyName", "terminalId", 
+//				"cardNumber", "expirationData", "kartomat_ime", "kartomat_grad", "authorizationCode", "transactionNumber", "ticket_order_id");
 
+		printerService.printKartu("kartomat_ime", "ticketID", "datum", "vreme", "a_voz_ID", "a_voz_br_sedista", "b_voz_ID", 
+				"b_voz_br_sedista", "a_stanica_od", "b_stanica_od", "a_stanica_do", "b_stanica_do", "a_via", "b_via", "vazi_od_datum", 
+				"a_rang", "a_razred", "vazi_do", "b_rang", "b_razred", "broj_putnika", "popust_procenat", "popust_osnova", "cena", 
+				false, "rezervacija_a", "rezervacija_r", "vreme_o_od", "vreme_p_od");
+		
+		printerService.printKartu("kartomat_ime", "ticketID", "datum", "vreme", "a_voz_ID", "a_voz_br_sedista", "b_voz_ID", 
+				"b_voz_br_sedista", "a_stanica_od", "b_stanica_od", "a_stanica_do", "b_stanica_do", "a_via", "b_via", "vazi_od_datum", 
+				"a_rang", "a_razred", "vazi_do", "b_rang", "b_razred", "broj_putnika", "popust_procenat", "popust_osnova", "cena", 
+				false, "rezervacija_a", "rezervacija_r", "vreme_o_od", "vreme_p_od");
 
+		printerService.printKartu("kartomat_ime", "ticketID", "datum", "vreme", "a_voz_ID", "a_voz_br_sedista", "b_voz_ID", 
+				"b_voz_br_sedista", "a_stanica_od", "b_stanica_od", "a_stanica_do", "b_stanica_do", "a_via", "b_via", "vazi_od_datum", 
+				"a_rang", "a_razred", "vazi_do", "b_rang", "b_razred", "broj_putnika", "popust_procenat", "popust_osnova", "cena", 
+				false, "rezervacija_a", "rezervacija_r", "vreme_o_od", "vreme_p_od");
+		
+		printerService.printKartu("kartomat_ime", "ticketID", "datum", "vreme", "a_voz_ID", "a_voz_br_sedista", "b_voz_ID", 
+				"b_voz_br_sedista", "a_stanica_od", "b_stanica_od", "a_stanica_do", "b_stanica_do", "a_via", "b_via", "vazi_od_datum", 
+				"a_rang", "a_razred", "vazi_do", "b_rang", "b_razred", "broj_putnika", "popust_procenat", "popust_osnova", "cena", 
+				false, "rezervacija_a", "rezervacija_r", "vreme_o_od", "vreme_p_od");
+		
 		printerService.printKartu("kartomat_ime", "ticketID", "datum", "vreme", "a_voz_ID", "a_voz_br_sedista", "b_voz_ID", 
 				"b_voz_br_sedista", "a_stanica_od", "b_stanica_od", "a_stanica_do", "b_stanica_do", "a_via", "b_via", "vazi_od_datum", 
 				"a_rang", "a_razred", "vazi_do", "b_rang", "b_razred", "broj_putnika", "popust_procenat", "popust_osnova", "cena", 
 				false, "rezervacija_a", "rezervacija_r", "vreme_o_od", "vreme_p_od");
 
 
-		printerService.printCreditCardSlip("datum", "vreme", "iznos", "tID", "mID", "companyName", "terminalId", 
-				"cardNumber", "expirationData", "kartomat_ime", "kartomat_grad", "authorizationCode", "transactionNumber");
 
-
+//		printerService.print_end();
+//		printerService.full_cut();
+//		printerService.form_feed_n();
 
 //		printerService.print_end();
 //		printerService.full_cut();

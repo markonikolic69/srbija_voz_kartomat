@@ -1,11 +1,14 @@
 package application.data;
 
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.internal.LinkedTreeMap;
 
-import javafx.scene.control.cell.PropertyValueFactory;
 
 public class VozBean {
 
@@ -25,15 +28,82 @@ public class VozBean {
 	private double cenau = 0.0;
 	private String trajanje_putovanja = "";
 	private String datum_dolaska = "";
+	private int bsM_R2 = 0;
+	
+	private int bsM_R1 = 0;
 	private List<StanicaNaTrasiBean> etTrasaVoza = null;
+	
+	private String _datum_polaska = "";
+	
+	private static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+	
+	private String _trajanje_datum = "";
+	public String get_trajanje_datum() {
+		return _trajanje_datum;
+	}
+
+	public void set_trajanje_datum(String datum_polaska, String trajanje_datum) {
+		_trajanje_datum = convertDateFormat(trajanje_datum);
+		_trajanje_broj_dana = getNumDayFromToday(datum_polaska, _trajanje_datum) + 1;
+	}
+	
+	public Calendar get_trajanje_datum_Calendar() {
+		
+		Calendar cal = Calendar.getInstance();
+		try {
+		Date datum_vazenja = sdf.parse(_trajanje_datum);
+		cal.setTime(datum_vazenja);
+		cal.add(Calendar.DAY_OF_YEAR, 1);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return cal;
+	}
+
+	public int get_trajanje_broj_dana() {
+		return _trajanje_broj_dana;
+	}
+
+	private int _trajanje_broj_dana = 0;
 	
 	private String _datum_vreme_polaska = "";
 	
 	private String _datum_vreme_povratka = "";
 	
 	private boolean _is_selected = false;
+	
+	private int br_slobodnih_mesta = 0;
 
-	public VozBean (LinkedTreeMap gson_container) {
+	public int getBr_slobodnih_mesta() {
+		return br_slobodnih_mesta;
+	}
+
+	public void setBr_slobodnih_mesta(int br_slobodnih_mesta) {
+		this.br_slobodnih_mesta = br_slobodnih_mesta;
+	}
+
+	public boolean isRezervacioni_sistem() {
+		return rezervacioni_sistem;
+	}
+
+	public void setRezervacioni_sistem(boolean rezervacioni_sistem) {
+		this.rezervacioni_sistem = rezervacioni_sistem;
+	}
+
+	public boolean isSoko() {
+		return soko;
+	}
+
+	public void setSoko(boolean soko) {
+		this.soko = soko;
+	}
+
+	private boolean rezervacioni_sistem = false;
+
+	private boolean soko = false;
+
+
+	public VozBean (LinkedTreeMap gson_container, String datum_polaska) {
 
 		odsifra = (int) Double.parseDouble(gson_container.getOrDefault("odsifra", 0).toString());
 		dosifra = (int) Double.parseDouble(gson_container.getOrDefault("dosifra", 0).toString());
@@ -51,6 +121,11 @@ public class VozBean {
 		cenau = Double.parseDouble(gson_container.getOrDefault("cenau", 0).toString());
 		trajanje_putovanja = gson_container.getOrDefault("trajanje_putovanja", "").toString();
 		datum_dolaska = gson_container.getOrDefault("datum_dolaska", "").toString().substring(0,10);
+		br_slobodnih_mesta = (int) Double.parseDouble(gson_container.getOrDefault("br_slobodnih_mesta", 0).toString());
+		rezervacioni_sistem = Boolean.parseBoolean(gson_container.getOrDefault("rezervacioni_sistem", "false").toString());
+		soko = Boolean.parseBoolean(gson_container.getOrDefault("soko", "false").toString());
+		bsM_R2 = (int) Double.parseDouble(gson_container.getOrDefault("bsM_R2", 0).toString());
+		bsM_R1 = (int) Double.parseDouble(gson_container.getOrDefault("bsM_R1", 0).toString());
 		String[] splt = datum_dolaska.split("-");
 		datum_dolaska = splt[2] + "." + splt[1] + "." + splt[0];
 		etTrasaVoza = new ArrayList<StanicaNaTrasiBean>();
@@ -62,9 +137,10 @@ public class VozBean {
 			etTrasaVoza.add(new StanicaNaTrasiBean((LinkedTreeMap)current));
 		}
 		
-		_datum_vreme_polaska = datum_dolaska.substring(0,10) + " " + vremep;
-		
+		_datum_vreme_polaska = datum_polaska/*datum_dolaska.substring(0,10)*/ + " " + vremep;
+		_datum_polaska = datum_polaska;
 		_datum_vreme_povratka = datum_dolaska.substring(0,10) + " " + vremed;
+
 	}
 	
 	public VozBean() {
@@ -72,7 +148,13 @@ public class VozBean {
 	}
 	
 	public String getDatumPolaska() {
-		return datum_dolaska;
+		//return datum_dolaska;
+		return _datum_polaska;
+	}
+	
+	public String getDatumPolaskaForApi() {
+		String to_return  = datum_dolaska.replace(".", "-");
+		return to_return;
 	}
 	
 	public int getOdsifra() {
@@ -227,6 +309,23 @@ public class VozBean {
 	public void set_is_selected(boolean _is_selected) {
 		this._is_selected = _is_selected;
 	}
+	
+	public int getBsM_R2() {
+		return bsM_R2;
+	}
+
+	public void setBsM_R2(int bsM_R2) {
+		this.bsM_R2 = bsM_R2;
+	}
+
+	public int getBsM_R1() {
+		return bsM_R1;
+	}
+
+	public void setBsM_R1(int bsM_R1) {
+		this.bsM_R1 = bsM_R1;
+	}
+
 
 	@Override
 	public String toString() {
@@ -236,12 +335,41 @@ public class VozBean {
 				+ ", ponuda=" + ponuda + ", cenau=" + cenau + ", trajanje_putovanja=" + trajanje_putovanja
 				+ ", datum_dolaska=" + datum_dolaska + ", etTrasaVoza=" + etTrasaVoza + ", _datum_vreme_polaska="
 				+ _datum_vreme_polaska + ", _datum_vreme_povratka=" + _datum_vreme_povratka + ", _is_selected="
-				+ _is_selected + "]";
+				+ _is_selected + ", br_slobodnih_mesta=" + br_slobodnih_mesta + ", rezervacioni_sistem="
+				+ rezervacioni_sistem + ", soko=" + soko + ", bsM_R2=" + bsM_R2 + ", bsM_R1=" + bsM_R1 +"]";
 	}
+	
+	private static String convertDateFormat(String old_format) {
+		String[] parsed = old_format.split("/");
+		int dan = Integer.parseInt(parsed[1]);
+		int mesec = Integer.parseInt(parsed[0]);
+		String dan_str = dan < 10 ? "0" + dan : "" + dan;
+		String mesec_str = mesec < 10 ? "0" + mesec : "" + mesec;
+		return dan_str + "." + mesec_str + "." + parsed[2];
+	}
+	 
+	
+	private static int getNumDayFromToday(String vazi_od, String vazi_do) {
+		try {
+	    
+	    java.util.Date today = sdf.parse(vazi_od);
+	    java.util.Date secondDate = sdf.parse(vazi_do);
 
+	    long diffInMillies = Math.abs(secondDate.getTime() - today.getTime());
+	    return (int)TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println("getNumDayFromToday error, details: " + e.getMessage());
+			return 0;
+		}
+	}
 	
 	
-	
+	public static void main(String[] args) {
+		System.out.println("getNumDayFromToday = " + getNumDayFromToday("24.04.2022", "26.04.2022"));
+		
+		System.out.println("getNumDayFromToday = " + getNumDayFromToday(convertDateFormat("5/5/2022"), convertDateFormat("5/7/2022")));
+	}
 	
 	
 

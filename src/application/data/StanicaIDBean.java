@@ -13,8 +13,11 @@ public class StanicaIDBean {
 
 	public StanicaIDBean (LinkedTreeMap gson_container) {
 
-		sifra = (int) Double.parseDouble(gson_container.getOrDefault("sifra", 0).toString());
-		naziv = gson_container.getOrDefault("naziv", "").toString();
+//		sifra = (int) Double.parseDouble(gson_container.getOrDefault("sifra", 0).toString());
+//		naziv = gson_container.getOrDefault("naziv", "").toString();
+		
+		sifra = (int) Double.parseDouble(gson_container.getOrDefault("sifrA_DO", 0).toString());
+		naziv = gson_container.getOrDefault("naziV_DO", "").toString();
 
 	}
 	

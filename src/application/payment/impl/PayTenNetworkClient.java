@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Timer;
+
+import org.apache.log4j.Logger;
+
 import java.util.Queue;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +34,7 @@ public class PayTenNetworkClient implements PayTenPaymentIface{
     private String _ipAddress = "";
     private int _port = 0;
 
-    
+    private static final Logger logger = Logger.getLogger("PayTenNetworkClient");
     
     private Queue<Byte> _byteQueue = new LinkedList<Byte>();
     
@@ -44,7 +47,14 @@ public class PayTenNetworkClient implements PayTenPaymentIface{
 ////////////////////////////////////////PayTenPaymentIface implementation/////////////////////////////////////////////////
     
 	public TransactionDataResponse payForTicket(double amount, String order_id, String merchant_id) throws PaymentException{
-		System.out.println("--> payForTicket, amount = " + amount + ", order_id = " + order_id + ", merchant_id = " + merchant_id);
+		////////////////////////////testing/////////////////////////////
+//		if(true) {
+//			TransactionDataResponse to_return_test = new TransactionDataResponse();
+//			to_return_test.set_transactionFlag("01");
+//			return to_return_test;
+//		}
+		//////////////////////////////end of testing///////////////////
+		logger.info("--> payForTicket, amount = " + amount + ", order_id = " + order_id + ", merchant_id = " + merchant_id);
 		TransactionDataRequest transactionRequest = new TransactionDataRequest();
 		transactionRequest.set_transactionType(TransactionTypesConstants.SALE);
 		transactionRequest.set_transactionAmount1(String.format("%012d", (int)amount*100));
@@ -53,7 +63,7 @@ public class PayTenNetworkClient implements PayTenPaymentIface{
 		transactionRequest.set_languageId("02");//serbian
 		String dataToSend = ProtocolHelper.createSendMessage(transactionRequest.create());
 
-		System.out.println("try to open connection ...");
+		logger.info("try to open connection ...");
 		open();
 		System.out.println("connection opened, try to start initialization ...");
 		String transaction_response = _client.sendTransaction(dataToSend, true);
