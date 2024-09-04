@@ -6645,11 +6645,30 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	}
 	
 	private void tastatura_common_zatvori() {
-		resetTipKarteButtonGroup(_current_tip_karte_button_group, 0);
-		_currentBindTastTF.setText("");
-		id_povlastice_value_lbl.setText(_currentBindTastTF.getText());
-		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
-		_currentBindTastTF.setVisible(false);
+//		resetTipKarteButtonGroup(_current_tip_karte_button_group, 0);
+//		_currentBindTastTF.setText("");
+//		id_povlastice_value_lbl.setText(_currentBindTastTF.getText());
+//		tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+//		_currentBindTastTF.setVisible(false);
+//
+//		switch(_current_bind_tip_karte) {
+//		case 1: _prva_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+//		case 2: _druga_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+//		case 3: _treca_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+//		case 4: _cetvrta_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+//		case 5: _peta_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
+//		}
+//
+//
+//		tastatura_pn.setVisible(false);
+//		tastatura_alfanumeric_pn.setVisible(false);
+		if(_current_tip_karte_button_group != null)resetTipKarteButtonGroup(_current_tip_karte_button_group, 0);
+		if(_currentBindTastTF != null) {
+			_currentBindTastTF.setText("");
+			if(id_povlastice_value_lbl != null)id_povlastice_value_lbl.setText(_currentBindTastTF.getText());
+			if(tast_alfa_num_value_lbl != null)tast_alfa_num_value_lbl.setText(_currentBindTastTF.getText());
+			if(_currentBindTastTF != null)_currentBindTastTF.setVisible(false);
+		}
 
 		switch(_current_bind_tip_karte) {
 		case 1: _prva_karta_tip_not_confirmed = TIP_REDOVNA_CENA;break;
@@ -6660,8 +6679,8 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 		}
 
 
-		tastatura_pn.setVisible(false);
-		tastatura_alfanumeric_pn.setVisible(false);
+		if(tastatura_pn != null)tastatura_pn.setVisible(false);
+		if(tastatura_alfanumeric_pn != null)tastatura_alfanumeric_pn.setVisible(false);
 	}
 	
 	
@@ -7307,7 +7326,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 		}
 		_current_fis_qr_code = "";
 		
-		
+		tastatura_common_zatvori();
 		logger.info("<-- resetForNewSession " );
 	}
 	

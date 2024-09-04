@@ -580,7 +580,7 @@
             <Pane fx:id="prva_karta_pn" layoutX="60.0" layoutY="150.0" prefHeight="150.0" prefWidth="640.0" styleClass="tip_karte_pn">
                <children>
 					<Label fx:id="prva_polaziste_lbl" layoutX="10.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%polaziste" />
-            		<Label fx:id="prva_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
+            		<Label fx:id="prva_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="250.0" styleClass="bold_crna_slova" text="" />
             		<Label fx:id="prva_smer_lbl" layoutX="250.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%smer" />
             		<Label fx:id="prva_smer_value_lbl" layoutX="250.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_tamno_braon_slova" text="" />
            			<Label fx:id="prva_odrediste_lbl" layoutX="380.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
@@ -614,7 +614,7 @@
             <Pane fx:id="druga_karta_pn" layoutX="60.0" layoutY="310.0" prefHeight="150.0" prefWidth="640.0" styleClass="tip_karte_pn">
                <children>
 					<Label fx:id="druga_polaziste_lbl" layoutX="10.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%polaziste" />
-            		<Label fx:id="druga_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
+            		<Label fx:id="druga_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="250.0" styleClass="bold_crna_slova" text="" />
             		<Label fx:id="druga_smer_lbl" layoutX="250.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%smer" />
             		<Label fx:id="druga_smer_value_lbl" layoutX="250.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_tamno_braon_slova" text="" />
            			<Label fx:id="druga_odrediste_lbl" layoutX="380.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
@@ -648,7 +648,7 @@
             <Pane fx:id="treca_karta_pn" layoutX="60.0" layoutY="470.0" prefHeight="150.0" prefWidth="640.0" styleClass="tip_karte_pn">
                <children>
 					<Label fx:id="treca_polaziste_lbl" layoutX="10.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%polaziste" />
-            		<Label fx:id="treca_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
+            		<Label fx:id="treca_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="250.0" styleClass="bold_crna_slova" text="" />
             		<Label fx:id="treca_smer_lbl" layoutX="250.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%smer" />
             		<Label fx:id="treca_smer_value_lbl" layoutX="250.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_tamno_braon_slova" text="" />
            			<Label fx:id="treca_odrediste_lbl" layoutX="380.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
@@ -681,7 +681,7 @@
             <Pane fx:id="cetvrta_karta_pn" layoutX="60.0" layoutY="630.0" prefHeight="150.0" prefWidth="640.0" styleClass="tip_karte_pn">
                <children>
 					<Label fx:id="cetvrta_polaziste_lbl" layoutX="10.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%polaziste" />
-            		<Label fx:id="cetvrta_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
+            		<Label fx:id="cetvrta_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="250.0" styleClass="bold_crna_slova" text="" />
             		<Label fx:id="cetvrta_smer_lbl" layoutX="250.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%smer" />
             		<Label fx:id="cetvrta_smer_value_lbl" layoutX="250.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_tamno_braon_slova" text="" />
            			<Label fx:id="cetvrta_odrediste_lbl" layoutX="380.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
@@ -711,10 +711,10 @@
                  
                </children>
             </Pane>
-             <Pane fx:id="peta_karta_pn" layoutX="60.0" layoutY="790.0" prefHeight="150.0" prefWidth="640.0" styleClass="tip_karte_pn">
+            <Pane fx:id="peta_karta_pn" layoutX="60.0" layoutY="790.0" prefHeight="150.0" prefWidth="640.0" styleClass="tip_karte_pn">
                <children>
 					<Label fx:id="peta_polaziste_lbl" layoutX="10.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%polaziste" />
-            		<Label fx:id="peta_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="300.0" styleClass="bold_crna_slova" text="" />
+            		<Label fx:id="peta_polaziste_value_lbl" layoutX="10.0" layoutY="20.0" prefHeight="18.0" prefWidth="250.0" styleClass="bold_crna_slova" text="" />
             		<Label fx:id="peta_smer_lbl" layoutX="250.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%smer" />
             		<Label fx:id="peta_smer_value_lbl" layoutX="250.0" layoutY="20.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_tamno_braon_slova" text="" />
            			<Label fx:id="peta_odrediste_lbl" layoutX="380.0" layoutY="5.0" prefHeight="18.0" prefWidth="200.0" styleClass="mala_siva_slova" text="%odrediste" />
