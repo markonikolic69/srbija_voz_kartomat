@@ -10,5 +10,6 @@ public class MessageByteConstants {
     public static final byte US = 0x1F;
     public static final byte ACK = 0x06;
     public static final byte NAK = 0x15;
+ 
 
 }

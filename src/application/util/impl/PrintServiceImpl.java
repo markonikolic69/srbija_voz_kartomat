@@ -121,7 +121,7 @@ public class PrintServiceImpl {
 
 		
 
-		if(!rezervacija_r.equals("")) {
+		if(/*!rezervacija_r.equals("")*/ is_povratna) {
 			// B VOZ
 			g.drawString("VOZ", 460, 147);
 
@@ -149,10 +149,15 @@ public class PrintServiceImpl {
 			g.drawString("Pol: " + vreme_o_od, 215, 147);
 		}
 		
+		if(/*!rezervacija_r.equals("")*/ is_povratna) {
+			// B VOZ
+			g.drawString( b_voz_ID, 540, 147);
+		}
+		
 		if(!rezervacija_r.equals("")) {
 			// B VOZ
 
-			g.drawString( b_voz_ID, 540, 147);
+			//g.drawString( b_voz_ID, 540, 147);
 			
 			g.drawString("Pol: " + vreme_p_od, 610, 147);
 			

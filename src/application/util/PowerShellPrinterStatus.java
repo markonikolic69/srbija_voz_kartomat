@@ -12,8 +12,8 @@ public class PowerShellPrinterStatus {
 	public static final String PRINTER_OFFLINE = "128:1";
 	public static final String PRINTER_NO_PAPER = "16:1";
 	
-	public static void checkPrinterStatus() throws Exception{
-		String printerName = "NPI Integration Driver";
+	public static void checkPrinterStatus(String printerName) throws Exception{
+
 		ProcessBuilder builder = new ProcessBuilder("powershell.exe", "get-wmiobject -class win32_printer | Select-Object Name, PrinterState, PrinterStatus | where {$_.Name -eq '"+printerName+"'}");
 
 		String fullStatus = null;
@@ -63,7 +63,7 @@ public class PowerShellPrinterStatus {
 	
 	public static void main(String[] args) throws Exception{
 		
-		new PowerShellPrinterStatus().checkPrinterStatus();
+		new PowerShellPrinterStatus().checkPrinterStatus("NPI Integration Driver");
 		//kada je offline, pritner_state = 128, pritner status = 1
 		//TODO treba sve kombinacije ispitati
 	}

@@ -45,4 +45,13 @@ public class ExtendedErrorDataResponse {
     }
     
     
+	@Override
+	public String toString() {
+		return "ExtendedErrorDataResponse [_identifier=" + _identifier + ", _displayMessage=" + _displayMessage
+				+ ", _code=" + _code + "]";
+	}
+    
+    
+
+    
 }

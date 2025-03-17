@@ -97,7 +97,9 @@ public class ProtocolHelper {
     public static String getDecodedMessage(byte[] message, boolean onlyPayload)
     {
         String decodedMessage = decodeMessage(new String(message, StandardCharsets.UTF_8));
-
+        if(decodedMessage.startsWith("<ACK>")) {
+        	decodedMessage = decodedMessage.replaceAll("<ACK>", "");
+        }
         if (onlyPayload)
         {
             decodedMessage = decodedMessage.replace(MessageStringConstants.STX, "").replace(MessageStringConstants.ETX, "");

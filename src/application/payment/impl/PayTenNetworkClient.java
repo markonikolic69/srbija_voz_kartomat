@@ -66,7 +66,9 @@ public class PayTenNetworkClient implements PayTenPaymentIface{
 		logger.info("try to open connection ...");
 		open();
 		System.out.println("connection opened, try to start initialization ...");
-		String transaction_response = _client.sendTransaction(dataToSend, true);
+		//String transaction_response = _client.sendTransaction(dataToSend, true);
+		//06.03.2025 - po nalogu payten-a, mi ne treba vise da saljemo zahtv za inicijalizaciju
+		String transaction_response = _client.sendTransaction(dataToSend, false/*ne salje se inicijalizacija*/);
 		System.out.println("Kraj, dobio je objekat transaction_response = " + transaction_response);
 		TransactionDataResponse to_return = new TransactionDataResponse();
 		to_return.fillObject(transaction_response);
@@ -110,6 +112,7 @@ public class PayTenNetworkClient implements PayTenPaymentIface{
     private boolean open()
     {
         // Connect to a remote device.  
+    	logger.info("--> open()");
         try
         {
 
@@ -118,12 +121,13 @@ public class PayTenNetworkClient implements PayTenPaymentIface{
             _client.connectToServerNoThread(_ipAddress, _port);
 
 
-
+            logger.info("<-- open(), return true");
             return true;
         }
         catch (Exception e)
         {
-            System.out.println("unable to connect to payment terminal, details : " + e.getMessage());
+        	logger.error("<-- open(), return false, unable to connect to payment terminal, details : " + e.getMessage(), e);
+        	System.out.println("unable to connect to payment terminal, details : " + e.getMessage());
             return false;
         }
     }

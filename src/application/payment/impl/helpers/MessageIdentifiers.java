@@ -4,6 +4,7 @@ public class MessageIdentifiers {
 	
 	
     public static final String TRANSACTION_REQUEST = "00";
+    public static final String SETTLEMENT_END = "02";
     public static final String CANCEL_CURRENT_TRANSACTION_REQUEST = "23";
     
     public static final String TRANSACTION_RESPONSE = "10";

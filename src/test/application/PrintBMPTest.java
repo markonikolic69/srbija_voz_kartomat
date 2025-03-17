@@ -218,8 +218,8 @@ public class PrintBMPTest {
     
 	
 	public static void main(String[] args) throws Exception{
-//		PrintBMPTest print_test = new PrintBMPTest("NPI Integration Driver");
-		PrintBMPTest print_test = new PrintBMPTest("EP802");
+		PrintBMPTest print_test = new PrintBMPTest("NPI Integration Driver");
+//		PrintBMPTest print_test = new PrintBMPTest("EP802");
 		
 //		File outputfile = new File("C:\\\\Users\\\\38164\\\\eclipse-workspace\\\\SrbijaVoz\\\\src\\\\smily.bmp");
 //		BufferedImage image = ImageIO.read(outputfile);

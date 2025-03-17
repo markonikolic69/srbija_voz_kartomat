@@ -140,6 +140,7 @@ import application.payment.impl.PayTenNetworkClient;
 import application.payment.impl.models.TransactionDataResponse;
 import application.util.PowerShellPrinterStatus;
 import application.util.PrinterService;
+import application.util.PrinterStatusChecker;
 import application.util.SessionTimer;
 import application.util.StanicaNames;
 
@@ -1035,6 +1036,8 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 //	final ToggleGroup smer_putovanja_group = new ToggleGroup();
 
 	//private Timer _timer = null;
+	
+	private static final String PRINTER_NAME = "NPI Integration Driver";
 
 	private boolean _is_english = false;
 	private boolean _is_cirilica = true;
@@ -6279,7 +6282,10 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 
 		try {
 			checkBrojPutnika(broj_putnika);
-			PowerShellPrinterStatus.checkPrinterStatus();
+			
+			PrinterStatusChecker.checkPrinterQueueSize(PRINTER_NAME);
+			PrinterStatusChecker.checkPrinterStatus(PRINTER_NAME);
+			PowerShellPrinterStatus.checkPrinterStatus(PRINTER_NAME);
 			placanje_result_pn.setStyle("-fx-background-image: url('"+resources.getString("prisloni_karticu_za_placanje_gif")+"')");
 			placanje_result_pn.setVisible(true);
 			placanje_result_pn.toFront();
@@ -6312,7 +6318,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 			if(e instanceof NoSeetsAvailableException) {
 				run_error(resources.getString("nema_slobodnih_mesta"), e.getMessage(), "", "",  "", "", "", 5);
 			}else {
-				run_error("GREŠKA NA ŠTAMPAČU", e.getMessage(), "POZOVITE OSOBLJE STANICE", "",  "", "", "", 10);
+				run_error("GREŠKA NA ŠTAMPAČU", e.getMessage(), "POZOVITE OSOBLJE STANICE", e.getMessage(),  "", "", "", 10);
 			}
 
 			Thread thread3 = new Thread(() -> {
