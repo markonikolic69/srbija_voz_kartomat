@@ -1,10 +1,11 @@
 package application;
 
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -17,6 +18,9 @@ import application.data.PutnikIface;
 import application.data.SifraBean;
 import application.data.VozBean;
 import application.data.VozDataBean;
+import application.fiskalizacija.InvoiceRequestBean;
+import application.fiskalizacija.InvoiceResponse;
+import application.fiskalizacija.ItemBean;
 import application.fiskalizacija.SrbijaVozInvoiceHandler;
 import application.https.CommunicationException;
 import application.https.ETKartaResponseBean;
@@ -27,8 +31,9 @@ import application.payment.PayTenPaymentIface;
 import application.payment.PaymentException;
 import application.payment.PaymentFactory;
 import application.payment.impl.models.TransactionDataResponse;
+import application.transactionreport.*;
 import application.util.PrinterService;
-import javafx.application.Platform;
+
 
 public class KartaPaymentControler implements Runnable{
 	
@@ -84,6 +89,15 @@ public class KartaPaymentControler implements Runnable{
 	
 	List<String> _vk_amount = new ArrayList<String>();
 	
+
+	private SrbijaVozInvoiceHandler fiskal_handler;
+	
+	List putnici = null;
+	
+	private String _transaction_id;
+	
+	private String _transactionReportURL;
+	
 	
 	public KartaPaymentControler(IPaymentCallbackInfo callback, int user_id, int id_kartomata, String naziv_stanice,
 			VozBean selected_voz, VozBean selected_voz_povratak, int selectet_razred_polazak, int selected_razred_povratak,
@@ -92,7 +106,7 @@ public class KartaPaymentControler implements Runnable{
 			CenaBean cetvrti_putnik_povratna_cena, CenaBean peti_putnik_povratna_cena, int prva_karta_tip, int druga_karta_tip, int treca_karta_tip,
 			int cetvrta_karta_tip, int peta_karta_tip, boolean is_petnaest_dana,
 			String prva_karta_tip_id_legitimacije, String druga_karta_tip_id_legitimacije, String treca_karta_tip_id_legitimacije,
-			String cetvrta_karta_tip_id_legitimacije, String peta_karta_tip_id_legitimacije) {
+			String cetvrta_karta_tip_id_legitimacije, String peta_karta_tip_id_legitimacije, String transactionReportURL) {
 		_is_petnaest_dana = is_petnaest_dana;
 		_callback = callback;
 		_user_id = user_id;
@@ -127,6 +141,8 @@ public class KartaPaymentControler implements Runnable{
 		_treca_karta_tip_id_legitimacije = treca_karta_tip_id_legitimacije;
 		_cetvrta_karta_tip_id_legitimacije = cetvrta_karta_tip_id_legitimacije;
 		_peta_karta_tip_id_legitimacije = peta_karta_tip_id_legitimacije;
+		
+		_transactionReportURL = transactionReportURL;
 	}
 	
 	
@@ -319,7 +335,7 @@ public class KartaPaymentControler implements Runnable{
 
 			///////////////////////////putnici /////////////////////////////////////////
 
-			List putnici =  smer == 1 ? new ArrayList<PutniciBean>() : new ArrayList<PutniciBeanPovratna>();
+			putnici =  smer == 1 ? new ArrayList<PutniciBean>() : new ArrayList<PutniciBeanPovratna>();
 			
 			PutnikIface putnik1 = smer == 1 ? new PutniciBean() : new PutniciBeanPovratna();
 			putnik1.setImeprezime("" + _id_kartomata);
@@ -442,7 +458,7 @@ public class KartaPaymentControler implements Runnable{
 						"tdr = " + tdr
 						);
 				
-
+				_transaction_id = tdr.get_transactionNumber();
 				
 				
 				EtKartaResponse et_karta = SrbijaVozIfaceFactory.getIface(MainUIController.SV_API_URL, MainUIController.SV_API_CONN_TIME, MainUIController.SV_API_READ_TIME).upisUPIT_KA_BANCI(tdr.is_pozitivan(), _user_id, et_response.get_order_id(), 
@@ -547,7 +563,8 @@ public class KartaPaymentControler implements Runnable{
 				//TODO pozvati panel sa greskom - pokusajte ponovo
 				pe.printStackTrace();
 				logger.info("PaymentException when try to purchase a ticket, details: " + pe.getMessage(), pe);
-				_error_message = "Pokušajte ponovo";
+				//_error_message = "Pokušajte ponovo";
+				_error_message = pe.getMessage();
 			}catch(Throwable e) {
 				//TODO pozvati panel sa greskom - pokusajte ponovo
 				//ovde rollback payment-a
@@ -557,8 +574,11 @@ public class KartaPaymentControler implements Runnable{
 			}finally {
 				if(payment_iface != null)payment_iface.close();
 
-				
-
+				try {
+					sendTotransactionReport();
+				}catch(Throwable e) {
+					logger.info(" Exception when try to sendTotransactionReport, details: " + e.getMessage(), e);
+				}
 //				Platform.runLater(() -> {       	
 //
 //
@@ -649,7 +669,7 @@ public class KartaPaymentControler implements Runnable{
 	
 	private void fiskalizuj() {
 		logger.info("fiskalizuj ");
-		SrbijaVozInvoiceHandler fiskal_handler = new SrbijaVozInvoiceHandler(_vk_amount, 
+		fiskal_handler = new SrbijaVozInvoiceHandler(_vk_amount, 
 				AbstractController.getProperties().getProperty("fiscal.esir.number", "1145/2.0"/*"601/1.0"*/), 
 				AbstractController.getProperties());
 		try {
@@ -660,6 +680,102 @@ public class KartaPaymentControler implements Runnable{
 		}catch(IOException ioe) {
 			logger.error("Unable to call fiskal service, details: = " + ioe.getMessage(), ioe);
 		}
+		
+	}
+	
+	private void sendTotransactionReport() {
+		KupovinaTransaction to_report = new KupovinaTransaction();
+		InvoiceRequestBean fiskalizacija_request = fiskal_handler.getBean();
+		InvoiceResponse fiskalizacija_response = fiskal_handler.getInvoiceResponse();
+		KartomatData kartomat = new KartomatData();
+		kartomat.setId(_id_kartomata);
+		kartomat.setName(_naziv_stanice);
+		to_report.setKartomat(kartomat);
+		List<FisklaizacijaTransactionKartaDto> fiskal_karte = new ArrayList<FisklaizacijaTransactionKartaDto>();
+		for(ItemBean current : fiskalizacija_request.getItems()) {
+			FisklaizacijaTransactionKartaDto fis_karta = new FisklaizacijaTransactionKartaDto();
+			fis_karta.setAmount(current.getUnitPrice());
+			fis_karta.setName(current.getName());
+			fis_karta.setQuantity(current.getQuantity());
+			fis_karta.setTotalPrice(current.getTotalAmount());
+			fis_karta.setUnitPrice(current.getUnitPrice());
+		}
+		to_report.setFiskal_karte(fiskal_karte);
+
+		FiskalizacijaTransactionItemDto fiskla_item = new FiskalizacijaTransactionItemDto();
+		fiskla_item.setAmount(fiskalizacija_response.getTaxItems().get(0).getAmount());
+		fiskla_item.setCategoryName(fiskalizacija_response.getTaxItems().get(0).getCategoryName());
+		fiskla_item.setCategoryType("" + fiskalizacija_response.getTaxItems().get(0).getCategoryType());
+		fiskla_item.setLabel(fiskalizacija_response.getTaxItems().get(0).getLabel());
+		fiskla_item.setRate(fiskalizacija_response.getTaxItems().get(0).getRate());
+		to_report.setFiskal_item(fiskla_item);
+		
+		FiskalizacijaTransactionDto fisk_tran = new FiskalizacijaTransactionDto();
+		fisk_tran.setAddress(fiskalizacija_response.getAddress());
+		fisk_tran.setAmount(Double.parseDouble(fiskalizacija_response.getTotalAmount()));
+		fisk_tran.setBusinessName(fiskalizacija_response.getBusinessName());
+		fisk_tran.setDistrict(fiskalizacija_response.getDistrict());
+		fisk_tran.setInvoiceCounter(fiskalizacija_response.getInvoiceCounter());
+		fisk_tran.setInvoiceCounterExtension(fiskalizacija_response.getInvoiceCounterExtension());
+		fisk_tran.setInvoiceNumber(fiskalizacija_response.getInvoiceNumber());
+		fisk_tran.setJournal(fiskalizacija_response.getJournal());
+		fisk_tran.setLocationName(fiskalizacija_response.getLocationName());
+		fisk_tran.setMrc(fiskalizacija_response.getMrc());
+		fisk_tran.setPAC(fiskal_handler.getPAC());
+		fisk_tran.setPayment(fiskalizacija_request.getPayment().get(0).getPaymentType());
+		fisk_tran.setRequest_id(fiskal_handler.get_invoice_number());
+		fisk_tran.setRequestedBy(fiskalizacija_response.getRequestedBy());
+		fisk_tran.setSdcDateTime(fiskalizacija_response.getSdcDateTime());
+		fisk_tran.setTin(fiskalizacija_response.getTin());
+		fisk_tran.setTotalAmount(Integer.parseInt(fiskalizacija_response.getTotalAmount()));
+		fisk_tran.setTransactionType(fiskalizacija_request.getTransactionType());
+		fisk_tran.setVerificationQRCode(fiskalizacija_response.getVerificationQRCode());
+		fisk_tran.setVerificationUrl(fiskalizacija_response.getVerificationUrl());
+		to_report.setFiskalizacija_transakcija(fisk_tran);
+		
+		Iterator putniciIterator = putnici.iterator();
+		List<KartaDto> karte = new ArrayList<KartaDto>();
+
+		while(putniciIterator.hasNext()) {
+
+			KartaDto karta_current = new KartaDto();
+			Object current = putniciIterator.next();
+		    if(current instanceof PutniciBean) {
+		    	PutniciBean p_beee_current = (PutniciBean)current;
+		    	karta_current.setCena(p_beee_current.getCenaa().get(0).getCenau());
+		    	karta_current.setKarta_tip("" + p_beee_current.getSifrapovlastice());
+		    	karta_current.setLegitimacija_id(p_beee_current.getIdleg());
+		    	karta_current.setPovratna_cena(0);
+		    	karta_current.setSelected_razred_polazak("" + _selected_razred_polazak);
+		    	karta_current.setSelected_razred_povratak("");
+		    }else {
+		    	PutniciBeanPovratna p_beee_current = (PutniciBeanPovratna)current;
+		    	karta_current.setCena(p_beee_current.getCenaa().get(0).getCenau());
+		    	karta_current.setKarta_tip("" + p_beee_current.getSifrapovlastice());
+		    	karta_current.setLegitimacija_id(p_beee_current.getIdleg());
+		    	karta_current.setPovratna_cena((int)p_beee_current.getCenaa().get(0).getCenar());
+		    	karta_current.setSelected_razred_polazak("" + _selected_razred_polazak);
+		    	karta_current.setSelected_razred_povratak("" + _selected_razred_povratak);
+		    }
+		    karte.add(karta_current);
+		}
+		
+		to_report.setKarte(karte);
+		to_report.setSelected_train("" + _selected_voz.getBrvoz());
+		to_report.setSelected_train_povrtaka("" + _selected_voz_povratak.getBrvoz());
+		to_report.setBroj_putnika(_broj_putnika);
+		to_report.setCena_ukupno(_ukupna_cena);
+		to_report.setDestination(_selected_voz.getNazivdo());
+		to_report.setId(_transaction_id);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+		to_report.setTransaction_time(sdf.format(new Date()));
+		
+		try {
+			new Thread(new TransactionReportHandler(to_report, new URL(_transactionReportURL))).start();
+		}catch(Exception e) {
+			
+		}
+		
 		
 	}
 

@@ -30,13 +30,22 @@ public class SrbijaVozInvoiceHandler  extends AbstractHandler{
 	private static final String TRANSACTION_TYPE = "Sale";
 	
 	private InvoiceResponse _response_object = null;
+	private InvoiceRequestBean bean = null;
 	
+	public InvoiceRequestBean getBean() {
+		return bean;
+	}
+
 	public SrbijaVozInvoiceHandler(List<String> params, String invoice_number, Properties properties) {
 		super(properties);
 		_params = params;
 		_invoice_number = invoice_number;
 	}
 	
+	public String get_invoice_number() {
+		return _invoice_number;
+	}
+
 	public InvoiceResponse getInvoiceResponse() {
 		return _response_object;
 	}
@@ -50,7 +59,7 @@ public class SrbijaVozInvoiceHandler  extends AbstractHandler{
 
 		List<String> vk_amount_list = _params;
 		
-		InvoiceRequestBean bean = new InvoiceRequestBean(vk_amount_list, _invoice_number,  PoreskaStopa.DESET_POSTO);
+		bean = new InvoiceRequestBean(vk_amount_list, _invoice_number,  PoreskaStopa.DESET_POSTO);
 		
 
 		String json_request = new Gson().toJson(bean);

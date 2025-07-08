@@ -26,7 +26,7 @@ public abstract class AbstractHandler {
 	}
 
 
-	protected String getPAC() {
+	public String getPAC() {
 		String poreska_pac = _properties.getProperty("poreska.pac", "TMYD8A");
 		System.out.println("poreska_pac = " + poreska_pac);
 		return poreska_pac;

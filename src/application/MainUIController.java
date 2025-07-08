@@ -1551,32 +1551,27 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 //		jedan_smer_rb.setToggleGroup(smer_putovanja_group);
 //		povratna_smer_rb.setToggleGroup(smer_putovanja_group);
 		init_clock();
-		try {
-			_kartomat = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getKartomat(MAC_ADDRESS);
-			//Label b = new Label(_kartomat.getNaziV_STANICE().toUpperCase());
-			kartomat_stanica_lbl.setText(KARTOMAT_STANICA_NAZIV_LATIN.substring("Polazna stanica : ".length())/*this.resources.getString("beograd_centar")*//*_kartomat.getNaziV_STANICE().toUpperCase()*/);
-//			b.setLayoutX(150.0);
-//			b.setLayoutY(20.0);
-//			b.setPrefHeight(31.0);
-//			b.setPrefWidth(400.0);
-//			b.setAlignment(Pos.CENTER);
-//			b.setStyle("-fx-font-family: 'Montserrat';-fx-text-fill: black;-fx-font-size: 20pt;-fx-font-weight: bold;-fx-text-alignment:left;");
-			//root_pane.getChildren().add(b);
-			
-			_frekventne_stanice = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getFrekventneStanice(MAC_ADDRESS);
-			StanicaNames.loadCirLatinFS(_frekventne_stanice);
-			logger.info("_frekventne_stanice: " + _frekventne_stanice);
-			_ostale_stanice = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getStanicaIDsNew(_kartomat.getSifrA_STANICE());
-			StanicaNames.loadCirLatinOS(_ostale_stanice);
-			logger.info("_ostale_stanice: " + _ostale_stanice);
-			azuriraj_listu_ostalinh_filtered_stanica("");
-			
-			//_ostale_stanice_filtered = new ArrayList<StanicaIDBean>(_ostale_stanice);
-		}catch(Exception e) {
-			e.printStackTrace();
-			logger.error("Exception when try to init data from SV api, details: " + e.getMessage() + ", application will exit", e);
-			System.exit(-1);
-		}
+		
+		init_get_frekventne_stanice_retry();
+//		try {
+//			_kartomat = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getKartomat(MAC_ADDRESS);
+//
+//			kartomat_stanica_lbl.setText(KARTOMAT_STANICA_NAZIV_LATIN.substring("Polazna stanica : ".length())/*this.resources.getString("beograd_centar")*//*_kartomat.getNaziV_STANICE().toUpperCase()*/);
+//	
+//			_frekventne_stanice = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getFrekventneStanice(MAC_ADDRESS);
+//			StanicaNames.loadCirLatinFS(_frekventne_stanice);
+//			logger.info("_frekventne_stanice: " + _frekventne_stanice);
+//			_ostale_stanice = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getStanicaIDsNew(_kartomat.getSifrA_STANICE());
+//			StanicaNames.loadCirLatinOS(_ostale_stanice);
+//			logger.info("_ostale_stanice: " + _ostale_stanice);
+//			azuriraj_listu_ostalinh_filtered_stanica("");
+//			
+//			//_ostale_stanice_filtered = new ArrayList<StanicaIDBean>(_ostale_stanice);
+//		}catch(Exception e) {
+//			e.printStackTrace();
+//			logger.error("Exception when try to init data from SV api, details: " + e.getMessage() + ", application will exit", e);
+//			System.exit(-1);
+//		}
 		
 		init_frekventne_stanice();
 //		init_polasci();
@@ -1744,6 +1739,50 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 		
 		logger.info("<-- initialized: " );
 		
+	}
+	
+	
+	private void init_get_frekventne_stanice_retry() {
+		int number_of_retries = 10;
+		int i = 0;
+		boolean is_in_retry = true;
+		while (is_in_retry) {
+			i++;
+			try {
+				_kartomat = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getKartomat(MAC_ADDRESS);
+				//Label b = new Label(_kartomat.getNaziV_STANICE().toUpperCase());
+				kartomat_stanica_lbl.setText(KARTOMAT_STANICA_NAZIV_LATIN.substring("Polazna stanica : ".length())/*this.resources.getString("beograd_centar")*//*_kartomat.getNaziV_STANICE().toUpperCase()*/);
+
+				_frekventne_stanice = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getFrekventneStanice(MAC_ADDRESS);
+				StanicaNames.loadCirLatinFS(_frekventne_stanice);
+				logger.info("_frekventne_stanice: " + _frekventne_stanice);
+				_ostale_stanice = SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).getStanicaIDsNew(_kartomat.getSifrA_STANICE());
+				StanicaNames.loadCirLatinOS(_ostale_stanice);
+				logger.info("_ostale_stanice: " + _ostale_stanice);
+				azuriraj_listu_ostalinh_filtered_stanica("");
+
+				is_in_retry = false;
+			}catch(Exception e) {
+				if(i >= number_of_retries) {
+					is_in_retry = false;
+				}
+				//slee[ 15 seconds
+				try {
+					Thread.sleep(15000);
+				}catch(Throwable ex) {
+
+				}
+				e.printStackTrace();
+				
+				logger.error("Exception when try to init data from SV api, details: " + e.getMessage() , e);
+				logger.error("Exception retry attempt =  " + i );
+				//System.exit(-1);
+			}
+			if(i >= number_of_retries) {
+				logger.error("Fatal: Unable to init data from SV api" + ", application will exit");
+				System.exit(-1);
+			}
+		}
 	}
 	
 	private ChangeListener datum_polaska_changeListener = new ChangeListener<String>() {
@@ -6304,7 +6343,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 			_prvi_putnik_povratna_cena, _drugi_putnik_povratna_cena, _treci_putnik_povratna_cena, _cetvrti_putnik_povratna_cena, _peti_putnik_povratna_cena, 
 			_prva_karta_tip, _druga_karta_tip, _treca_karta_tip, _treca_karta_tip, _peta_karta_tip, is_petnaest_dana,
 			prvi_tip_tf.getText().trim(), drugi_tip_tf.getText().trim(), treci_tip_tf.getText().trim(),
-			cetvrti_tip_tf.getText().trim(), peti_tip_tf.getText().trim());
+			cetvrti_tip_tf.getText().trim(), peti_tip_tf.getText().trim(), getProperties().getProperty("transaction.report.url"));
 			
 
 			

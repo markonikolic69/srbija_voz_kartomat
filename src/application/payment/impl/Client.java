@@ -111,7 +111,7 @@ public class Client implements Runnable{
 		//nova implementacija protokola, sad se ceka void a ne ack
 		//boolean is_ack_received = false;
 		//boolean is_void_received = false;
-
+		String display_message = "";
 		String to_return = "";
 
 
@@ -233,7 +233,9 @@ public class Client implements Runnable{
 						if(message_ident.equals(MessageIdentifiers.EXTENDED_HOLD_RESPONSE) ) {
 							logger.info("Stiglo  Extend HOLD, vratiti ACK");
 							ExtendedHoldDataResponse extendedHoldDataResponse = new ExtendedHoldDataResponse();
-							extendedHoldDataResponse.fillObject(message.substring(0, message.length()));           
+							extendedHoldDataResponse.fillObject(message.substring(0, message.length()));  
+							display_message = extendedHoldDataResponse.get_displayMessage();
+							logger.info("extendedHoldDataResponse, display message = " + display_message);
 							flushData(new byte[] {MessageByteConstants.ACK});
 							//_callback.setPaymentSessionMessage(extendedHoldDataResponse.get_displayMessage().trim());
 						}else {
@@ -245,7 +247,9 @@ public class Client implements Runnable{
 								if(message_ident.equals(MessageIdentifiers.HOLD_RESPONSE)) {
 									logger.info("Stiglo HOLD, vratiti ACK");
 									HoldDataResponse holdDataResponse = new HoldDataResponse();
-									holdDataResponse.fillObject(message.substring(0, message.length()));           
+									holdDataResponse.fillObject(message.substring(0, message.length()));     
+									display_message = holdDataResponse.get_displayMessage();
+									logger.info("holdDataResponse, display message = " + display_message);
 									flushData(new byte[] {MessageByteConstants.ACK});
 									//_callback.setPaymentSessionMessage(holdDataResponse.get_displayMessage().trim());
 								}else {
@@ -257,7 +261,9 @@ public class Client implements Runnable{
 											logger.info("Stiglo SETTLEMENT END - end of the day RESPONSE, vratiti ACK i pozitivan izlaz iz metode");
 										}
 										TransactionDataResponse transactionDataResponse = new TransactionDataResponse();
-										transactionDataResponse.fillObject(message.substring(0, message.length()));       
+										transactionDataResponse.fillObject(message.substring(0, message.length()));   
+										display_message = transactionDataResponse.get_displayMessage();
+										logger.info("transactionDataResponse, display message = " + display_message);
 										String tran_type = transactionDataResponse.get_transactionType();
 										String tran_flag = transactionDataResponse.get_transactionFlag();
 										logger.info("Stiglo TRANSACTION TYPE = " + tran_type);
@@ -296,6 +302,8 @@ public class Client implements Runnable{
 													flushData(new byte[] {MessageByteConstants.ACK});
 													ExtendedErrorDataResponse extendedErrorResponse = new ExtendedErrorDataResponse();
 													extendedErrorResponse.fillObject(message.substring(0, message.length()));
+													display_message = extendedErrorResponse.get_displayMessage();
+													logger.info("extendedErrorResponse, display message = " + display_message);
 													logger.info("Stiglo EXTENDED_ERROR_RESPONSE, extendedErrorResponse = " + extendedErrorResponse);
 													if(extendedErrorResponse.get_identifier().equals("02")) {
 														TransactionDataRequest settlement_message = new TransactionDataRequest();
@@ -307,13 +315,14 @@ public class Client implements Runnable{
 														logger.info("Stigloerror poruka koja nije vezana za settlement vec neki drugi razlog, prekidamo flow");										
 
 														NOT_END_OF_SESSION = false;
-														throw new PaymentException( extendedErrorResponse.get_displayMessage() );
+														logger.info("Stigloerror , display_message = " + display_message);	
+														throw new PaymentException( display_message );
 													}
 												}else {
 													logger.info("Stiglo neocekivana poruka , poruka o gresci ili slicno, poslati ack i prekinuti flow");										
 													flushData(new byte[] {MessageByteConstants.ACK});
 													NOT_END_OF_SESSION = false;
-													throw new PaymentException( message );
+													throw new PaymentException( /*message*/display_message );
 												}
 											}
 										}
@@ -327,11 +336,12 @@ public class Client implements Runnable{
 					}else {
 						//received NACK
 						logger.info("Stiglo NACK , neocekivano se desila greska, pokusati ponovo");	
+						logger.info("Stiglo NACK , display_message = " + display_message);	
 						NOT_END_OF_SESSION = false;
 						//							if(!is_ack_received) {
 						//								System.out.println("Received NACK, nesto nije u redu ");
 						//							}
-						throw new PaymentException( "Greska, pokusajte ponovo" );
+						throw new PaymentException( display_message + " pokušajte ponovo" );
 					}
 
 				}
@@ -343,16 +353,17 @@ public class Client implements Runnable{
 			//A socket error has occurred
 			e.printStackTrace();
 			System.out.println("A socket error has occurred with the client socket, details:  " + e.getMessage());
-
-			throw new PaymentException("Izgubljena veza sa serverom, pokusajte ponovo");
+			logger.info("IOException , display_message = " + display_message);
+			throw new PaymentException("Izgubljena veza sa serverom, pokušajte ponovo");
 		}
 		catch(Throwable e )
 		{
 			//A socket error has occurred
 			e.printStackTrace();
+			logger.info("Throwable , display_message = " + display_message);
 			logger.error("Unknown has occurred with the client socket, details: " + e.getMessage(), e);
 
-			throw new PaymentException("Izgubljena veza sa serverom, pokusajte ponovo");
+			throw new PaymentException("Molimo pokušajte ponovo");
 		}
 		finally {
 			bf.clear();
