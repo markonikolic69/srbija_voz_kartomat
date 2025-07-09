@@ -90,7 +90,7 @@ public class KartaPaymentControler implements Runnable{
 	List<String> _vk_amount = new ArrayList<String>();
 	
 
-	private SrbijaVozInvoiceHandler fiskal_handler;
+	
 	
 	List putnici = null;
 	
@@ -185,7 +185,12 @@ public class KartaPaymentControler implements Runnable{
 			logger.error("Greska u placanju , details: " + e.getMessage(), e );
 		}
 		try {
-			fiskalizuj();
+			SrbijaVozInvoiceHandler f_handler = fiskalizuj();
+			try {
+				sendTotransactionReport(f_handler);
+			}catch(Throwable e) {
+				logger.info(" Exception when try to sendTotransactionReport, details: " + e.getMessage(), e);
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 			logger.error("Greska u fiskalizaciji , details: " + e.getMessage(), e );
@@ -574,11 +579,7 @@ public class KartaPaymentControler implements Runnable{
 			}finally {
 				if(payment_iface != null)payment_iface.close();
 
-				try {
-					sendTotransactionReport();
-				}catch(Throwable e) {
-					logger.info(" Exception when try to sendTotransactionReport, details: " + e.getMessage(), e);
-				}
+
 //				Platform.runLater(() -> {       	
 //
 //
@@ -667,9 +668,9 @@ public class KartaPaymentControler implements Runnable{
 
 	}
 	
-	private void fiskalizuj() {
+	private SrbijaVozInvoiceHandler fiskalizuj() {
 		logger.info("fiskalizuj ");
-		fiskal_handler = new SrbijaVozInvoiceHandler(_vk_amount, 
+		SrbijaVozInvoiceHandler fiskal_handler = new SrbijaVozInvoiceHandler(_vk_amount, 
 				AbstractController.getProperties().getProperty("fiscal.esir.number", "1145/2.0"/*"601/1.0"*/), 
 				AbstractController.getProperties());
 		try {
@@ -679,11 +680,11 @@ public class KartaPaymentControler implements Runnable{
 			_fiscal_qr_code = journal_qr_code[1];
 		}catch(IOException ioe) {
 			logger.error("Unable to call fiskal service, details: = " + ioe.getMessage(), ioe);
-		}
-		
+		} 
+		return fiskal_handler;
 	}
 	
-	private void sendTotransactionReport() {
+	private void sendTotransactionReport(SrbijaVozInvoiceHandler fiskal_handler) {
 		KupovinaTransaction to_report = new KupovinaTransaction();
 		InvoiceRequestBean fiskalizacija_request = fiskal_handler.getBean();
 		InvoiceResponse fiskalizacija_response = fiskal_handler.getInvoiceResponse();

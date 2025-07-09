@@ -56,6 +56,7 @@ public class TransactionReportHandler implements Runnable{
 		con.setRequestProperty("Accept", "application/json");
 		con.setRequestProperty("Accept-Language", "sr-Cyrl-RS");
 		con.setRequestProperty("RequestId", request_id);
+		con.setRequestProperty("JWT", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MjY3ODU3MjgsInN1YiI6Nzk0NiwidHlwZSI6ImNvbnN1bWVyIn0.cPMlWTkfr4qnhei54niEhIwi8wEY8dhzDcgi925jYh4");
 		
 		//kentkart
 		//con.setRequestProperty("PAC", "TMYD8A");
