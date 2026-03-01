@@ -8,6 +8,7 @@ encoding//src/application/fiskalizacija/InvoiceRequestBean.java=UTF-8
 encoding//src/application/fiskalizacija/ItemBean.java=UTF-8
 encoding//src/application/fiskalizacija/PoreskaStopa.java=UTF-8
 encoding//src/application/fiskalizacija/SrbijaVozInvoiceHandler.java=UTF-8
+encoding//src/application/https/impl/HttpsClient.java=UTF-8
 encoding//src/application/util/impl/PrintServiceImpl.java=UTF-8
 encoding//src/test/application/BmpWriteText.java=UTF-8
 encoding//src/test/application/StaniceUtil.java=UTF-8

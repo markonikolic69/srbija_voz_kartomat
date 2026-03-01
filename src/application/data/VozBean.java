@@ -366,9 +366,9 @@ public class VozBean {
 	
 	
 	public static void main(String[] args) {
-		System.out.println("getNumDayFromToday = " + getNumDayFromToday("24.04.2022", "26.04.2022"));
+		System.out.println("getNumDayFromToday = " + getNumDayFromToday("03.11.2025", "03.11.2025"));
 		
-		System.out.println("getNumDayFromToday = " + getNumDayFromToday(convertDateFormat("5/5/2022"), convertDateFormat("5/7/2022")));
+		System.out.println("getNumDayFromToday = " + getNumDayFromToday(convertDateFormat("11/3/2025"), convertDateFormat("11/17/2025")));
 	}
 	
 	

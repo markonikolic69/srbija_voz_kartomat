@@ -873,11 +873,11 @@ public class SrbijaVozIfaceImpl implements SrbijaVozIface {
 //		System.out.println("Broj slobodnih mesta : " + SrbijaVozIfaceFactory.getIfaceProduction().getBrojSlobodnihMesta(743, "4-17-2022") );
 //		
 //		
-//		System.out.println("Broj getTrajanjeKarte mesta : " + SrbijaVozIfaceFactory.getIfaceProduction().getTrajanjeKarte(16052, 
-//				12551, 1, 2, "23-4-2022"));
+		System.out.println("Broj getTrajanjeKarte mesta : " + SrbijaVozIfaceFactory.getIfaceProduction().getTrajanjeKarte(16052, 
+				23305, 1, 2, "03-11-2025"));
+//		 stanica od: 16052  stanica do: 23305  via: 1 smer: 2  datum: 31.10.2025
 
-
-		System.out.println("upisU_KARTOMAT_SLIP returned : " + SrbijaVozIfaceFactory.getIfaceTest().upisU_KARTOMAT_SLIP("1112", "test slip"));
+//		System.out.println("upisU_KARTOMAT_SLIP returned : " + SrbijaVozIfaceFactory.getIfaceTest().upisU_KARTOMAT_SLIP("1112", "test slip"));
 				
 	}
 

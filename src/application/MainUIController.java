@@ -141,6 +141,7 @@ import application.payment.impl.models.TransactionDataResponse;
 import application.util.PowerShellPrinterStatus;
 import application.util.PrinterService;
 import application.util.PrinterStatusChecker;
+import application.util.ScreenSaverTimer;
 import application.util.SessionTimer;
 import application.util.StanicaNames;
 
@@ -151,7 +152,7 @@ import javafx.scene.text.Text;
 
 
 public class MainUIController extends AbstractController implements Initializable, IPaymentCallbackInfo, SessionControlIface, 
-IGetListaVozovaPolasci, IGetListaVozovaPovratak{
+IGetListaVozovaPolasci, IGetListaVozovaPovratak, IScreenSaverCallback{
 	
 	
 	private static final Logger logger = Logger.getLogger("MainUIController");
@@ -1027,6 +1028,9 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	@FXML private Pane fiscal_check_pn;
 	
 	@FXML private Label tast_alfa_num_value_lbl;
+	
+	
+	@FXML private Pane screen_saver_pn;
 
 
 	
@@ -1133,6 +1137,9 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	private boolean _polazak_true_povratak_false = true;
 	
 	private String _current_fis_qr_code = "";
+	
+	private static final long FIFTEEN_SECONDS = 15*1000;
+	private boolean _is_for_screen_saver = true;
 	
 	
 	private void resetButtonGroup(List<Button> group, boolean blue_background) {
@@ -1278,6 +1285,8 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 			try {
 				//only for testing try{Thread.sleep(5000);}catch(Exception e) {}
 				Platform.runLater(() -> {  
+					loader_pn.setVisible(false);
+					loader_pn.toFront();
 					if(is_uspesna_kupovina) {
 						//showSlanjeZahteva("USPEŠNO plaćanje","Hvala što koristite kartomat");
 						placanje_result_pn.setStyle("-fx-background-image: url('"+resources.getString("karticq_za_placanje_uspesna_gif")+"')");
@@ -1736,6 +1745,12 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 		
 		
 		setSerbianCir();
+		
+		try {
+			new Timer().scheduleAtFixedRate(new ScreenSaverTimer(this),FIFTEEN_SECONDS, FIFTEEN_SECONDS);
+		}catch(Exception e) {
+
+		}
 		
 		logger.info("<-- initialized: " );
 		
@@ -2839,6 +2854,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	
 	public void handle_destinacija1() {
 		logger.info("handle_destinacija1");
+		_is_for_screen_saver = false;
 		FrekventneStaniceBean dest = _frekventne_stanice.get(0);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2858,6 +2874,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	
 	public void handle_destinacija2() {
 		logger.info("handle_destinacija2");
+		_is_for_screen_saver = false;
 		FrekventneStaniceBean dest = _frekventne_stanice.get(1);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2876,6 +2893,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	public void handle_destinacija3() {
 		logger.info("handle_destinacija3");
 		FrekventneStaniceBean dest = _frekventne_stanice.get(2);
+		_is_for_screen_saver = false;
 		if(dest != null) {
 			_selected_voz = null;
 			odrediste_value_lbl.setText(dest.getNaziV_UPUTNE_STANICE());
@@ -2892,6 +2910,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	
 	public void handle_destinacija4() {
 		logger.info("handle_destinacija4");
+		_is_for_screen_saver = false;
 		FrekventneStaniceBean dest = _frekventne_stanice.get(3);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2909,6 +2928,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	
 	public void handle_destinacija5() {
 		logger.info("handle_destinacija5");
+		_is_for_screen_saver = false;
 		FrekventneStaniceBean dest = _frekventne_stanice.get(4);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2926,6 +2946,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	
 	public void handle_destinacija6() {
 		logger.info("handle_destinacija6");
+		_is_for_screen_saver = false;
 		FrekventneStaniceBean dest = _frekventne_stanice.get(5);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2943,6 +2964,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	
 	public void handle_destinacija7() {
 		logger.info("handle_destinacija7");
+		_is_for_screen_saver = false;
 		FrekventneStaniceBean dest = _frekventne_stanice.get(6);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2960,6 +2982,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	
 	public void handle_destinacija8() {
 		logger.info("handle_destinacija8");
+		_is_for_screen_saver = false;
 		FrekventneStaniceBean dest = _frekventne_stanice.get(7);
 		if(dest != null) {
 			_selected_voz = null;
@@ -2977,6 +3000,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	
 	public void handle_ostale() {
 		logger.info("handle_ostale");
+		_is_for_screen_saver = false;
 //		System.out.println("jebeni naziv stanice je: " + _kartomat.getNaziV_STANICE());
 //		stanica_lbl.setText(_kartomat.getNaziV_STANICE());
 		ostale_stanice_pn.setVisible(true);
@@ -3048,12 +3072,16 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 		handle_ostale_common(ostale_stanice_16);
 	}
 	
-	private void setSelectedVoz(VozBean selected) {
+	/*
+	 * 03.11.2025 - promena po zokijevom nalogu, uvesti smer
+	 * u poziv: 1 - ukoliko je karta u jednom smeru, 2 - ukoliko je povratna karta
+	 */
+	private void setSelectedVoz(VozBean selected, int smer) {
 		logger.info("setSelectedVoz, selected = " + selected);
 		try {
 		_selected_voz = selected;
 		_selected_voz.set_trajanje_datum(datum_polaska_value_lbl.getText(), SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).
-				getTrajanjeKarte(_selected_voz.getOdsifra(), _selected_voz.getDosifra(), 1/*via*/, 2/*smer - povratna*/, _selected_voz.getDatumPolaska()));
+				getTrajanjeKarte(_selected_voz.getOdsifra(), _selected_voz.getDosifra(), 1/*via*/, smer/*2*//*smer - povratna*/, _selected_voz.getDatumPolaska()));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -3151,6 +3179,24 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	
 	
 	
+	////////////////////////////////////////////IScreenSaver/////////////////////////////////////////////////
+	
+	
+	public void showScreenSaver() {
+//		Platform.runLater(() -> { 
+//			if(_is_for_screen_saver) {
+//				screen_saver_pn.setVisible(true);
+//				screen_saver_pn.toFront();
+//			}
+//		
+//		});
+	}
+	
+	
+	//////////////////////////////////////////IScreenSaver end///////////////////////////////////////////////
+	
+	
+	
 	private void setPodaciOdVoza() {
 		logger.info("setPodaciOdVoza" );
 		_selected_voz = null;
@@ -3169,7 +3215,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 //							_selected_voz = current;
 //							_selected_voz.set_trajanje_datum(SrbijaVozIfaceFactory.getIface(SV_API_URL, SV_API_CONN_TIME, SV_API_READ_TIME).
 //									getTrajanjeKarte(_selected_voz.getOdsifra(), _selected_voz.getDosifra(), 1/*via*/, 2/*smer - povratna*/, _selected_voz.getDatumPolaska()));
-							setSelectedVoz(current);
+							setSelectedVoz(current, _selected_voz_povratak == null ? 1 : 2);
 							break;
 						}
 //						String[] splt = current.getVremep().split(":");
@@ -5387,7 +5433,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 			}
 
 //			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 0 );
-			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 0 ));
+			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 0 ), _selected_voz_povratak == null ? 1 : 2);
 			_selected_voz.setRang(Integer.parseInt(prvi_pol_rang_value_lbl.getText()));
 			
 			setCena(_selected_voz_povratak != null);
@@ -5449,7 +5495,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 			
 			
 //			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 1 );
-			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 1 ));
+			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 1 ), _selected_voz_povratak == null ? 1 : 2);
 			_selected_voz.setRang(Integer.parseInt(drugi_pol_rang_value_lbl.getText()));
 			setCena(_selected_voz_povratak != null);
 			soko_view_polazak.setVisible(_selected_voz.isSoko());
@@ -5484,7 +5530,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 			}
 			
 //			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 2 );
-			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 2 ));
+			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 2 ), _selected_voz_povratak == null ? 1 : 2);
 			_selected_voz.setRang(Integer.parseInt(treci_pol_rang_value_lbl.getText()));
 			setCena(_selected_voz_povratak != null);
 			soko_view_polazak.setVisible(_selected_voz.isSoko());
@@ -5519,7 +5565,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 			}
 			
 //			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 3 );
-			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 3 ));
+			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 3 ), _selected_voz_povratak == null ? 1 : 2);
 			_selected_voz.setRang(Integer.parseInt(cetvrti_pol_rang_value_lbl.getText()));
 			setCena(_selected_voz_povratak != null);
 			soko_view_polazak.setVisible(_selected_voz.isSoko());
@@ -5554,7 +5600,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 			
 			
 //			_selected_voz = _svi_polasci.get(_lista_svih_polazaka_current_position + 4 );
-			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 4 ));
+			setSelectedVoz(_svi_polasci.get(_lista_svih_polazaka_current_position + 4 ), _selected_voz_povratak == null ? 1 : 2);
 			_selected_voz.setRang(Integer.parseInt(peti_pol_rang_value_lbl.getText()));
 			setCena(_selected_voz_povratak != null);
 			soko_view_polazak.setVisible(_selected_voz.isSoko());
@@ -6316,15 +6362,20 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	}
 	
 	public void handle_plati_final_btn(){
+		Platform.runLater(() -> {
+			loader_pn.setVisible(true);
+			loader_pn.toFront();
+		});
+
 		int broj_putnika = Integer.parseInt( broj_putnika_lbl.getText() );
-		logger.info("handle_plati_final_btn, broj_putnika = " + broj_putnika);
+		logger.info("#######handle_plati_final_btn, broj_putnika = " + broj_putnika);
 
 		try {
 			checkBrojPutnika(broj_putnika);
-			
-			PrinterStatusChecker.checkPrinterQueueSize(PRINTER_NAME);
-			PrinterStatusChecker.checkPrinterStatus(PRINTER_NAME);
-			PowerShellPrinterStatus.checkPrinterStatus(PRINTER_NAME);
+
+//			PrinterStatusChecker.checkPrinterQueueSize(PRINTER_NAME);
+//			PrinterStatusChecker.checkPrinterStatus(PRINTER_NAME);
+//			PowerShellPrinterStatus.checkPrinterStatus(PRINTER_NAME);
 			placanje_result_pn.setStyle("-fx-background-image: url('"+resources.getString("prisloni_karticu_za_placanje_gif")+"')");
 			placanje_result_pn.setVisible(true);
 			placanje_result_pn.toFront();
@@ -6351,7 +6402,8 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 			Thread thread = new Thread(controller);
 			thread.start();
 		}catch(Exception e) {
-
+			loader_pn.setVisible(false);
+			loader_pn.toFront();
 			error_pn.setVisible(true);
 			error_pn.toFront();
 			if(e instanceof NoSeetsAvailableException) {
@@ -6581,7 +6633,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 	}
 	
 	public void handle_strana1_pomoc_btn() {
-		
+		_is_for_screen_saver = false;
 		Platform.runLater(() -> {       	
 			help_1_pn.setVisible(true);
 			help_1_pn.toFront();
@@ -6589,7 +6641,7 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
                 try {
                     // Wait for 15 secs
                     Thread.sleep(15000);
-
+                    _is_for_screen_saver = true;
                 } catch (Exception exp) {
                     exp.printStackTrace();
                 } finally {
@@ -6748,6 +6800,12 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
         fiscal_check_pn.getChildren().add(view);
         fiscal_check_pn.toFront();
         fiscal_check_pn.setVisible(true);
+	}
+	
+	public void handleScreenSaver() {
+//		screen_saver_pn.setVisible(false);
+//		screen_saver_pn.toBack();
+//		_is_for_screen_saver = true;
 	}
 	
 	
@@ -7372,6 +7430,8 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak{
 		_current_fis_qr_code = "";
 		
 		tastatura_common_zatvori();
+		
+		_is_for_screen_saver = true;
 		logger.info("<-- resetForNewSession " );
 	}
 	

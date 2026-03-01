@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -87,6 +88,84 @@ public class TransactionReportHandler implements Runnable{
 //		_response_object = gson.fromJson(response.toString(), InvoiceResponse.class);
 //		
 
+	}
+	
+	public static void main(String[] args) throws Exception{
+		KupovinaTransaction karta_tran = new KupovinaTransaction();
+		KartomatData kartomat = new KartomatData();
+		kartomat.setId(1);
+		kartomat.setName("kartomat1");
+
+		karta_tran.setKartomat(kartomat);
+
+		FiskalizacijaTransactionDto fiskalizacija_transakcija = new FiskalizacijaTransactionDto();
+		fiskalizacija_transakcija.setAddress("address");
+		fiskalizacija_transakcija.setAmount(100.0);
+		fiskalizacija_transakcija.setBusinessName("business_name");
+		fiskalizacija_transakcija.setDistrict("district");
+		fiskalizacija_transakcija.setInvoiceCounter("invoice_counter");
+		fiskalizacija_transakcija.setInvoiceCounterExtension("invoice_counter_extension");
+		fiskalizacija_transakcija.setInvoiceNumber("invoice_number");
+		fiskalizacija_transakcija.setInvoiceType("invoice_type");
+		fiskalizacija_transakcija.setJournal("journal");
+		fiskalizacija_transakcija.setLocationName("location_name");
+		fiskalizacija_transakcija.setMrc("mrc");
+		fiskalizacija_transakcija.setPAC("PAC");
+		fiskalizacija_transakcija.setPayment("payment");
+		fiskalizacija_transakcija.setRequest_id("request_id");
+		fiskalizacija_transakcija.setRequestedBy("requested_by");
+		fiskalizacija_transakcija.setSdcDateTime("sdv_date_time");
+		fiskalizacija_transakcija.setTin("Tin");
+		fiskalizacija_transakcija.setTotalAmount(100);
+		fiskalizacija_transakcija.setTransactionType("transaction_type");
+		fiskalizacija_transakcija.setVerificationQRCode("verification_qr_code");
+		fiskalizacija_transakcija.setVerificationUrl("verification_url");
+
+		karta_tran.setFiskalizacija_transakcija(fiskalizacija_transakcija);
+
+		KartaDto karta = new KartaDto();
+		karta.setCena(100.0);
+		karta.setKarta_tip("karta_tip");
+		karta.setLegitimacija_id("legitimacija");
+		karta.setPovratna_cena(1000);
+		karta.setSelected_razred_polazak("drugi");
+		karta.setSelected_razred_povratak("drugi");
+		List<KartaDto> karte = new ArrayList<KartaDto>();
+		karte.add(karta);
+
+		karta_tran.setKarte(karte);
+
+		FisklaizacijaTransactionKartaDto fiskal_karta = new FisklaizacijaTransactionKartaDto();
+		fiskal_karta.setAmount(100.0);
+		fiskal_karta.setName("fiskal_karta_name");
+		fiskal_karta.setQuantity(1);
+		fiskal_karta.setTotalPrice(100.0);
+		fiskal_karta.setUnitPrice(100.0);
+
+		List<FisklaizacijaTransactionKartaDto> fisk_karte = new ArrayList<FisklaizacijaTransactionKartaDto>();
+		fisk_karte.add(fiskal_karta);
+
+		karta_tran.setFiskal_karte(fisk_karte);
+
+		FiskalizacijaTransactionItemDto item = new FiskalizacijaTransactionItemDto();
+		item.setAmount(100.0);
+		item.setCategoryName("category_name");
+		item.setLabel("label");
+		item.setRate(10.0);
+
+		karta_tran.setFiskal_item(item);
+
+		karta_tran.setBroj_putnika(1);
+		karta_tran.setCena_ukupno(100.0);
+		karta_tran.setDestination("destination");
+		karta_tran.setSelected_train("selected_train");
+		karta_tran.setSelected_train_povrtaka("selected_train_povratka");
+		karta_tran.setTransaction_time("2025-05-13");
+		
+		URL url_devellop = new URL("http://212.200.144.87:6443/addNewTransactionRecord");
+		
+		TransactionReportHandler handler = new TransactionReportHandler(karta_tran, url_devellop);
+		handler.handle_request();
 	}
 
 }

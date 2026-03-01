@@ -128,6 +128,14 @@ public class SrbijaVozInvoiceHandler  extends AbstractHandler{
 		return to_return;
 	}
 	
+	
+	
+	@Override
+	public String toString() {
+		return "SrbijaVozInvoiceHandler [_params=" + _params + ", _invoice_number=" + _invoice_number
+				+ ", _response_object=" + _response_object + ", bean=" + bean + "]";
+	}
+
 	public static void main(String[] args) throws Exception {
 		
 		//komplus testni sertifikati

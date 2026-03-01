@@ -32,7 +32,9 @@ import application.payment.PaymentException;
 import application.payment.PaymentFactory;
 import application.payment.impl.models.TransactionDataResponse;
 import application.transactionreport.*;
+import application.util.PowerShellPrinterStatus;
 import application.util.PrinterService;
+import application.util.PrinterStatusChecker;
 
 
 public class KartaPaymentControler implements Runnable{
@@ -86,6 +88,7 @@ public class KartaPaymentControler implements Runnable{
 	
 	private String _fiscal_journal = "";
 	private String _fiscal_qr_code = "";
+	private SrbijaVozInvoiceHandler f_handler = null;
 	
 	List<String> _vk_amount = new ArrayList<String>();
 	
@@ -177,25 +180,32 @@ public class KartaPaymentControler implements Runnable{
 				", _cetvrta_karta_tip_id_legitimacije = " + _cetvrta_karta_tip_id_legitimacije + 
 				", _peta_karta_tip_id_legitimacije = " + _peta_karta_tip_id_legitimacije 
 				);
+
 		String message = "";
 		try {
+			String PRINTER_NAME = "NPI Integration Driver";
+			PrinterStatusChecker.checkPrinterQueueSize(PRINTER_NAME);
+			PrinterStatusChecker.checkPrinterStatus(PRINTER_NAME);
+			PowerShellPrinterStatus.checkPrinterStatus(PRINTER_NAME);
 			message = plati_kartu_sequence();
 		}catch(Exception e) {
 			e.printStackTrace();
 			logger.error("Greska u placanju , details: " + e.getMessage(), e );
 		}
 		try {
-			SrbijaVozInvoiceHandler f_handler = fiskalizuj();
-			try {
-				sendTotransactionReport(f_handler);
-			}catch(Throwable e) {
-				logger.info(" Exception when try to sendTotransactionReport, details: " + e.getMessage(), e);
-			}
+			f_handler = fiskalizuj();
+
 		}catch(Exception e) {
 			e.printStackTrace();
 			logger.error("Greska u fiskalizaciji , details: " + e.getMessage(), e );
 		}
 		_callback.setPaymentSessionMessage(uspesna_kupovina, message, _broj_putnika, _fiscal_journal, _fiscal_qr_code);
+		
+		try {
+			sendTotransactionReport(f_handler);
+		}catch(Throwable e) {
+			logger.info(" Exception when try to sendTotransactionReport, details: " + e.getMessage(), e);
+		}
 	}
 	
 	
@@ -685,6 +695,7 @@ public class KartaPaymentControler implements Runnable{
 	}
 	
 	private void sendTotransactionReport(SrbijaVozInvoiceHandler fiskal_handler) {
+		logger.info("--> sendTotransactionReport, fiskal_handler = " + fiskal_handler);
 		KupovinaTransaction to_report = new KupovinaTransaction();
 		InvoiceRequestBean fiskalizacija_request = fiskal_handler.getBean();
 		InvoiceResponse fiskalizacija_response = fiskal_handler.getInvoiceResponse();
@@ -702,38 +713,40 @@ public class KartaPaymentControler implements Runnable{
 			fis_karta.setUnitPrice(current.getUnitPrice());
 		}
 		to_report.setFiskal_karte(fiskal_karte);
-
+		logger.info("--> sendTotransactionReport, setFiskal_karte ");
 		FiskalizacijaTransactionItemDto fiskla_item = new FiskalizacijaTransactionItemDto();
-		fiskla_item.setAmount(fiskalizacija_response.getTaxItems().get(0).getAmount());
-		fiskla_item.setCategoryName(fiskalizacija_response.getTaxItems().get(0).getCategoryName());
-		fiskla_item.setCategoryType("" + fiskalizacija_response.getTaxItems().get(0).getCategoryType());
-		fiskla_item.setLabel(fiskalizacija_response.getTaxItems().get(0).getLabel());
-		fiskla_item.setRate(fiskalizacija_response.getTaxItems().get(0).getRate());
-		to_report.setFiskal_item(fiskla_item);
-		
-		FiskalizacijaTransactionDto fisk_tran = new FiskalizacijaTransactionDto();
-		fisk_tran.setAddress(fiskalizacija_response.getAddress());
-		fisk_tran.setAmount(Double.parseDouble(fiskalizacija_response.getTotalAmount()));
-		fisk_tran.setBusinessName(fiskalizacija_response.getBusinessName());
-		fisk_tran.setDistrict(fiskalizacija_response.getDistrict());
-		fisk_tran.setInvoiceCounter(fiskalizacija_response.getInvoiceCounter());
-		fisk_tran.setInvoiceCounterExtension(fiskalizacija_response.getInvoiceCounterExtension());
-		fisk_tran.setInvoiceNumber(fiskalizacija_response.getInvoiceNumber());
-		fisk_tran.setJournal(fiskalizacija_response.getJournal());
-		fisk_tran.setLocationName(fiskalizacija_response.getLocationName());
-		fisk_tran.setMrc(fiskalizacija_response.getMrc());
-		fisk_tran.setPAC(fiskal_handler.getPAC());
-		fisk_tran.setPayment(fiskalizacija_request.getPayment().get(0).getPaymentType());
-		fisk_tran.setRequest_id(fiskal_handler.get_invoice_number());
-		fisk_tran.setRequestedBy(fiskalizacija_response.getRequestedBy());
-		fisk_tran.setSdcDateTime(fiskalizacija_response.getSdcDateTime());
-		fisk_tran.setTin(fiskalizacija_response.getTin());
-		fisk_tran.setTotalAmount(Integer.parseInt(fiskalizacija_response.getTotalAmount()));
-		fisk_tran.setTransactionType(fiskalizacija_request.getTransactionType());
-		fisk_tran.setVerificationQRCode(fiskalizacija_response.getVerificationQRCode());
-		fisk_tran.setVerificationUrl(fiskalizacija_response.getVerificationUrl());
-		to_report.setFiskalizacija_transakcija(fisk_tran);
-		
+		if(fiskalizacija_response != null) {
+			fiskla_item.setAmount(fiskalizacija_response.getTaxItems().get(0).getAmount());
+			fiskla_item.setCategoryName(fiskalizacija_response.getTaxItems().get(0).getCategoryName());
+			fiskla_item.setCategoryType("" + fiskalizacija_response.getTaxItems().get(0).getCategoryType());
+			fiskla_item.setLabel(fiskalizacija_response.getTaxItems().get(0).getLabel());
+			fiskla_item.setRate(fiskalizacija_response.getTaxItems().get(0).getRate());
+			to_report.setFiskal_item(fiskla_item);
+
+			FiskalizacijaTransactionDto fisk_tran = new FiskalizacijaTransactionDto();
+			fisk_tran.setAddress(fiskalizacija_response.getAddress());
+			fisk_tran.setAmount(Double.parseDouble(fiskalizacija_response.getTotalAmount()));
+			fisk_tran.setBusinessName(fiskalizacija_response.getBusinessName());
+			fisk_tran.setDistrict(fiskalizacija_response.getDistrict());
+			fisk_tran.setInvoiceCounter(fiskalizacija_response.getInvoiceCounter());
+			fisk_tran.setInvoiceCounterExtension(fiskalizacija_response.getInvoiceCounterExtension());
+			fisk_tran.setInvoiceNumber(fiskalizacija_response.getInvoiceNumber());
+			fisk_tran.setJournal(fiskalizacija_response.getJournal());
+			fisk_tran.setLocationName(fiskalizacija_response.getLocationName());
+			fisk_tran.setMrc(fiskalizacija_response.getMrc());
+			fisk_tran.setPAC(fiskal_handler.getPAC());
+			fisk_tran.setPayment(fiskalizacija_request.getPayment().get(0).getPaymentType());
+			fisk_tran.setRequest_id(fiskal_handler.get_invoice_number());
+			fisk_tran.setRequestedBy(fiskalizacija_response.getRequestedBy());
+			fisk_tran.setSdcDateTime(fiskalizacija_response.getSdcDateTime());
+			fisk_tran.setTin(fiskalizacija_response.getTin());
+			fisk_tran.setTotalAmount((int)Double.parseDouble(fiskalizacija_response.getTotalAmount()));
+			fisk_tran.setTransactionType(fiskalizacija_request.getTransactionType());
+			fisk_tran.setVerificationQRCode(fiskalizacija_response.getVerificationQRCode());
+			fisk_tran.setVerificationUrl(fiskalizacija_response.getVerificationUrl());
+			to_report.setFiskalizacija_transakcija(fisk_tran);
+		}
+		logger.info("--> sendTotransactionReport, fisk_tran ");
 		Iterator putniciIterator = putnici.iterator();
 		List<KartaDto> karte = new ArrayList<KartaDto>();
 
@@ -760,10 +773,15 @@ public class KartaPaymentControler implements Runnable{
 		    }
 		    karte.add(karta_current);
 		}
-		
+		logger.info("--> sendTotransactionReport, putniciIterator ");
 		to_report.setKarte(karte);
 		to_report.setSelected_train("" + _selected_voz.getBrvoz());
-		to_report.setSelected_train_povrtaka("" + _selected_voz_povratak.getBrvoz());
+		if(_selected_voz_povratak != null) {
+			to_report.setSelected_train_povrtaka("" + _selected_voz_povratak.getBrvoz());
+		}else {
+			to_report.setSelected_train_povrtaka("");
+		}
+		
 		to_report.setBroj_putnika(_broj_putnika);
 		to_report.setCena_ukupno(_ukupna_cena);
 		to_report.setDestination(_selected_voz.getNazivdo());

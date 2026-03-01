@@ -27,6 +27,10 @@ import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 
+import javax.net.ssl.*;
+import java.security.SecureRandom;
+
+
 
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -63,152 +67,251 @@ public class HttpsClient {
     
     
 	
-	public static String getUrl(String url) throws CommunicationException {
-
-		DefaultHttpClient httpclient = null;
-
-		try {
-//			System.setProperty("javax.net.ssl.keyStore", "C:\\Users\\38164\\eclipse-workspace\\SrbijaVoz\\srbija_voz.keystore");
-//			System.setProperty("javax.net.ssl.trustStore", "C:\\Users\\38164\\eclipse-workspace\\SrbijaVoz\\srbija_voz.keystore");
-//			System.setProperty("javax.net.ssl.keyStorePassword", "changeit");
-//			System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
-			
-			httpclient = new DefaultHttpClient();
-			KeyStore trustStore = KeyStore.getInstance(KeyStore
-					.getDefaultType());
-/*			FileInputStream instream = new FileInputStream(new File(
-					PCVoucherUtil.CERT_PATH));*/
-			
-			// Get current classloader
-//			ClassLoader cl = new HttpsClient().getClass().getClassLoader();
-//			InputStream  instream = cl.getResourceAsStream("C:\\Users\\38164\\eclipse-workspace\\SrbijaVoz\\srbija_voz.keystore");
-			
-			// TODO AUTOMATIC HTTPS CERTIFICATE HANDLING			
-/*			URL url1 = new URL("http://localhost:8080/pcvoucher/lanus.keystore");
-			URLConnection uc = url1.openConnection();*/
-						
-//			try {
-//				trustStore.load(instream, "changeit".toCharArray());
-//				
-//				// TODO AUTOMATIC HTTPS CERTIFICATE HANDLING
-//				//trustStore.load(uc.getInputStream(), "hanibal77".toCharArray());
-//			} finally {
-//				instream.close();
-//			}
-
-			SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
-			
-			socketFactory
-					.setHostnameVerifier(socketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-			Scheme sch = new Scheme("https", socketFactory, 443);
-			//httpclient.getConnectionManager().getSchemeRegistry().register(sch);
-
-			HttpGet httpget = new HttpGet(url);
-
-			HttpResponse response = httpclient.execute(httpget);
-			HttpEntity entity = response.getEntity();
-			BufferedReader in
-			   = new BufferedReader(new InputStreamReader(entity.getContent()));
-
-
-			
-			String line  = in.readLine();
-			System.out.println("content = " + line);
-			return line;
-			//return response;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new CommunicationException();
-		} finally {
-			// When HttpClient instance is no longer needed,
-			// shut down the connection manager to ensure
-			// immediate deallocation of all system resources
-			
-			//httpclient.getConnectionManager().shutdown();
-		}
-
-	}
+//	public static String getUrl(String url) throws CommunicationException {
+//
+//		DefaultHttpClient httpclient = null;
+//
+//		try {
+////			System.setProperty("javax.net.ssl.keyStore", "C:\\Users\\38164\\eclipse-workspace\\SrbijaVoz\\srbija_voz.keystore");
+////			System.setProperty("javax.net.ssl.trustStore", "C:\\Users\\38164\\eclipse-workspace\\SrbijaVoz\\srbija_voz.keystore");
+////			System.setProperty("javax.net.ssl.keyStorePassword", "changeit");
+////			System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
+//
+//			
+//			httpclient = new DefaultHttpClient();
+//			KeyStore trustStore = KeyStore.getInstance(KeyStore
+//					.getDefaultType());
+///*			FileInputStream instream = new FileInputStream(new File(
+//					PCVoucherUtil.CERT_PATH));*/
+//			
+//			// Get current classloader
+////			ClassLoader cl = new HttpsClient().getClass().getClassLoader();
+////			InputStream  instream = cl.getResourceAsStream("C:\\Users\\38164\\eclipse-workspace\\SrbijaVoz\\srbija_voz.keystore");
+//			
+//			// TODO AUTOMATIC HTTPS CERTIFICATE HANDLING			
+///*			URL url1 = new URL("http://localhost:8080/pcvoucher/lanus.keystore");
+//			URLConnection uc = url1.openConnection();*/
+//						
+////			try {
+////				trustStore.load(instream, "changeit".toCharArray());
+////				
+////				// TODO AUTOMATIC HTTPS CERTIFICATE HANDLING
+////				//trustStore.load(uc.getInputStream(), "hanibal77".toCharArray());
+////			} finally {
+////				instream.close();
+////			}
+//
+//			SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
+//			
+//			socketFactory
+//					.setHostnameVerifier(socketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+//			Scheme sch = new Scheme("https", socketFactory, 443);
+//			//httpclient.getConnectionManager().getSchemeRegistry().register(sch);
+//
+//			HttpGet httpget = new HttpGet(url);
+//
+//			HttpResponse response = httpclient.execute(httpget);
+//			HttpEntity entity = response.getEntity();
+//			BufferedReader in
+//			   = new BufferedReader(new InputStreamReader(entity.getContent()));
+//
+//
+//			
+//			String line  = in.readLine();
+//			System.out.println("content = " + line);
+//			return line;
+//			//return response;
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			throw new CommunicationException();
+//		} finally {
+//			// When HttpClient instance is no longer needed,
+//			// shut down the connection manager to ensure
+//			// immediate deallocation of all system resources
+//			
+//			//httpclient.getConnectionManager().shutdown();
+//		}
+//
+//	}
+	
+//	public static String postUrl(String url, String to_post) throws CommunicationException {
+//
+//		DefaultHttpClient httpclient = null;
+//
+//		try {
+////			System.setProperty("javax.net.ssl.keyStore", "C:\\Users\\38164\\eclipse-workspace\\SrbijaVoz\\srbija_voz.keystore");
+////			System.setProperty("javax.net.ssl.trustStore", "C:\\Users\\38164\\eclipse-workspace\\SrbijaVoz\\srbija_voz.keystore");
+////			System.setProperty("javax.net.ssl.keyStorePassword", "changeit");
+////			System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
+//			
+//			httpclient = new DefaultHttpClient();
+//			KeyStore trustStore = KeyStore.getInstance(KeyStore
+//					.getDefaultType());
+///*			FileInputStream instream = new FileInputStream(new File(
+//					PCVoucherUtil.CERT_PATH));*/
+//			
+//			// Get current classloader
+////			ClassLoader cl = new HttpsClient().getClass().getClassLoader();
+////			InputStream  instream = cl.getResourceAsStream("C:\\Users\\38164\\eclipse-workspace\\SrbijaVoz\\srbija_voz.keystore");
+//			
+//			// TODO AUTOMATIC HTTPS CERTIFICATE HANDLING			
+///*			URL url1 = new URL("http://localhost:8080/pcvoucher/lanus.keystore");
+//			URLConnection uc = url1.openConnection();*/
+//						
+////			try {
+////				trustStore.load(instream, "changeit".toCharArray());
+////				
+////				// TODO AUTOMATIC HTTPS CERTIFICATE HANDLING
+////				//trustStore.load(uc.getInputStream(), "hanibal77".toCharArray());
+////			} finally {
+////				instream.close();
+////			}
+//
+//			SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
+//			
+//			socketFactory
+//					.setHostnameVerifier(socketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+//			Scheme sch = new Scheme("https", socketFactory, 443);
+//			//httpclient.getConnectionManager().getSchemeRegistry().register(sch);
+//
+//			HttpPost http_post = new HttpPost(url);
+//			
+//
+//		    StringEntity st_entity = new StringEntity(to_post);
+//		    http_post.setEntity(st_entity);
+//		    http_post.setHeader("Accept", "application/json");
+//		    http_post.setHeader("Content-type", "application/json");
+//
+//		    HttpResponse response = httpclient.execute(http_post);
+//
+//			HttpEntity entity = response.getEntity();
+//			BufferedReader in
+//			   = new BufferedReader(new InputStreamReader(entity.getContent()));
+//
+//			
+//			String line  = in.readLine();
+//			System.out.println("content = " + line);
+//			return line;
+//			//return response;
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			throw new CommunicationException();
+//		} finally {
+//			// When HttpClient instance is no longer needed,
+//			// shut down the connection manager to ensure
+//			// immediate deallocation of all system resources
+//			
+//			//httpclient.getConnectionManager().shutdown();
+//		}
+//
+//	}
 	
 	public static String postUrl(String url, String to_post) throws CommunicationException {
 
-		DefaultHttpClient httpclient = null;
+	    DefaultHttpClient httpclient = null;
 
-		try {
-//			System.setProperty("javax.net.ssl.keyStore", "C:\\Users\\38164\\eclipse-workspace\\SrbijaVoz\\srbija_voz.keystore");
-//			System.setProperty("javax.net.ssl.trustStore", "C:\\Users\\38164\\eclipse-workspace\\SrbijaVoz\\srbija_voz.keystore");
-//			System.setProperty("javax.net.ssl.keyStorePassword", "changeit");
-//			System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
-			
-			httpclient = new DefaultHttpClient();
-			KeyStore trustStore = KeyStore.getInstance(KeyStore
-					.getDefaultType());
-/*			FileInputStream instream = new FileInputStream(new File(
-					PCVoucherUtil.CERT_PATH));*/
-			
-			// Get current classloader
-//			ClassLoader cl = new HttpsClient().getClass().getClassLoader();
-//			InputStream  instream = cl.getResourceAsStream("C:\\Users\\38164\\eclipse-workspace\\SrbijaVoz\\srbija_voz.keystore");
-			
-			// TODO AUTOMATIC HTTPS CERTIFICATE HANDLING			
-/*			URL url1 = new URL("http://localhost:8080/pcvoucher/lanus.keystore");
-			URLConnection uc = url1.openConnection();*/
+	    try {
+
+	        httpclient = new DefaultHttpClient();
+
+	        // 1️⃣ Trust all certificates
+	        TrustManager[] trustAllCerts = new TrustManager[]{
+	            new X509TrustManager() {
+
+					@Override
+					public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType)
+							throws java.security.cert.CertificateException {
+						// TODO Auto-generated method stub
 						
-//			try {
-//				trustStore.load(instream, "changeit".toCharArray());
-//				
-//				// TODO AUTOMATIC HTTPS CERTIFICATE HANDLING
-//				//trustStore.load(uc.getInputStream(), "hanibal77".toCharArray());
-//			} finally {
-//				instream.close();
-//			}
+					}
+					@Override
+					public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType)
+							throws java.security.cert.CertificateException {
+						// TODO Auto-generated method stub
+						
+					}
+					@Override
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+	            }
+	        };
 
-			SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
-			
-			socketFactory
-					.setHostnameVerifier(socketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-			Scheme sch = new Scheme("https", socketFactory, 443);
-			//httpclient.getConnectionManager().getSchemeRegistry().register(sch);
+	        SSLContext sslContext = SSLContext.getInstance("TLS");
+	        sslContext.init(null, trustAllCerts, new SecureRandom());
 
-			HttpPost http_post = new HttpPost(url);
-			
+	        // 2️⃣ Disable hostname verification
+	        SSLSocketFactory socketFactory = new SSLSocketFactory(sslContext);
+	        socketFactory.setHostnameVerifier(
+	                SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
-		    StringEntity st_entity = new StringEntity(to_post);
-		    http_post.setEntity(st_entity);
-		    http_post.setHeader("Accept", "application/json");
-		    http_post.setHeader("Content-type", "application/json");
+	        // 3️⃣ Register HTTPS scheme (VERY IMPORTANT)
+	        Scheme scheme = new Scheme("https", 443, socketFactory);
+	        httpclient.getConnectionManager()
+	                  .getSchemeRegistry()
+	                  .register(scheme);
 
-		    HttpResponse response = httpclient.execute(http_post);
+	        // 4️⃣ Prepare POST
+	        HttpPost httpPost = new HttpPost(url);
 
-			HttpEntity entity = response.getEntity();
-			BufferedReader in
-			   = new BufferedReader(new InputStreamReader(entity.getContent()));
+	        StringEntity stEntity = new StringEntity(to_post, "UTF-8");
+	        httpPost.setEntity(stEntity);
+	        httpPost.setHeader("Accept", "application/json");
+	        httpPost.setHeader("Content-type", "application/json");
 
-			
-			String line  = in.readLine();
-			System.out.println("content = " + line);
-			return line;
-			//return response;
+	        // 5️⃣ Execute
+	        HttpResponse response = httpclient.execute(httpPost);
+	        HttpEntity entity = response.getEntity();
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new CommunicationException();
-		} finally {
-			// When HttpClient instance is no longer needed,
-			// shut down the connection manager to ensure
-			// immediate deallocation of all system resources
-			
-			//httpclient.getConnectionManager().shutdown();
-		}
+	        BufferedReader in = new BufferedReader(
+	                new InputStreamReader(entity.getContent(), "UTF-8"));
 
+	        StringBuilder result = new StringBuilder();
+	        String line;
+	        while ((line = in.readLine()) != null) {
+	            result.append(line);
+	        }
+
+	        return result.toString();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new CommunicationException();
+	    } finally {
+//	        if (httpclient != null) {
+//	            httpclient.getConnectionManager().shutdown();
+//	        }
+	    }
 	}
 	
+	
+//	public static String postUrl(String url, Map<String, Object> fields) throws CommunicationException {
+//
+//		try {
+//
+//			
+//
+//			com.mashape.unirest.http.HttpResponse<String> jsonResponse_et_log 
+//			= Unirest.post(url)
+//			.header("accept", "application/json").header("Content-Type", "application/x-www-form-urlencoded")
+//			.fields(fields)
+//			.asString();
+//			System.out.println(jsonResponse_et_log.getBody());
+//			return jsonResponse_et_log.getBody();
+//		}catch(Exception e) {
+//			throw new CommunicationException();
+//		}
+//
+//	}
 	
 	public static String postUrl(String url, Map<String, Object> fields) throws CommunicationException {
 
 		try {
 
-
+			disableSslVerification();
 
 			com.mashape.unirest.http.HttpResponse<String> jsonResponse_et_log 
 			= Unirest.post(url)
@@ -224,6 +327,119 @@ public class HttpsClient {
 	}
 	
 	
+	public static void disableSslVerification() throws Exception {
+
+        TrustManager[] trustAllCerts = new TrustManager[] {
+                new X509TrustManager() {
+
+
+					@Override
+					public void checkClientTrusted(java.security.cert.X509Certificate[] arg0, String arg1)
+							throws java.security.cert.CertificateException {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void checkServerTrusted(java.security.cert.X509Certificate[] arg0, String arg1)
+							throws java.security.cert.CertificateException {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+                }
+            };
+
+	    SSLContext sslContext = SSLContext.getInstance("TLS");
+	    sslContext.init(null, trustAllCerts, new SecureRandom());
+
+	    SSLConnectionSocketFactory socketFactory =
+	            new SSLConnectionSocketFactory(
+	                    sslContext,
+	                    NoopHostnameVerifier.INSTANCE);
+
+	    CloseableHttpClient httpClient =
+	            HttpClients.custom()
+	                    .setSSLSocketFactory(socketFactory)
+	                    .build();
+
+	    Unirest.setHttpClient(httpClient);
+	}
+	
+	public static String getUrl(String url) throws CommunicationException {
+
+	    DefaultHttpClient httpclient = null;
+
+	    try {
+
+	        httpclient = new DefaultHttpClient();
+
+	        // 1️⃣ Trust all certificates
+	        TrustManager[] trustAllCerts = new TrustManager[]{
+	            new X509TrustManager() {
+
+					public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType)
+							throws java.security.cert.CertificateException {
+						// TODO Auto-generated method stub
+						
+					}
+					@Override
+					public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType)
+							throws java.security.cert.CertificateException {
+						// TODO Auto-generated method stub
+						
+					}
+					@Override
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+	            }
+	        };
+
+	        SSLContext sslContext = SSLContext.getInstance("TLS");
+	        sslContext.init(null, trustAllCerts, new SecureRandom());
+
+	        // 2️⃣ Create socket factory with disabled hostname verification
+	        SSLSocketFactory socketFactory = new SSLSocketFactory(sslContext);
+	        socketFactory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+	        // 3️⃣ Register HTTPS scheme (IMPORTANT!)
+	        Scheme scheme = new Scheme("https", 443, socketFactory);
+	        httpclient.getConnectionManager()
+	                  .getSchemeRegistry()
+	                  .register(scheme);
+
+	        // 4️⃣ Execute request
+	        HttpGet httpget = new HttpGet(url);
+	        HttpResponse response = httpclient.execute(httpget);
+	        HttpEntity entity = response.getEntity();
+
+	        BufferedReader in = new BufferedReader(
+	                new InputStreamReader(entity.getContent(), "UTF-8"));
+
+	        StringBuilder result = new StringBuilder();
+	        String line;
+	        while ((line = in.readLine()) != null) {
+	            result.append(line);
+	        }
+
+	        return result.toString();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new CommunicationException();
+	    } finally {
+//	        if (httpclient != null) {
+//	            httpclient.getConnectionManager().shutdown();
+//	        }
+	    }
+	}
 	
 	
 	public final static void main(String[] args) throws Exception {
@@ -246,7 +462,7 @@ public class HttpsClient {
 				//https://testekarta.srbvoz.rs/etest21/api/KartomatSV/KT_Vrati_Terminal?mac_address=987654321
 				//produkcija
 				//https://ekarta.srbvoz.rs/api/
-				.getUrl("https://testekarta.srbvoz.rs/etest21/api/povlastice?smer=1");
+				.getUrl("https://ekarta.srbvoz.rs/api/povlastice?smer=1");
 //		System.out.println(response.getStatusLine());
 //		HttpEntity entity = response.getEntity();
 //		
