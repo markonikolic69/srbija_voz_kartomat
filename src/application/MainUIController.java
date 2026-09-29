@@ -2596,6 +2596,8 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak, IScreenSaverCallback{
 
 					_session_timer.stopCounting();
 					resetForNewSession();
+					loader_pn.setVisible(false);
+					loader_pn.toFront();
 
 				});
 
@@ -3151,11 +3153,12 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak, IScreenSaverCallback{
 	
 	public void setListaVozovaPovratakCallbackSuccess(String datum_povratka, List<VozBean> lista_vozova) {
 		logger.info("setListaVozovaPovratakCallbackSuccess, datum_povratka = " + datum_povratka + ", lista_vozova = " + lista_vozova );
-		loader_pn.setVisible(false);
+		
 		
 		Platform.runLater(new Runnable() {
 		    @Override
 		    public void run() {
+		    	loader_pn.setVisible(false);
 		    	setPodaciOdVozaPovratakMarko(datum_povratka, lista_vozova);
 		    }
 		});

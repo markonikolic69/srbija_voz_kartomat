@@ -1,0 +1,28 @@
+[00:00:00][INFO][Timer-1][2619][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 105
+[00:00:00][INFO][JavaFX Application Thread][4268][MainUIController][handleKupiKartuOpcije] - --> handleKupiKartuOpcije
+[00:00:00][INFO][JavaFX Application Thread][4274][MainUIController][handleKupiKartuOpcije] - <-- handleKupiKartuOpcije
+[00:00:01][INFO][Timer-1][2619][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 120
+[00:00:02][INFO][Timer-1][2619][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 119
+[00:00:03][INFO][Timer-1][2619][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 118
+[00:00:04][INFO][Timer-1][2619][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 117
+[00:00:05][INFO][Timer-1][2619][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 116
+[00:00:06][INFO][Timer-1][2619][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 115
+[00:00:06][INFO][JavaFX Application Thread][6025][MainUIController][handle_placanje_nazad_btn] - handle_placanje_nazad_btn 
+[00:00:07][INFO][Timer-1][2619][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 114
+[00:00:08][INFO][Timer-1][2619][MainUIController][update_recycling_session] - update_recycling_session, broj_sekundi = 113
+[00:00:09][INFO][JavaFX Application Thread][7125][MainUIController][resetForNewSession] - --> resetForNewSession 
+[00:00:09][INFO][JavaFX Application Thread][2258][MainUIController][setLocale] - resetLocale finished
+[00:00:09][INFO][JavaFX Application Thread][3871][MainUIController][handle_1_btn] - handle_1_btn 
+[00:00:09][INFO][JavaFX Application Thread][3569][MainUIController][setCena] - set cena, is_povratna = false
+[00:00:09][INFO][JavaFX Application Thread][3578][MainUIController][setCenaJedanSmer] - setCena , _prva_karta_tip = 0
+[00:00:09][INFO][JavaFX Application Thread][3639][MainUIController][setCenaJedanSmer] - <--setCena, ukupna_cena = 0.0
+[00:00:09][INFO][JavaFX Application Thread][4229][MainUIController][handle_razred_drugi_polazak] - --> handle_razred_drugi_polazak
+[00:00:09][INFO][JavaFX Application Thread][4236][MainUIController][handle_razred_drugi_polazak] - <-- handle_razred_drugi_polazak
+[00:00:09][INFO][JavaFX Application Thread][3930][MainUIController][handle_smer] - handle_smer, is_povratna =  false
+[00:00:09][INFO][JavaFX Application Thread][6873][MainUIController][uslov_za_drugi_korak] - --> uslov_za_drugi_korak
+[00:00:09][INFO][JavaFX Application Thread][6964][MainUIController][uslov_za_drugi_korak] - <-- uslov_za_drugi_korak
+[00:00:09][INFO][JavaFX Application Thread][4287][MainUIController][refresh_ostale_stanice] - --> refresh_ostale_stanice
+[00:00:09][INFO][JavaFX Application Thread][4513][MainUIController][refresh_ostale_stanice] - <-- refresh_ostale_stanice
+[00:00:09][INFO][JavaFX Application Thread][4517][MainUIController][handle_pagination] - --> handle_pagination, is_napred = true
+[00:00:09][INFO][JavaFX Application Thread][4745][MainUIController][handle_pagination] - <-- handle_pagination
+[00:00:09][INFO][JavaFX Application Thread][7435][MainUIController][resetForNewSession] - <-- resetForNewSession 
