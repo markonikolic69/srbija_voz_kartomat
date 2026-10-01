@@ -491,6 +491,13 @@
  	-fx-alignment:center;
 }
 
+.error_lbl_2 {
+	-fx-font-family: 'Montserrat';
+ 	-fx-font-size: 20pt ;
+ 	-fx-text-fill: #404040;
+ 	-fx-alignment:center;
+}
+
 .message_lbl {
 	-fx-font-family: 'Montserrat Light';
  	-fx-font-size: 23pt ;

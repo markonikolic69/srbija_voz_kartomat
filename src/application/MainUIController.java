@@ -28,6 +28,7 @@ import java.util.TimerTask;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -897,6 +898,18 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak, IScreenSaverCallback{
 	@FXML private Button novi_pomoc_btn;
 	
 	@FXML private Pane error_pn;
+	
+	@FXML private Label error_pn_2_lbl_1;
+	@FXML private Label error_pn_2_lbl_2;
+	@FXML private Label error_pn_2_lbl_3;
+	@FXML private Label error_pn_2_lbl_4;
+	@FXML private Label error_pn_2_lbl_5;
+	@FXML private Label error_pn_2_lbl_6;
+	@FXML private Label error_pn_2_lbl_7;
+	@FXML private Label error_pn_2_lbl_8;
+	
+	@FXML private Pane error_pn_2;
+	
 	@FXML private Label error_lbl_1;
 	@FXML private Label error_lbl_2;
 	@FXML private Label error_lbl_3;
@@ -6364,77 +6377,99 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak, IScreenSaverCallback{
 		handle_smer(false);
 	}
 	
+
+	
 	public void handle_plati_final_btn(){
-		Platform.runLater(() -> {
-			loader_pn.setVisible(true);
-			loader_pn.toFront();
-		});
 
-		int broj_putnika = Integer.parseInt( broj_putnika_lbl.getText() );
-		logger.info("#######handle_plati_final_btn, broj_putnika = " + broj_putnika);
 
+		plati_kartu_final_btn.setDisable(true);
+		//ovo je kasnjenje koje je potrebno JavaFX thready da renderuje disable button gornji poziv
 		try {
-			checkBrojPutnika(broj_putnika);
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
-//			PrinterStatusChecker.checkPrinterQueueSize(PRINTER_NAME);
-//			PrinterStatusChecker.checkPrinterStatus(PRINTER_NAME);
-//			PowerShellPrinterStatus.checkPrinterStatus(PRINTER_NAME);
-			placanje_result_pn.setStyle("-fx-background-image: url('"+resources.getString("prisloni_karticu_za_placanje_gif")+"')");
-			placanje_result_pn.setVisible(true);
-			placanje_result_pn.toFront();
-			
-			boolean is_petnaest_dana = false;
-			if(_selected_voz_povratak != null) {
-				is_petnaest_dana = _selected_voz_povratak.getRelkm() > 100;
-			}
-			
+		Platform.runLater(() -> {
+			int broj_putnika = Integer.parseInt( broj_putnika_lbl.getText() );
+			logger.info("#######handle_plati_final_btn, broj_putnika = " + broj_putnika);
 
+			try {
 
-			
-			KartaPaymentControler controller = new KartaPaymentControler(this,_kartomat.getiD_USER(), _kartomat.getiD_TERMINALA(),_kartomat.getNaziV_STANICE(),
-					_selected_voz, _selected_voz_povratak, _selected_razred_polazak, _selected_razred_povratak, broj_putnika,
-			Double.parseDouble(ukupna_cena_value_lbl.getText()), _prvi_putnik_cena, _drugi_putnik_cena, _treci_putnik_cena, _cetvrti_putnik_cena, _peti_putnik_cena,
-			_prvi_putnik_povratna_cena, _drugi_putnik_povratna_cena, _treci_putnik_povratna_cena, _cetvrti_putnik_povratna_cena, _peti_putnik_povratna_cena, 
-			_prva_karta_tip, _druga_karta_tip, _treca_karta_tip, _treca_karta_tip, _peta_karta_tip, is_petnaest_dana,
-			prvi_tip_tf.getText().trim(), drugi_tip_tf.getText().trim(), treci_tip_tf.getText().trim(),
-			cetvrti_tip_tf.getText().trim(), peti_tip_tf.getText().trim(), getProperties().getProperty("transaction.report.url"));
-			
-
-			
-			
-			Thread thread = new Thread(controller);
-			thread.start();
-		}catch(Exception e) {
-			loader_pn.setVisible(false);
-			loader_pn.toFront();
-			error_pn.setVisible(true);
-			error_pn.toFront();
-			if(e instanceof NoSeetsAvailableException) {
-				run_error(resources.getString("nema_slobodnih_mesta"), e.getMessage(), "", "",  "", "", "", 5);
-			}else {
-				run_error("GREŠKA NA ŠTAMPAČU", e.getMessage(), "POZOVITE OSOBLJE STANICE", e.getMessage(),  "", "", "", 10);
-			}
-
-			Thread thread3 = new Thread(() -> {
+				checkBrojPutnika(broj_putnika);
+				//TODO - ubaceno ovde da bi se dobila greska pre thread-a, videti da li je to ok
+				String PRINTER_NAME = "NPI Integration Driver";
+				PrinterStatusChecker.checkPrinterQueueSize(PRINTER_NAME);
+				PrinterStatusChecker.checkPrinterStatus(PRINTER_NAME);
+				PowerShellPrinterStatus.checkPrinterStatus(PRINTER_NAME);
 
 
-				try {
-					Thread.sleep(10000);
 
-				}catch(Exception ee) {}
-				finally {
-					placanje_pn.setVisible(false);
-					odrediste_pn.setVisible(true);
-					stop_recycling_session();
+				Platform.runLater(() -> {
+					loader_pn.setVisible(true);
+					loader_pn.toFront();
+				});
+
+
+
+				placanje_result_pn.setStyle("-fx-background-image: url('"+resources.getString("prisloni_karticu_za_placanje_gif")+"')");
+				placanje_result_pn.setVisible(true);
+				placanje_result_pn.toFront();
+
+				boolean is_petnaest_dana = false;
+				if(_selected_voz_povratak != null) {
+					is_petnaest_dana = _selected_voz_povratak.getRelkm() > 100;
 				}
-			});
 
-			thread3.setDaemon(true);
-			thread3.start();
 
-		}
-		
-		
+
+
+				KartaPaymentControler controller = new KartaPaymentControler(this,_kartomat.getiD_USER(), _kartomat.getiD_TERMINALA(),_kartomat.getNaziV_STANICE(),
+						_selected_voz, _selected_voz_povratak, _selected_razred_polazak, _selected_razred_povratak, broj_putnika,
+						Double.parseDouble(ukupna_cena_value_lbl.getText()), _prvi_putnik_cena, _drugi_putnik_cena, _treci_putnik_cena, _cetvrti_putnik_cena, _peti_putnik_cena,
+						_prvi_putnik_povratna_cena, _drugi_putnik_povratna_cena, _treci_putnik_povratna_cena, _cetvrti_putnik_povratna_cena, _peti_putnik_povratna_cena, 
+						_prva_karta_tip, _druga_karta_tip, _treca_karta_tip, _treca_karta_tip, _peta_karta_tip, is_petnaest_dana,
+						prvi_tip_tf.getText().trim(), drugi_tip_tf.getText().trim(), treci_tip_tf.getText().trim(),
+						cetvrti_tip_tf.getText().trim(), peti_tip_tf.getText().trim(), getProperties().getProperty("transaction.report.url"));
+
+
+
+
+				Thread thread = new Thread(controller);
+				thread.start();
+			}catch(Exception e) {
+				loader_pn.setVisible(false);
+				loader_pn.toFront();
+				error_pn_2.setVisible(true);
+				error_pn_2.toFront();
+				if(e instanceof NoSeetsAvailableException) {
+					run_info_2(resources.getString("nema_slobodnih_mesta"), "", "", "",  "", "", "", 3);
+				}else {
+					run_error_2("GREŠKA NA ŠTAMPAČU", "POZOVITE OSOBLJE STANICE", "", "",  "", "", "", 3);
+				}
+
+				Thread thread3 = new Thread(() -> {
+
+
+					try {
+						Thread.sleep(3000);
+
+					}catch(Exception ee) {}
+					finally {
+						
+					        placanje_pn.setVisible(false);
+					        odrediste_pn.setVisible(true);
+					        stop_recycling_session();
+					   
+					}
+				});
+
+				thread3.setDaemon(true);
+				thread3.start();
+
+			}
+
+		});
 
 
 			//platu_kartu_sequence_threaded();
@@ -7060,6 +7095,66 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak, IScreenSaverCallback{
         });
 	}
 	
+	private void run_error_2(String prvi_red, String drugi_red, String treci_red, 
+			String cetvrti_red,String peti_red,String sesti_red,String sedmi_red,  int number_of_seconds) {
+		run_message_2("GREŠKA:", prvi_red, drugi_red, treci_red, cetvrti_red, peti_red, 
+				sesti_red, sedmi_red, number_of_seconds);
+	}
+	
+	private void run_info_2(String prvi_red, String drugi_red, String treci_red, 
+			String cetvrti_red,String peti_red,String sesti_red,String sedmi_red, int number_of_seconds) {
+		run_message_2("INFO:", prvi_red, drugi_red, treci_red, cetvrti_red, peti_red, 
+				sesti_red, sedmi_red, number_of_seconds);
+	}
+	
+	
+	private void run_message_2(String naslov, String prvi_red, String drugi_red, String treci_red, 
+			String cetvrti_red,String peti_red,String sesti_red,String sedmi_red, int number_of_seconds) {
+		logger.info("--> run_message_2, naslov = " + ", prvi_red = " + prvi_red  + ", drugi_red = " + drugi_red + ", treci_red = " + treci_red
+				+ ", cetvrti_red = " + cetvrti_red + ", peti_red = " + peti_red + ", sesti_red = " + sesti_red + ", sedmi_red = " + sedmi_red);
+		error_pn_2_lbl_1.setText(naslov);
+		error_pn_2_lbl_2.setText(prvi_red);
+		error_pn_2_lbl_3.setText(drugi_red);
+		error_pn_2_lbl_4.setText(treci_red);
+		error_pn_2_lbl_5.setText(cetvrti_red);
+		error_pn_2_lbl_6.setText(peti_red);
+		error_pn_2_lbl_7.setText(sesti_red);
+		error_pn_2_lbl_8.setText(sedmi_red);
+		if(prvi_red.equals("")) {
+			
+		}else if(drugi_red.equals("")) {
+			error_pn_2.setPrefHeight(110);
+		}else if(treci_red.equals("")) {
+			error_pn_2.setPrefHeight(150);
+		}else if(cetvrti_red.equals("")) {
+			error_pn_2.setPrefHeight(190);
+		}else if(peti_red.equals("")) {
+			error_pn_2.setPrefHeight(230);
+		}else if(sesti_red.equals("")) {
+			error_pn_2.setPrefHeight(270);
+		}else if(sedmi_red.equals("")) {
+			error_pn_2.setPrefHeight(310);
+		}
+		
+		Platform.runLater(() -> {       	
+			error_pn_2.setVisible(true);
+            Thread thread = new Thread(() -> {
+                try {
+                    // Wait for 6 secs
+                    Thread.sleep(number_of_seconds * 1000);
+
+                } catch (Exception exp) {
+                    exp.printStackTrace();
+                } finally {
+                	error_pn_2.setVisible(false);
+                }
+            });
+            thread.setDaemon(true);
+            thread.start();
+    				
+        });
+	}
+	
 	
 //	private void printSlip() {
 //		KartaBean karta = new KartaBean();
@@ -7126,6 +7221,8 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak, IScreenSaverCallback{
 	private void resetForNewSession() {
 
 		logger.info("--> resetForNewSession " );
+		
+		plati_kartu_final_btn.setDisable(false);
 
 		datum_polaska_value_lbl.textProperty().removeListener(datum_polaska_changeListener);
 		datum_povratka_polazak_value_lbl.textProperty().removeListener(datum_povratka_polazak_changeListener);
@@ -7237,7 +7334,20 @@ IGetListaVozovaPolasci, IGetListaVozovaPovratak, IScreenSaverCallback{
 		error_lbl_6.setText("");
 		error_lbl_7.setText("");
 		error_lbl_8.setText("");
-
+		error_pn.setVisible(false);
+		
+		error_pn_2.setPrefHeight(340.0);
+		error_pn_2.setPrefWidth(690.0);
+		
+		error_pn_2_lbl_1.setText("");
+		error_pn_2_lbl_2.setText("");
+		error_pn_2_lbl_3.setText("");
+		error_pn_2_lbl_4.setText("");
+		error_pn_2_lbl_5.setText("");
+		error_pn_2_lbl_6.setText("");
+		error_pn_2_lbl_7.setText("");
+		error_pn_2_lbl_8.setText("");
+		error_pn_2.setVisible(false);
 
 		_selected_razred_polazak = DEFAULT_RAZRED;
 		_selected_razred_povratak = DEFAULT_RAZRED;

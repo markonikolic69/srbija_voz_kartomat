@@ -764,6 +764,19 @@
          </children>
       </Pane>
       
+      <Pane fx:id="error_pn_2" layoutX="390.0" layoutY="450.0" prefHeight="150.0" prefWidth="690.0" styleClass="error_pn" visible="false">
+         <children>
+            <Label fx:id="error_pn_2_lbl_1" layoutX="23.0" layoutY="14.0" prefHeight="30.0" prefWidth="630.0" styleClass="error_lbl_2" text="" />
+            <Label fx:id="error_pn_2_lbl_2" layoutX="23.0" layoutY="54.0" prefHeight="30.0" prefWidth="630.0" styleClass="error_lbl_2" text="" />
+            <Label fx:id="error_pn_2_lbl_3" layoutX="23.0" layoutY="94.0" prefHeight="30.0" prefWidth="630.0" styleClass="error_lbl_2" text="" />
+            <Label fx:id="error_pn_2_lbl_4" layoutX="23.0" layoutY="134.0" prefHeight="30.0" prefWidth="630.0" styleClass="error_lbl_2" text="" />
+            <Label fx:id="error_pn_2_lbl_5" layoutX="23.0" layoutY="174.0" prefHeight="30.0" prefWidth="630.0" styleClass="error_lbl_2" text="" />
+            <Label fx:id="error_pn_2_lbl_6" layoutX="23.0" layoutY="214.0" prefHeight="30.0" prefWidth="630.0" styleClass="error_lbl_2" text="" />
+            <Label fx:id="error_pn_2_lbl_7" layoutX="23.0" layoutY="254.0" prefHeight="30.0" prefWidth="630.0" styleClass="error_lbl_2" text="" />
+            <Label fx:id="error_pn_2_lbl_8" layoutX="23.0" layoutY="294.0" prefHeight="30.0" prefWidth="630.0" styleClass="error_lbl_2" text="" />
+         </children>
+      </Pane>
+      
       <Pane fx:id="tastatura_pn" layoutX="400.0" layoutY="50.0" prefHeight="850.0" prefWidth="500.0" styleClass="tastatura_pn" visible="false">
          <children>
          	<Button fx:id="tastatura_zatvori_btn" layoutX="40.0" layoutY="40.0" mnemonicParsing="false" onAction="#handle_tastatura_zatvori" prefHeight="40.0" prefWidth="112.0" styleClass="cal_act_btn" text="%zatvori" />

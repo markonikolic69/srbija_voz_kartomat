@@ -183,29 +183,33 @@ public class KartaPaymentControler implements Runnable{
 
 		String message = "";
 		try {
-			String PRINTER_NAME = "NPI Integration Driver";
-			PrinterStatusChecker.checkPrinterQueueSize(PRINTER_NAME);
-			PrinterStatusChecker.checkPrinterStatus(PRINTER_NAME);
-			PowerShellPrinterStatus.checkPrinterStatus(PRINTER_NAME);
+//			String PRINTER_NAME = "NPI Integration Driver";
+//			PrinterStatusChecker.checkPrinterQueueSize(PRINTER_NAME);
+//			PrinterStatusChecker.checkPrinterStatus(PRINTER_NAME);
+//			PowerShellPrinterStatus.checkPrinterStatus(PRINTER_NAME);
 			message = plati_kartu_sequence();
+			if(uspesna_kupovina) {
+				try {
+					f_handler = fiskalizuj();
+
+				}catch(Exception e) {
+					e.printStackTrace();
+					logger.error("Greska u fiskalizaciji , details: " + e.getMessage(), e );
+				}
+				try {
+					sendTotransactionReport(f_handler);
+				}catch(Throwable e) {
+					logger.info(" Exception when try to sendTotransactionReport, details: " + e.getMessage(), e);
+				}
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 			logger.error("Greska u placanju , details: " + e.getMessage(), e );
 		}
-		try {
-			f_handler = fiskalizuj();
-
-		}catch(Exception e) {
-			e.printStackTrace();
-			logger.error("Greska u fiskalizaciji , details: " + e.getMessage(), e );
-		}
+		
 		_callback.setPaymentSessionMessage(uspesna_kupovina, message, _broj_putnika, _fiscal_journal, _fiscal_qr_code);
 		
-		try {
-			sendTotransactionReport(f_handler);
-		}catch(Throwable e) {
-			logger.info(" Exception when try to sendTotransactionReport, details: " + e.getMessage(), e);
-		}
+		
 	}
 	
 	
